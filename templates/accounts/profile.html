@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ user_data.name }} | Founder Dashboard | Thinkers{% endblock %}
+
+{% block content %}
+
+<section class="page-section">
+  <div class="comic-container">
+    <!-- Breadcrumb -->
+    <div class="comic-breadcrumb">
+      <a href="{% url 'home' %}">Home</a> <span class="comic-breadcrumb-sep">&gt;</span> <span>Founder Dashboard</span>
+    </div>
+
+    <!-- Profile Header Hero Box -->
+    <div class="comic-box comic-box-yellow dashboard-hero">
+      <div class="dashboard-hero-row">
+        <div class="dashboard-user-info">
+          <div class="comic-avatar comic-avatar-lg comic-box-white">
+            {{ user_data.avatar }}
+          </div>
+          <div>
+            <div class="flex gap-sm items-center mb-xs flex-wrap">
+              <span class="comic-badge comic-badge-pink">{{ user_data.role }}</span>
+              <span class="comic-badge comic-box-white">
+                <i data-lucide="map-pin" class="icon-sm"></i> {{ user_data.college }}
+              </span>
+            </div>
+            <h1 class="mb-xs text-3xl">{{ user_data.name }}</h1>
+            <p class="mt-xs text-muted text-base">
+              {{ user_data.bio }}
+            </p>
+          </div>
+        </div>
+
+        <div class="flex gap-sm">
+          <button onclick="showComicToast('Profile editor opened!');" class="comic-btn comic-btn-sm comic-btn-white">
+            <i data-lucide="edit-3" class="icon-sm"></i> Edit Profile
+          </button>
+          <a href="{% url 'logout' %}" class="comic-btn comic-btn-sm comic-btn-black">
+            <i data-lucide="log-out" class="icon-sm"></i> Log Out
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard Grid: 2 Columns -->
+    <div class="dashboard-grid">
+      
+      <!-- Left Column: Clubs & Pitches -->
+      <div class="dashboard-column">
+        
+        <!-- My Clubs Box -->
+        <div class="comic-box comic-box-white">
+          <div class="flex justify-between items-center mb-md">
+            <div class="flex items-center gap-sm">
+              <span class="comic-sticker comic-sticker-cyan">
+                <i data-lucide="compass"></i> MY HUBS
+              </span>
+              <h3 class="mb-0 text-xl">Active Clubs Joined</h3>
+            </div>
+            <a href="{% url 'club_list' %}" class="comic-btn comic-btn-sm comic-btn-yellow">
+              <i data-lucide="plus" class="icon-sm"></i> Browse Clubs
+            </a>
+          </div>
+
+          <div class="flex flex-col gap-md">
+            {% for club in user_data.clubs_joined %}
+              <div class="comic-box comic-box-{{ club.badge_color }} p-md flex justify-between items-center">
+                <div>
+                  <h4 class="mb-0 text-lg">{{ club.name }}</h4>
+                  <span class="font-bold text-muted text-xs">Role: {{ club.role }}</span>
+                </div>
+                <a href="{% url 'club_detail' club.slug %}" class="comic-btn comic-btn-sm comic-btn-black">
+                  Enter Hub <i data-lucide="arrow-right" class="icon-sm"></i>
+                </a>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- My Pitches Box -->
+        <div class="comic-box comic-box-white">
+          <div class="flex justify-between items-center mb-md">
+            <div class="flex items-center gap-sm">
+              <span class="comic-sticker comic-sticker-pink">
+                <i data-lucide="rocket"></i> MY VENTURES
+              </span>
+              <h3 class="mb-0 text-xl">Pitches on the Wall</h3>
+            </div>
+            <a href="{% url 'pitch_wall' %}" class="comic-btn comic-btn-sm comic-btn-pink">
+              <i data-lucide="plus" class="icon-sm"></i> New Pitch
+            </a>
+          </div>
+
+          <div class="flex flex-col gap-md">
+            {% for pitch in user_data.my_pitches %}
+              <div class="comic-box comic-box-yellow p-md flex justify-between items-center">
+                <div>
+                  <h4 class="mb-0 text-lg">{{ pitch.title }}</h4>
+                  <div class="font-bold text-muted text-xs">
+                    Stage: {{ pitch.stage }} &bull; Seeking: {{ pitch.seeking }}
+                  </div>
+                </div>
+                <div class="flex items-center gap-sm">
+                  <span class="comic-badge comic-badge-green">
+                    <i data-lucide="thumbs-up" class="icon-sm"></i> {{ pitch.upvotes }} Upvotes
+                  </span>
+                  <a href="{% url 'pitch_wall' %}" class="comic-btn comic-btn-sm comic-btn-black">View</a>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Match & Coffee Chat Requests -->
+      <div class="dashboard-column">
+        
+        <!-- Requests Box -->
+        <div class="comic-box comic-box-cyan">
+          <div class="flex justify-between items-center mb-md">
+            <h3 class="mb-0 flex items-center gap-xs text-xl">
+              <i data-lucide="coffee" class="icon-sm"></i> Coffee Chat Requests
+            </h3>
+            <span class="comic-badge comic-badge-yellow">2 PENDING</span>
+          </div>
+
+          <div class="flex flex-col gap-md">
+            {% for req in user_data.match_requests %}
+              <div class="comic-box comic-box-white p-md">
+                <div class="flex justify-between items-center mb-xs">
+                  <span class="font-black text-base">From: {{ req.from_user }}</span>
+                  <span class="text-muted font-bold text-xs">{{ req.time }}</span>
+                </div>
+                <p class="mb-md text-sm text-dim">
+                  "{{ req.topic }}"
+                </p>
+                <div class="flex gap-sm">
+                  <button onclick="this.parentElement.innerHTML='<span class=\'text-success font-black\'>Accepted! Video room shared.</span>'; showComicToast('Accepted coffee chat!');" class="comic-btn comic-btn-sm comic-btn-black flex-1">
+                    <i data-lucide="check" class="icon-sm"></i> Accept
+                  </button>
+                  <button onclick="this.closest('.comic-box').remove(); showComicToast('Request dismissed.');" class="comic-btn comic-btn-sm comic-btn-white">
+                    <i data-lucide="x" class="icon-sm"></i> Decline
+                  </button>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Quick Jump Box -->
+        <div class="comic-box comic-box-white">
+          <h4 class="mb-md flex items-center gap-xs text-lg">
+            <i data-lucide="zap" class="icon-sm"></i> Quick Founder Actions
+          </h4>
+          <div class="flex flex-col gap-sm">
+            <a href="{% url 'speed_networking' %}" class="comic-btn comic-btn-sm comic-btn-yellow justify-start">
+              <i data-lucide="coffee" class="icon-sm"></i> Join Speed Networking Lounge
+            </a>
+            <a href="{% url 'co_founders' %}" class="comic-btn comic-btn-sm comic-btn-pink justify-start">
+              <i data-lucide="users" class="icon-sm"></i> Find A Technical Co-Founder
+            </a>
+            <a href="{% url 'challenges' %}" class="comic-btn comic-btn-sm comic-btn-green justify-start">
+              <i data-lucide="trophy" class="icon-sm"></i> Check Sprint Deadlines
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

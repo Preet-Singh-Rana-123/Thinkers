@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ thread.title }} | Thinkers Discussions{% endblock %}
+
+{% block content %}
+
+<section class="page-section">
+  <div class="comic-container comic-container-narrow">
+    <!-- Breadcrumb -->
+    <div class="comic-breadcrumb">
+      <a href="{% url 'home' %}">Home</a> <span class="comic-breadcrumb-sep">&gt;</span> 
+      <a href="{% url 'forum_list' %}">Discussions</a> <span class="comic-breadcrumb-sep">&gt;</span> 
+      <span>Thread #{{ thread.id }}</span>
+    </div>
+
+    <!-- Main Question Box -->
+    <div class="comic-box comic-box-yellow mb-xl">
+      <div class="flex justify-between items-center mb-md flex-wrap gap-xs">
+        <div class="flex gap-xs items-center">
+          <span class="comic-badge comic-badge-pink">{{ thread.channel }}</span>
+          <span class="comic-badge comic-box-white">
+            <i data-lucide="compass" class="icon-sm"></i> {{ thread.club }}
+          </span>
+        </div>
+
+        <button class="comic-btn comic-btn-sm comic-btn-white comic-upvote-btn">
+          <i data-lucide="thumbs-up" class="icon-sm"></i> Upvote (<span class="upvote-count">{{ thread.upvotes }}</span>)
+        </button>
+      </div>
+
+      <h1 class="mb-md text-3xl leading-snug">
+        {{ thread.title }}
+      </h1>
+
+      <div class="comic-box comic-box-white mb-md">
+        <p class="mb-0 lead-text text-dark">
+          {{ thread.content }}
+        </p>
+      </div>
+
+      <div class="flex items-center gap-md">
+        <div class="comic-avatar comic-avatar-sm comic-box-purple">
+          {{ thread.author_avatar }}
+        </div>
+        <div>
+          <span class="font-black text-base">{{ thread.author }}</span>
+          <span class="text-muted font-bold text-xs">&bull; {{ thread.author_role }} &bull; Asked {{ thread.created_at }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Answers / Comic Dialogue Bubbles -->
+    <div class="thread-dialogue-stack">
+      <div class="flex justify-between items-center mb-xs">
+        <h3 class="flex items-center gap-xs mb-0 text-2xl">
+          <i data-lucide="message-square" class="icon-sm"></i> Founder Answers &amp; Feedback ({{ thread.replies|length }})
+        </h3>
+        <span class="comic-badge comic-badge-green">
+          <i data-lucide="check-circle" class="icon-sm"></i> PEER VERIFIED
+        </span>
+      </div>
+
+      {% for reply in thread.replies %}
+        <div class="thread-reply-row">
+          <div class="comic-avatar comic-box-yellow mt-xs">
+            {{ reply.author_avatar }}
+          </div>
+
+          <div class="thread-reply-body">
+            <div class="comic-box comic-box-white relative">
+              {% if reply.is_top_answer %}
+                <div class="thread-top-solution-badge">
+                  <span class="comic-badge comic-badge-yellow">
+                    <i data-lucide="star" class="icon-sm"></i> TOP COMMUNITY SOLUTION
+                  </span>
+                </div>
+              {% endif %}
+
+              <div class="thread-reply-header">
+                <div>
+                  <span class="font-black text-base">{{ reply.author }}</span>
+                  <span class="text-muted font-bold text-xs"> &bull; {{ reply.author_role }} &bull; {{ reply.created_at }}</span>
+                </div>
+
+                <button class="comic-btn comic-btn-sm comic-btn-white comic-upvote-btn">
+                  <i data-lucide="thumbs-up" class="icon-sm"></i> Upvote (<span class="upvote-count">{{ reply.upvotes }}</span>)
+                </button>
+              </div>
+
+              <p class="mb-0 text-base text-dark leading-relaxed">
+                {{ reply.content }}
+              </p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Reply Box Form -->
+    <div class="comic-box comic-box-cyan">
+      <h3 class="mb-xs text-xl">Add Your Founder Perspective</h3>
+      <p class="mb-lg text-sm text-dim">
+        Share personal experience, metrics from your own startup, or technical code snippets.
+      </p>
+
+      <form onsubmit="event.preventDefault(); showComicToast('Your reply was posted to the mastermind!'); document.getElementById('replyTextarea').value='';">
+        <div class="form-group">
+          <textarea id="replyTextarea" required rows="4" class="comic-input comic-textarea" placeholder="Write your response, feedback or roast here..."></textarea>
+        </div>
+
+        <div class="flex justify-between items-center">
+          <span class="text-muted font-bold text-xs">Markdown formatting supported</span>
+          <button type="submit" class="comic-btn comic-btn-black">
+            <i data-lucide="send" class="icon-sm"></i> Post Founder Reply
+          </button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

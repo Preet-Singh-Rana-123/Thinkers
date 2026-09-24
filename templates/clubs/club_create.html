@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Launch an Entrepreneur Club | Thinkers{% endblock %}
+
+{% block content %}
+
+<section class="page-section">
+  <div class="comic-container comic-container-narrow">
+    <!-- Breadcrumb -->
+    <div class="comic-breadcrumb">
+      <a href="{% url 'home' %}">Home</a> <span class="comic-breadcrumb-sep">&gt;</span> 
+      <a href="{% url 'club_list' %}">Clubs</a> <span class="comic-breadcrumb-sep">&gt;</span> 
+      <span>Launch Club</span>
+    </div>
+
+    <!-- Alert if created -->
+    {% if success_message %}
+      <div class="comic-box comic-box-green mb-xl">
+        <div class="flex items-center justify-between flex-wrap gap-md">
+          <div class="font-black flex items-center gap-sm text-lg">
+            <i data-lucide="check-circle-2"></i> {{ success_message }}
+          </div>
+          <a href="{% url 'club_list' %}" class="comic-btn comic-btn-sm comic-btn-black">
+            View In Directory <i data-lucide="arrow-right" class="icon-sm"></i>
+          </a>
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Creation Card -->
+    <div class="comic-box comic-box-yellow">
+      <div class="flex justify-between items-center mb-md">
+        <span class="comic-sticker comic-sticker-pink">
+          <i data-lucide="compass"></i> FOUND A NEW HUB
+        </span>
+        <span class="comic-badge comic-box-white">STEP 1 OF 1</span>
+      </div>
+
+      <h1 class="text-3xl mb-xs">Launch Your Entrepreneur Club</h1>
+      <p class="text-base text-muted mb-xl">
+        Become a collegiate hub leader. Gather at least 3 passionate co-organizers, set your meeting cadence, and we'll feature your club to all campus innovators.
+      </p>
+
+      <form method="POST" action="{% url 'club_create' %}">
+        {% csrf_token %}
+
+        <!-- Field: Club Name -->
+        <div class="form-group">
+          <label class="comic-label">
+            <i data-lucide="compass" class="icon-sm"></i> Club Name *
+          </label>
+          <input 
+            type="text" 
+            name="name" 
+            required 
+            placeholder="e.g., Quantum Computing Builders, EV Mobility Lab, Indie Hackers Club" 
+            class="comic-input"
+          >
+        </div>
+
+        <!-- Field: Category & University -->
+        <div class="form-row-2">
+          <div>
+            <label class="comic-label">
+              <i data-lucide="target" class="icon-sm"></i> Industry Vertical *
+            </label>
+            <select name="category" class="comic-input comic-select" required>
+              <option value="ai">AI &amp; DeepTech</option>
+              <option value="saas">B2B SaaS &amp; Dev Tools</option>
+              <option value="d2c">D2C, Consumer &amp; Food</option>
+              <option value="greentech">CleanTech &amp; Sustainability</option>
+              <option value="fintech">FinTech &amp; Web3</option>
+              <option value="edtech">EdTech &amp; Learning</option>
+              <option value="student">Campus Hustlers &amp; Agencies</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="comic-label">
+              <i data-lucide="map-pin" class="icon-sm"></i> Chapter / University
+            </label>
+            <input 
+              type="text" 
+              name="university" 
+              placeholder="e.g. Cross-Campus / Pan-India or IIT Delhi" 
+              class="comic-input"
+            >
+          </div>
+        </div>
+
+        <!-- Field: One Line Tagline -->
+        <div class="form-group">
+          <label class="comic-label">
+            <i data-lucide="zap" class="icon-sm"></i> Punchy Tagline (60 Characters) *
+          </label>
+          <input 
+            type="text" 
+            name="tagline" 
+            required 
+            placeholder="e.g., Building next-generation EV battery analytics for fleets" 
+            class="comic-input"
+          >
+        </div>
+
+        <!-- Field: Description -->
+        <div class="form-group">
+          <label class="comic-label">
+            <i data-lucide="file-text" class="icon-sm"></i> Club Mission &amp; Purpose *
+          </label>
+          <textarea 
+            name="description" 
+            required 
+            rows="4" 
+            placeholder="What will members work on? How will weekly masterminds run? What type of founders should join?" 
+            class="comic-input comic-textarea"
+          ></textarea>
+        </div>
+
+        <!-- Field: Meeting Frequency & Theme -->
+        <div class="form-row-2">
+          <div>
+            <label class="comic-label">
+              <i data-lucide="calendar" class="icon-sm"></i> Mastermind Cadence
+            </label>
+            <select name="frequency" class="comic-input comic-select">
+              <option value="Every Thursday @ 8:00 PM IST">Weekly (Thursdays 8:00 PM)</option>
+              <option value="Every Saturday @ 5:00 PM IST">Weekly (Saturdays 5:00 PM)</option>
+              <option value="Every Wednesday @ 9:00 PM IST">Weekly (Wednesdays 9:00 PM)</option>
+              <option value="Bi-weekly Sundays @ 11:00 AM IST">Bi-weekly (Sundays 11:00 AM)</option>
+              <option value="Monthly Demo Sprint">Monthly Sprints</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="comic-label">
+              <i data-lucide="palette" class="icon-sm"></i> Club Color Theme
+            </label>
+            <select name="color_theme" class="comic-input comic-select">
+              <option value="yellow">Pop Electric Yellow</option>
+              <option value="pink">Bubblegum Pink</option>
+              <option value="cyan">Neon Turquoise</option>
+              <option value="purple">Lavender Violet</option>
+              <option value="green">Mint Green</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Field: Tags -->
+        <div class="form-group mb-xl">
+          <label class="comic-label">
+            <i data-lucide="tag" class="icon-sm"></i> Tech &amp; Domain Tags (Comma Separated)
+          </label>
+          <input 
+            type="text" 
+            name="tags" 
+            placeholder="e.g. NextJS, PyTorch, Pre-seed, Micro-SaaS" 
+            class="comic-input"
+          >
+        </div>
+
+        <!-- Submit Button -->
+        <div class="form-actions">
+          <a href="{% url 'club_list' %}" class="comic-btn comic-btn-white">Cancel</a>
+          <button type="submit" class="comic-btn comic-btn-lg comic-btn-black">
+            <i data-lucide="rocket"></i> Launch Club Now
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,125 @@
+/* ==========================================================
+   THINKERS - Networking & Member Profiles Styles
+   ========================================================== */
+
+.networking-highlight-strip {
+  margin-bottom: 2.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.networking-highlight-content {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.member-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.member-card-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.member-seeking-pill {
+  background: var(--comic-yellow-light);
+  border: var(--border-medium);
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Trading Card Detail Profile */
+.trading-card-banner {
+  margin-bottom: 2rem;
+}
+
+.trading-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.trading-card-user {
+  display: flex;
+  gap: 1.2rem;
+  align-items: center;
+}
+
+.trading-card-badges {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.trading-card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+/* Speed Networking Lounge */
+.speed-lounge-box {
+  margin-bottom: 3.5rem;
+  text-align: center;
+  padding: 3.5rem 1.5rem;
+}
+
+.speed-timer-container {
+  display: inline-flex;
+  gap: 1.2rem;
+  background: #FFFFFF;
+  border: var(--border-thick);
+  border-radius: var(--radius-md);
+  padding: 1.1rem 2.2rem;
+  box-shadow: var(--box-shadow-md);
+  margin-bottom: 2rem;
+  align-items: center;
+}
+
+.speed-timer-unit {
+  text-align: center;
+}
+
+.speed-timer-num {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 2.2rem;
+  line-height: 1;
+}
+
+.speed-timer-lbl {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--ink-muted);
+}
+
+.speed-timer-sep {
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+@media (max-width: 640px) {
+  .trading-card-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Founder Login | Thinkers Entrepreneur Network{% endblock %}
+
+{% block content %}
+
+<section class="page-section">
+  <div class="comic-container comic-container-auth">
+    
+    <div class="comic-box comic-box-yellow">
+      <div class="auth-header">
+        <span class="comic-sticker comic-sticker-cyan mb-md">
+          <i data-lucide="zap"></i> ACCESS THE CLUBHOUSE
+        </span>
+        <h1 class="auth-title">Welcome Back, Boss!</h1>
+        <p class="auth-subtitle">
+          Log in to check your mastermind schedule, pitch votes, and coffee chat requests.
+        </p>
+      </div>
+
+      <form method="POST" action="{% url 'login' %}">
+        {% csrf_token %}
+
+        <div class="form-group">
+          <label class="comic-label">
+            <i data-lucide="mail" class="icon-sm"></i> Email or Username
+          </label>
+          <input 
+            type="text" 
+            id="loginEmail" 
+            name="username" 
+            required 
+            placeholder="founder@campus.edu" 
+            class="comic-input"
+          >
+        </div>
+
+        <div class="form-group mb-lg">
+          <div class="flex justify-between items-center mb-xs">
+            <label class="comic-label mb-0">
+              <i data-lucide="lock" class="icon-sm"></i> Password
+            </label>
+            <a href="#" onclick="showComicToast('Password reset link sent to demo email!');" class="underline-link font-bold text-xs">
+              Forgot Password?
+            </a>
+          </div>
+          <input 
+            type="password" 
+            id="loginPass" 
+            name="password" 
+            required 
+            placeholder="••••••••••••" 
+            class="comic-input"
+          >
+        </div>
+
+        <div class="mb-lg">
+          <button type="submit" class="comic-btn comic-btn-lg comic-btn-black comic-btn-full">
+            <i data-lucide="log-in" class="icon-sm"></i> Log In to Clubhouse
+          </button>
+        </div>
+
+        <!-- Quick Demo Fill Button -->
+        <div class="mb-lg text-center">
+          <button 
+            type="button" 
+            onclick="document.getElementById('loginEmail').value='preet_builder@thinkers.io'; document.getElementById('loginPass').value='superpass123'; showComicToast('Demo credentials populated! Click Log In.');"
+            class="comic-btn comic-btn-sm comic-btn-white"
+          >
+            <i data-lucide="sparkles" class="icon-sm"></i> Autofill Demo Student Founder
+          </button>
+        </div>
+      </form>
+
+      <div class="auth-footer">
+        New to Thinkers? 
+        <a href="{% url 'register' %}">
+          Join Free Today &rarr;
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

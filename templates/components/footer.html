@@ -1,0 +1,84 @@
+{% load static %}
+<footer class="comic-footer">
+  <div class="comic-container">
+    <div class="footer-grid">
+      <!-- Col 1: Platform Brand -->
+      <div>
+        <div class="brand-logo mb-md">
+          <span class="brand-icon">
+            <i data-lucide="zap"></i>
+          </span>
+          <span>THINKERS</span>
+          <span class="brand-badge">EST. 2026</span>
+        </div>
+        <p class="footer-brand-desc">
+          The vibrant online ecosystem where ambitious student entrepreneurs, startup founders, angel investors, and mentors assemble to build the future.
+        </p>
+        <div class="footer-pill-row">
+          <span class="comic-badge comic-badge-yellow">
+            <i data-lucide="compass" class="icon-sm"></i> 150+ Clubs
+          </span>
+          <span class="comic-badge comic-badge-cyan">
+            <i data-lucide="users" class="icon-sm"></i> 4,800+ Founders
+          </span>
+        </div>
+      </div>
+
+      <!-- Col 2: Clubs & Hubs -->
+      <div>
+        <h4 class="footer-title">
+          <i data-lucide="compass" class="icon-sm"></i> Entrepreneur Clubs
+        </h4>
+        <ul class="footer-links">
+          <li><a href="{% url 'club_list' %}?cat=ai"><i data-lucide="bot" class="icon-sm"></i> AI &amp; DeepTech Innovators</a></li>
+          <li><a href="{% url 'club_list' %}?cat=saas"><i data-lucide="layers" class="icon-sm"></i> SaaS Growth Syndicate</a></li>
+          <li><a href="{% url 'club_list' %}?cat=d2c"><i data-lucide="shopping-bag" class="icon-sm"></i> D2C Brand Mavericks</a></li>
+          <li><a href="{% url 'club_list' %}?cat=greentech"><i data-lucide="leaf" class="icon-sm"></i> ClimateTech &amp; Sustainability</a></li>
+          <li><a href="{% url 'club_create' %}"><i data-lucide="plus" class="icon-sm"></i> Launch a College Club</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 3: Collaboration & Connect -->
+      <div>
+        <h4 class="footer-title">
+          <i data-lucide="users" class="icon-sm"></i> Collaboration
+        </h4>
+        <ul class="footer-links">
+          <li><a href="{% url 'pitch_wall' %}"><i data-lucide="rocket" class="icon-sm"></i> Pitch Deck Wall</a></li>
+          <li><a href="{% url 'co_founders' %}"><i data-lucide="user-check" class="icon-sm"></i> Find a Co-Founder</a></li>
+          <li><a href="{% url 'members_list' %}"><i data-lucide="network" class="icon-sm"></i> Founder Directory</a></li>
+          <li><a href="{% url 'speed_networking' %}"><i data-lucide="coffee" class="icon-sm"></i> Virtual Coffee Lounge</a></li>
+          <li><a href="{% url 'challenges' %}"><i data-lucide="trophy" class="icon-sm"></i> Startup Sprints &amp; Grants</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 4: Stay in the Loop -->
+      <div class="footer-newsletter-box">
+        <h4 class="footer-title">
+          <i data-lucide="mail" class="icon-sm"></i> Founder Dispatch
+        </h4>
+        <p class="footer-newsletter-desc">
+          Weekly curated pitch decks, grants, mastermind invites, and investor office hours.
+        </p>
+        <form class="footer-newsletter-form" onsubmit="event.preventDefault(); showComicToast('Subscribed to Founder Dispatch!');">
+          <input type="email" placeholder="founder@startup.io" required class="comic-input comic-input-sm">
+          <button type="submit" class="comic-btn comic-btn-sm comic-btn-primary">
+            <i data-lucide="send" class="icon-sm"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="footer-bottom">
+      <div>
+        &copy; 2026 <strong>Thinkers Entrepreneur Clubs</strong> &mdash; College Capstone Project. Built with Django &amp; Pop-Art UI.
+      </div>
+      <div class="footer-bottom-links">
+        <a href="{% url 'about' %}">About Project</a>
+        <a href="{% url 'how_it_works' %}">Club Roadmap</a>
+        <a href="{% url 'profile' %}">Founder Dashboard</a>
+      </div>
+    </div>
+  </div>
+</footer>

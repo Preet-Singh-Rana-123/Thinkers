@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Find A Co-Founder | Thinkers Collaboration Board{% endblock %}
+
+{% block content %}
+
+<section class="page-section">
+  <div class="comic-container">
+    <!-- Breadcrumb -->
+    <div class="comic-breadcrumb">
+      <a href="{% url 'home' %}">Home</a> <span class="comic-breadcrumb-sep">&gt;</span> <span>Find Co-Founders</span>
+    </div>
+
+    <!-- Header -->
+    <div class="section-header-row">
+      <div>
+        <span class="comic-sticker comic-sticker-cyan">
+          <i data-lucide="users"></i> CO-FOUNDER MATCHING
+        </span>
+        <h1 class="section-title">
+          Build Your Dream Founding Squad
+        </h1>
+        <p class="section-subtitle section-subtitle-left">
+          Solo founders seeking CTOs, CMOs, and operations partners. Transparent equity splits and clear expectations.
+        </p>
+      </div>
+
+      <button onclick="openModal('postCoFounderModal')" class="comic-btn comic-btn-pink">
+        <i data-lucide="plus"></i> Post A Co-Founder Request
+      </button>
+    </div>
+
+    <!-- Listings Grid -->
+    <div class="flex flex-col gap-xl">
+      {% for post in posts %}
+        <div class="comic-box comic-box-white">
+          <div class="co-founder-card-header">
+            <div>
+              <div class="co-founder-badges-row">
+                <span class="comic-badge comic-badge-yellow">
+                  <i data-lucide="flame" class="icon-sm"></i> {{ post.badge }}
+                </span>
+                <span class="comic-badge comic-badge-pink">
+                  <i data-lucide="pie-chart" class="icon-sm"></i> {{ post.equity }}
+                </span>
+                <span class="comic-badge comic-badge-neutral">
+                  <i data-lucide="clock" class="icon-sm"></i> {{ post.commitment }}
+                </span>
+                <span class="comic-badge comic-badge-neutral">
+                  <i data-lucide="map-pin" class="icon-sm"></i> {{ post.location }}
+                </span>
+              </div>
+              <h2 class="co-founder-role-title">{{ post.role_needed }}</h2>
+              <div class="co-founder-startup-meta">
+                For <strong>{{ post.startup_name }}</strong> &bull; Founded by {{ post.founder }} &bull; {{ post.club }}
+              </div>
+            </div>
+
+            <button onclick="openModal('applyCoFounderModal')" class="comic-btn comic-btn-black">
+              Apply as Co-Founder <i data-lucide="arrow-right" class="icon-sm"></i>
+            </button>
+          </div>
+
+          <p class="mb-lg text-base text-dim leading-relaxed">
+            {{ post.description }}
+          </p>
+
+          <div class="co-founder-footer">
+            <div class="flex items-center gap-xs flex-wrap">
+              <span class="stat-label">Required Skills:</span>
+              {% for s in post.skills_required %}
+                <span class="comic-badge comic-badge-purple comic-badge-sm">
+                  {{ s }}
+                </span>
+              {% endfor %}
+            </div>
+
+            <div class="flex gap-sm">
+              <a href="{% url 'pitch_wall' %}" class="comic-btn comic-btn-sm comic-btn-white">
+                View Startup Pitch
+              </a>
+              <button onclick="showComicToast('Chat room opened with {{ post.founder }}!');" class="comic-btn comic-btn-sm comic-btn-yellow">
+                <i data-lucide="message-square" class="icon-sm"></i> Message Founder
+              </button>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+<!-- Apply Modal -->
+<div id="applyCoFounderModal" class="comic-modal-overlay">
+  <div class="comic-modal">
+    <button class="modal-close-btn" onclick="closeModal('applyCoFounderModal')">&times;</button>
+    <div class="modal-header">
+      <span class="comic-sticker comic-sticker-cyan">
+        <i data-lucide="users"></i> TEAM UP
+      </span>
+      <h2 class="modal-title">Apply for Co-Founder Role</h2>
+      <p class="modal-subtitle">
+        Introduce yourself, your past projects, and why you are excited to build together.
+      </p>
+    </div>
+
+    <form onsubmit="event.preventDefault(); closeModal('applyCoFounderModal'); showComicToast('Application submitted to founder!');">
+      <div class="form-group">
+        <label class="comic-label">
+          <i data-lucide="link" class="icon-sm"></i> GitHub / Portfolio / LinkedIn Link *
+        </label>
+        <input type="url" required placeholder="https://github.com/yourhandle" class="comic-input">
+      </div>
+
+      <div class="form-group">
+        <label class="comic-label">
+          <i data-lucide="clock" class="icon-sm"></i> Weekly Hours You Can Commit *
+        </label>
+        <select class="comic-input comic-select">
+          <option>10 - 15 Hours / Week (Part-time student)</option>
+          <option>20 - 30 Hours / Week</option>
+          <option>40+ Hours / Week (Full-time committed)</option>
+        </select>
+      </div>
+
+      <div class="form-group mb-lg">
+        <label class="comic-label">Why are you the perfect co-founder? *</label>
+        <textarea required rows="4" class="comic-input comic-textarea" placeholder="Tell the founder about your relevant experience, technical chops, and hustle..."></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" onclick="closeModal('applyCoFounderModal')" class="comic-btn comic-btn-white">Cancel</button>
+        <button type="submit" class="comic-btn comic-btn-primary">
+          <i data-lucide="send" class="icon-sm"></i> Submit Application
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Post Co-Founder Request Modal -->
+<div id="postCoFounderModal" class="comic-modal-overlay">
+  <div class="comic-modal">
+    <button class="modal-close-btn" onclick="closeModal('postCoFounderModal')">&times;</button>
+    <div class="modal-header">
+      <span class="comic-sticker comic-sticker-pink">
+        <i data-lucide="megaphone"></i> SEEKING PARTNER
+      </span>
+      <h2 class="modal-title">Post Co-Founder Call</h2>
+      <p class="modal-subtitle">
+        Broadcast your need to ambitious students across all partner universities.
+      </p>
+    </div>
+
+    <form onsubmit="event.preventDefault(); closeModal('postCoFounderModal'); showComicToast('Co-Founder call posted to the board!');">
+      <div class="form-group">
+        <label class="comic-label">Startup / Project Name *</label>
+        <input type="text" required placeholder="e.g. CleanFleet AI" class="comic-input">
+      </div>
+
+      <div class="form-group">
+        <label class="comic-label">Role Needed *</label>
+        <input type="text" required placeholder="e.g. Technical CTO &amp; Django Specialist" class="comic-input">
+      </div>
+
+      <div class="form-row-2">
+        <div>
+          <label class="comic-label">Equity Offering</label>
+          <input type="text" placeholder="e.g. 20% - 25% Equity" class="comic-input">
+        </div>
+        <div>
+          <label class="comic-label">Location / Mode</label>
+          <select class="comic-input comic-select">
+            <option>Remote</option>
+            <option>Hybrid</option>
+            <option>On-Campus</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group mb-lg">
+        <label class="comic-label">What will they build / lead? *</label>
+        <textarea required rows="3" class="comic-input comic-textarea" placeholder="Explain the key milestones and responsibilities..."></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" onclick="closeModal('postCoFounderModal')" class="comic-btn comic-btn-white">Cancel</button>
+        <button type="submit" class="comic-btn comic-btn-primary">
+          <i data-lucide="check" class="icon-sm"></i> Post Request
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

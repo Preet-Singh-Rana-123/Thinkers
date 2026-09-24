@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Startup Sprints &amp; Hackathons | Thinkers{% endblock %}
+
+{% block content %}
+
+<section class="page-section">
+  <div class="comic-container">
+    <!-- Breadcrumb -->
+    <div class="comic-breadcrumb">
+      <a href="{% url 'home' %}">Home</a> <span class="comic-breadcrumb-sep">&gt;</span> 
+      <a href="{% url 'pitch_wall' %}">Collaboration</a> <span class="comic-breadcrumb-sep">&gt;</span> 
+      <span>Challenges &amp; Sprints</span>
+    </div>
+
+    <!-- Header -->
+    <div class="section-header-row">
+      <div>
+        <span class="comic-sticker comic-sticker-yellow">
+          <i data-lucide="trophy"></i> SPRINT ARENA
+        </span>
+        <h1 class="section-title">
+          College Sprints &amp; Grant Challenges
+        </h1>
+        <p class="section-subtitle section-subtitle-left">
+          Compete in club-hosted pitch battles, win non-dilutive university angel grants, and earn fast-track incubator interviews.
+        </p>
+      </div>
+
+      <button onclick="showComicToast('Subscribed to Sprint alerts!');" class="comic-btn comic-btn-primary">
+        <i data-lucide="bell"></i> Subscribe to Sprint Alerts
+      </button>
+    </div>
+
+    <!-- Challenges Grid -->
+    <div class="flex flex-col gap-xl mb-3xl">
+      {% for challenge in challenges %}
+        <div class="comic-box comic-box-white">
+          <div class="challenge-card-header">
+            <div>
+              <div class="flex gap-sm items-center mb-sm flex-wrap">
+                <span class="comic-badge comic-badge-{{ challenge.badge_color }}">{{ challenge.badge }}</span>
+                <span class="comic-badge comic-badge-pink">
+                  <i data-lucide="award" class="icon-sm"></i> {{ challenge.prize_pool }}
+                </span>
+                <span class="comic-badge comic-badge-neutral">
+                  <i data-lucide="clock" class="icon-sm"></i> {{ challenge.deadline }}
+                </span>
+              </div>
+              <h2 class="mb-0 text-2xl">{{ challenge.title }}</h2>
+              <div class="text-muted font-bold mt-xs text-sm">
+                Organized by <strong>{{ challenge.hosted_by }}</strong> &bull; {{ challenge.participants }} Teams Registered
+              </div>
+            </div>
+
+            <button onclick="showComicToast('Team registered for {{ challenge.title }}!');" class="comic-btn comic-btn-black">
+              Register Team <i data-lucide="arrow-right" class="icon-sm"></i>
+            </button>
+          </div>
+
+          <p class="mb-lg text-base text-dim leading-relaxed">
+            {{ challenge.description }}
+          </p>
+
+          <div class="challenge-perks-bar">
+            <div class="font-bold flex items-center gap-xs text-sm">
+              <i data-lucide="gift" class="icon-sm"></i> Winner Perks: Direct Pitch to VC Partners + Cloud Credits
+            </div>
+            <div class="flex gap-sm">
+              <button onclick="showComicToast('Rubric criteria sent to your inbox!');" class="comic-btn comic-btn-sm comic-btn-white">
+                Judging Criteria
+              </button>
+              <button onclick="showComicToast('Finding team members in club lounge...');" class="comic-btn comic-btn-sm comic-btn-yellow">
+                <i data-lucide="users" class="icon-sm"></i> Find Team Mates
+              </button>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Leaderboard Box -->
+    <div class="comic-box comic-box-cyan">
+      <div class="flex justify-between items-center mb-lg flex-wrap gap-md">
+        <div>
+          <span class="comic-sticker comic-sticker-pink">
+            <i data-lucide="award"></i> HALL OF FAME
+          </span>
+          <h3 class="mt-xs mb-xs text-2xl">Last Month's Demo Day Champions</h3>
+          <span class="text-sm text-dim">College ventures that pitched in club sprints and secured angel backing</span>
+        </div>
+        <span class="comic-badge comic-badge-yellow">AUGUST 2026 COHORT</span>
+      </div>
+
+      <div class="card-grid-3">
+        <div class="comic-box comic-box-white">
+          <span class="comic-badge comic-badge-yellow mb-xs">
+            <i data-lucide="trophy" class="icon-sm"></i> 1ST PLACE ($2,000)
+          </span>
+          <h4 class="mb-xs text-lg">NeuroNotes AI</h4>
+          <p class="mb-md text-muted text-sm">
+            Automated engineering diagram generator from audio meetings.
+          </p>
+          <span class="text-muted font-bold text-xs">Club: GenAI Disruptors</span>
+        </div>
+
+        <div class="comic-box comic-box-white">
+          <span class="comic-badge comic-badge-pink mb-xs">
+            <i data-lucide="award" class="icon-sm"></i> 2ND PLACE ($1,000)
+          </span>
+          <h4 class="mb-xs text-lg">KioskPay POS</h4>
+          <p class="mb-md text-muted text-sm">
+            Offline tap soundbox for cafeteria transactions.
+          </p>
+          <span class="text-muted font-bold text-xs">Club: FinTech &amp; Web3</span>
+        </div>
+
+        <div class="comic-box comic-box-white">
+          <span class="comic-badge comic-badge-green mb-xs">
+            <i data-lucide="award" class="icon-sm"></i> 3RD PLACE ($500)
+          </span>
+          <h4 class="mb-xs text-lg">EcoLoop Logistics</h4>
+          <p class="mb-md text-muted text-sm">
+            QR return escrow for reusable e-commerce packaging.
+          </p>
+          <span class="text-muted font-bold text-xs">Club: ClimateTech Hub</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

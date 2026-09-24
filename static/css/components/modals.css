@@ -1,0 +1,150 @@
+/* ==========================================================
+   THINKERS - Modals, Tabs & Toast Notifications
+   ========================================================== */
+
+/* Modals */
+.comic-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(2px);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  padding: 1.2rem;
+}
+
+.comic-modal-overlay.open {
+  display: flex;
+}
+
+.comic-modal {
+  background: #FFFFFF;
+  border: var(--border-thick);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--box-shadow-lg);
+  width: 100%;
+  max-width: 580px;
+  padding: 2rem;
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  margin-bottom: 1.3rem;
+}
+
+.modal-title {
+  font-size: 1.8rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.modal-subtitle {
+  font-size: 0.9rem;
+  color: var(--ink-muted);
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: var(--comic-pink-light);
+  border: var(--border-medium);
+  border-radius: var(--radius-pill);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: var(--box-shadow-xs);
+  transition: transform 0.1s ease;
+}
+
+.modal-close-btn:hover {
+  transform: scale(1.08);
+}
+
+/* Tabs */
+.comic-tabs-wrapper {
+  width: 100%;
+}
+
+.comic-tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: var(--border-thick);
+  margin-bottom: 2rem;
+  padding-bottom: 0px;
+  overflow-x: auto;
+}
+
+.comic-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.75rem 1.35rem;
+  border-top: var(--border-thick);
+  border-left: var(--border-thick);
+  border-right: var(--border-thick);
+  border-bottom: none;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  background: #EAEAEA;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.92rem;
+  cursor: pointer;
+  margin-bottom: -3px;
+  transition: background 0.12s ease;
+  white-space: nowrap;
+}
+
+.comic-tab.active {
+  background: #FFFFFF;
+  border-bottom: 3px solid #FFFFFF;
+}
+
+.comic-tab:hover:not(.active) {
+  background: #DDDDDD;
+}
+
+.tab-content-panel {
+  display: block;
+}
+
+.tab-panel-hidden {
+  display: none !important;
+}
+
+/* Toast Container */
+#comic-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--comic-yellow);
+  border: var(--border-thick);
+  border-radius: var(--radius-sm);
+  padding: 12px 20px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.95rem;
+  box-shadow: var(--box-shadow-md);
+  z-index: 100000;
+  transform: translateY(100px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+#comic-toast.show {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}

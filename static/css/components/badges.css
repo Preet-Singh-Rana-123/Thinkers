@@ -1,0 +1,119 @@
+/* ==========================================================
+   THINKERS - Badges, Stickers & Pill Tags
+   ========================================================== */
+
+.comic-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.28rem 0.75rem;
+  border: var(--border-medium);
+  border-radius: var(--radius-pill);
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: var(--box-shadow-xs);
+  background: #FFFFFF;
+  color: var(--ink-black);
+  white-space: nowrap;
+}
+
+.comic-badge-yellow { background-color: var(--comic-yellow); color: var(--ink-black); }
+.comic-badge-pink   { background-color: var(--comic-pink); color: #FFFFFF; }
+.comic-badge-cyan   { background-color: var(--comic-cyan); color: var(--ink-black); }
+.comic-badge-purple { background-color: var(--comic-purple); color: #FFFFFF; }
+.comic-badge-green  { background-color: var(--comic-green); color: var(--ink-black); }
+.comic-badge-orange { background-color: var(--comic-orange); color: var(--ink-black); }
+.comic-badge-blue   { background-color: var(--comic-blue); color: var(--ink-black); }
+.comic-badge-neutral{ background-color: #F3F4F6; color: var(--ink-black); }
+
+.comic-badge-xs {
+  font-size: 0.68rem;
+  padding: 0.18rem 0.5rem;
+}
+
+.comic-badge-sm {
+  font-size: 0.75rem;
+  padding: 0.22rem 0.6rem;
+}
+
+/* Rotated Action Stickers */
+.comic-sticker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-comic);
+  padding: 0.35rem 0.9rem;
+  border: var(--border-thick);
+  border-radius: var(--radius-xs);
+  background: var(--comic-yellow);
+  color: var(--ink-black);
+  box-shadow: var(--box-shadow-sm);
+  font-size: 0.82rem;
+  transform: rotate(-2.5deg);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.comic-sticker-pink {
+  background: var(--comic-pink);
+  color: #FFFFFF;
+  transform: rotate(2deg);
+}
+
+.comic-sticker-cyan {
+  background: var(--comic-cyan);
+  color: var(--ink-black);
+  transform: rotate(-2deg);
+}
+
+.comic-sticker-yellow {
+  background: var(--comic-yellow);
+  color: var(--ink-black);
+  transform: rotate(-1.5deg);
+}
+
+.comic-sticker-green {
+  background: var(--comic-green);
+  color: var(--ink-black);
+  transform: rotate(2deg);
+}
+
+/* Small Tag Pills (Tech stacks, keywords) */
+.comic-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: #FFFFFF;
+  border: 1.5px solid var(--ink-black);
+  padding: 2px 7px;
+  border-radius: 4px;
+  color: var(--ink-black);
+}
+
+.comic-tag-group {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+/* Title Headline Highlights */
+.highlight-yellow {
+  background: var(--comic-yellow);
+  padding: 0 0.4rem;
+  border: var(--border-medium);
+  display: inline-block;
+  box-shadow: var(--box-shadow-sm);
+  transform: rotate(-1deg);
+}
+
+.highlight-pink {
+  background: var(--comic-pink-light);
+  padding: 0 0.4rem;
+  border: var(--border-medium);
+  display: inline-block;
+  box-shadow: var(--box-shadow-sm);
+  transform: rotate(1.5deg);
+}

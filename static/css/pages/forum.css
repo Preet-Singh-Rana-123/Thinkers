@@ -1,0 +1,56 @@
+/* ==========================================================
+   THINKERS - Forum & Discussions Styles
+   ========================================================== */
+
+.thread-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.thread-card-title {
+  font-size: 1.45rem;
+  margin-bottom: 0.6rem;
+}
+
+.thread-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 2px dashed #E5E7EB;
+  padding-top: 0.85rem;
+}
+
+/* Thread Detail Dialogue */
+.thread-dialogue-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.thread-reply-row {
+  display: flex;
+  gap: 1.2rem;
+  align-items: flex-start;
+}
+
+.thread-reply-body {
+  flex: 1;
+}
+
+.thread-top-solution-badge {
+  position: absolute;
+  top: -14px;
+  right: 20px;
+}
+
+.thread-reply-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}

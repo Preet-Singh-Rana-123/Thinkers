@@ -1,0 +1,116 @@
+/* ==========================================================
+   THINKERS - Authentication & Dashboard Styles
+   ========================================================== */
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.auth-title {
+  font-size: 2.3rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.auth-subtitle {
+  font-size: 0.96rem;
+  color: #333333;
+}
+
+.auth-footer {
+  border-top: 2px dashed var(--ink-black);
+  padding-top: 1.2rem;
+  text-align: center;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.auth-footer a {
+  text-decoration: underline;
+  color: var(--ink-black);
+}
+
+/* Persona Selection Cards (Register) */
+.persona-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+}
+
+.persona-card {
+  cursor: pointer;
+  padding: 0.85rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-width: 2px;
+  background: #FFFFFF;
+  transition: transform 0.1s ease;
+}
+
+.persona-card:hover {
+  transform: translateY(-2px);
+}
+
+.persona-card input[type="radio"] {
+  accent-color: var(--ink-black);
+  width: 18px;
+  height: 18px;
+}
+
+.persona-card-title {
+  font-weight: 800;
+  font-size: 0.94rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.persona-card-subtitle {
+  font-size: 0.76rem;
+  color: var(--ink-muted);
+}
+
+/* Dashboard Profile Hero */
+.dashboard-hero {
+  margin-bottom: 2.5rem;
+}
+
+.dashboard-hero-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.dashboard-user-info {
+  display: flex;
+  gap: 1.2rem;
+  align-items: center;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 2rem;
+}
+
+.dashboard-column {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+@media (max-width: 860px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .persona-grid {
+    grid-template-columns: 1fr;
+  }
+}

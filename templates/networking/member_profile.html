@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ member.name }} | Entrepreneur Profile | Thinkers{% endblock %}
+
+{% block content %}
+
+<section class="page-section">
+  <div class="comic-container comic-container-narrow">
+    <!-- Breadcrumb -->
+    <div class="comic-breadcrumb">
+      <a href="{% url 'home' %}">Home</a> <span class="comic-breadcrumb-sep">&gt;</span> 
+      <a href="{% url 'members_list' %}">Network</a> <span class="comic-breadcrumb-sep">&gt;</span> 
+      <span>{{ member.name }}</span>
+    </div>
+
+    <!-- Main Trading Card Box -->
+    <div class="comic-box comic-box-{{ member.role_badge }} trading-card-banner">
+      <div class="trading-card-top">
+        <div class="trading-card-user">
+          <div class="comic-avatar comic-avatar-lg comic-box-white">
+            {{ member.avatar }}
+          </div>
+          <div>
+            <div class="flex gap-sm items-center mb-xs flex-wrap">
+              <span class="comic-badge comic-badge-yellow">{{ member.role }}</span>
+              <span class="comic-badge comic-box-white">
+                <i data-lucide="map-pin" class="icon-sm"></i> {{ member.college }}
+              </span>
+            </div>
+            <h1 class="text-3xl m-0">{{ member.name }}</h1>
+            <span class="font-bold text-muted text-sm">Member of {{ member.club }}</span>
+          </div>
+        </div>
+
+        <div class="flex gap-sm">
+          <button onclick="openModal('coffeeChatModal')" class="comic-btn comic-btn-black">
+            <i data-lucide="coffee" class="icon-sm"></i> Request Coffee Chat
+          </button>
+          <button onclick="showComicToast('Direct message dialog opened!');" class="comic-btn comic-btn-white">
+            <i data-lucide="message-square" class="icon-sm"></i> Message
+          </button>
+        </div>
+      </div>
+
+      <!-- Badges Ribbons -->
+      <div class="trading-card-badges">
+        {% for b in member.badges %}
+          <span class="comic-badge comic-badge-pink">
+            <i data-lucide="award" class="icon-sm"></i> {{ b }}
+          </span>
+        {% endfor %}
+      </div>
+
+      <!-- Comic Speech Bio Bubble -->
+      <div class="comic-speech-bubble mb-lg">
+        <h4 class="mb-xs text-lg">"{{ member.headline }}"</h4>
+        <p class="text-base text-dim leading-relaxed">
+          {{ member.bio }}
+        </p>
+      </div>
+
+      <!-- 2-Column Info Grid -->
+      <div class="trading-card-grid">
+        <!-- Left: Superpowers -->
+        <div class="comic-box comic-box-white">
+          <h4 class="mb-md flex items-center gap-xs text-base">
+            <i data-lucide="zap" class="icon-sm"></i> Technical &amp; Domain Superpowers
+          </h4>
+          <div class="comic-tag-group">
+            {% for s in member.skills %}
+              <span class="comic-badge comic-badge-yellow comic-badge-sm">{{ s }}</span>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Right: Seeking -->
+        <div class="comic-box comic-box-white">
+          <h4 class="mb-md flex items-center gap-xs text-base">
+            <i data-lucide="target" class="icon-sm"></i> What I'm Looking For
+          </h4>
+          <p class="font-bold text-base text-ink leading-normal">
+            {{ member.seeking }}
+          </p>
+          <div class="mt-md">
+            <span class="comic-badge comic-badge-green">
+              <i data-lucide="check-circle" class="icon-sm"></i> OPEN TO CO-FOUNDER CONVERSATIONS
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Projects & Pitches -->
+    <div class="comic-box comic-box-white">
+      <h3 class="mb-md flex items-center gap-xs text-xl">
+        <i data-lucide="rocket" class="icon-sm"></i> Ventures &amp; Projects by {{ member.name }}
+      </h3>
+      <div class="card-grid-2">
+        {% for p in member.projects %}
+          <div class="comic-box comic-box-cyan">
+            <div class="flex justify-between items-center mb-xs">
+              <h4 class="mb-0 text-lg">{{ p.title }}</h4>
+              <span class="comic-badge comic-badge-yellow">
+                <i data-lucide="star" class="icon-sm"></i> {{ p.stars }} Claps
+              </span>
+            </div>
+            <p class="mb-md text-sm text-dim">
+              {{ p.desc }}
+            </p>
+            <a href="{% url 'pitch_wall' %}" class="comic-btn comic-btn-sm comic-btn-black">
+              View Project Brief <i data-lucide="arrow-right" class="icon-sm"></i>
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Coffee Chat Modal -->
+<div id="coffeeChatModal" class="comic-modal-overlay">
+  <div class="comic-modal">
+    <button class="modal-close-btn" onclick="closeModal('coffeeChatModal')">&times;</button>
+    <div class="modal-header">
+      <span class="comic-sticker comic-sticker-cyan">
+        <i data-lucide="coffee"></i> 1-ON-1 CONNECT
+      </span>
+      <h2 class="modal-title">Invite {{ member.name }} to a Coffee Chat</h2>
+      <p class="modal-subtitle">
+        Propose a 15-minute virtual conversation to discuss co-founding, feedback, or collaborations.
+      </p>
+    </div>
+
+    <form onsubmit="event.preventDefault(); closeModal('coffeeChatModal'); showComicToast('Coffee chat invite dispatched to {{ member.name }}!');">
+      <div class="form-group">
+        <label class="comic-label">Conversation Focus</label>
+        <select class="comic-input comic-select">
+          <option>Discuss Co-Founding Opportunity</option>
+          <option>Get Technical / Design Feedback</option>
+          <option>Cross-Club Collaboration</option>
+          <option>Casual Founder Brainstorm</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="comic-label">Your Note / Pitch Hook</label>
+        <textarea class="comic-input comic-textarea" rows="3" placeholder="Hey {{ member.name }}, I saw your project and would love to brainstorm how we can team up..."></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" onclick="closeModal('coffeeChatModal')" class="comic-btn comic-btn-white">Cancel</button>
+        <button type="submit" class="comic-btn comic-btn-primary">
+          <i data-lucide="send" class="icon-sm"></i> Send Invite
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

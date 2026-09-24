@@ -1,0 +1,157 @@
+/* ==========================================================
+   THINKERS - Comic Boxes, Cards & Speech Bubbles
+   ========================================================== */
+
+.comic-box {
+  background: var(--bg-card);
+  border: var(--border-thick);
+  border-radius: var(--radius-md);
+  box-shadow: var(--box-shadow-md);
+  padding: 1.5rem;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  position: relative;
+}
+
+.comic-box-hoverable {
+  cursor: pointer;
+}
+
+.comic-box-hoverable:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: var(--box-shadow-hover);
+}
+
+/* Color Modifiers */
+.comic-box-yellow { background-color: var(--comic-yellow-light); }
+.comic-box-pink   { background-color: var(--comic-pink-light); }
+.comic-box-cyan   { background-color: var(--comic-cyan-light); }
+.comic-box-purple { background-color: var(--comic-purple-light); }
+.comic-box-green  { background-color: var(--comic-green-light); }
+.comic-box-orange { background-color: var(--comic-orange-light); }
+.comic-box-blue   { background-color: var(--comic-blue-light); }
+.comic-box-white  { background-color: #FFFFFF; }
+
+/* Sub-panels inside boxes */
+.comic-inner-panel {
+  background: rgba(255, 255, 255, 0.85);
+  border: var(--border-medium);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1.1rem;
+}
+
+/* Comic Speech Bubble */
+.comic-speech-bubble {
+  position: relative;
+  background: #FFFFFF;
+  border: var(--border-thick);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--box-shadow-sm);
+}
+
+.comic-speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -14px;
+  left: 30px;
+  border-width: 14px 14px 0;
+  border-style: solid;
+  border-color: #FFFFFF transparent;
+  display: block;
+  width: 0;
+}
+
+.comic-speech-bubble::before {
+  content: '';
+  position: absolute;
+  bottom: -18px;
+  left: 28px;
+  border-width: 16px 16px 0;
+  border-style: solid;
+  border-color: var(--ink-black) transparent;
+  display: block;
+  width: 0;
+}
+
+/* Avatars */
+.comic-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border: var(--border-thick);
+  border-radius: var(--radius-pill);
+  background: var(--comic-cyan-light);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.15rem;
+  box-shadow: var(--box-shadow-xs);
+  overflow: hidden;
+  flex-shrink: 0;
+  color: var(--ink-black);
+}
+
+.comic-avatar-sm {
+  width: 36px;
+  height: 36px;
+  font-size: 0.85rem;
+  border-width: 2px;
+}
+
+.comic-avatar-lg {
+  width: 80px;
+  height: 80px;
+  font-size: 1.8rem;
+}
+
+/* Stat Box Component */
+.stat-box {
+  background: #FFFFFF;
+  border: var(--border-thick);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  text-align: center;
+  box-shadow: var(--box-shadow-sm);
+}
+
+.stat-number {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 2.2rem;
+  line-height: 1;
+  margin-bottom: 0.35rem;
+}
+
+.stat-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  letter-spacing: 0.04em;
+}
+
+/* Responsive Card Grids */
+.card-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+  gap: 1.8rem;
+}
+
+.card-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.8rem;
+}
+
+.card-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .card-grid-2, .card-grid-3, .card-grid-4 {
+    grid-template-columns: 1fr;
+  }
+}

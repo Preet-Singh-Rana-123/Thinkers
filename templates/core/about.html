@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Thinkers | College Entrepreneur Clubs Mission{% endblock %}
+
+{% block content %}
+
+<!-- Header -->
+<section class="page-section-sm">
+  <div class="comic-container">
+    <div class="comic-breadcrumb">
+      <a href="{% url 'home' %}">Home</a> <span class="comic-breadcrumb-sep">&gt;</span> <span>About Thinkers</span>
+    </div>
+
+    <div class="section-header section-header-left">
+      <span class="comic-sticker comic-sticker-yellow">
+        <i data-lucide="lightbulb"></i> THE MISSION &amp; MANIFESTO
+      </span>
+      <h1 class="section-title">
+        Building The Interactive Silicon Valley For College Campuses.
+      </h1>
+      <p class="section-subtitle section-subtitle-left">
+        Traditional college networking is broken &mdash; stuffy LinkedIn DMs, formal seminars with zero follow-ups, and lonely dorm room hacking. Thinkers turns entrepreneurship into an interactive, high-voltage team sport.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Old Way vs Thinkers Way Comic Panels -->
+<section class="mb-3xl">
+  <div class="comic-container">
+    <div class="card-grid-2">
+      <!-- Old Way Box -->
+      <div class="comic-box comic-box-white">
+        <div class="flex items-center justify-between mb-md">
+          <span class="comic-badge comic-box-white">
+            <i data-lucide="clock" class="icon-sm"></i> THE OLD WAY
+          </span>
+          <i data-lucide="x-circle" class="icon-lg text-danger"></i>
+        </div>
+        <h3 class="mb-sm text-muted text-xl">Lonely Dorm Room Hacking</h3>
+        <ul class="flex flex-col gap-md text-muted text-base list-unstyled">
+          <li class="flex items-start gap-sm">
+            <i data-lucide="x" class="icon-sm text-danger"></i>
+            <span>Cold emailing busy alumni with 10-page PDFs that never get opened.</span>
+          </li>
+          <li class="flex items-start gap-sm">
+            <i data-lucide="x" class="icon-sm text-danger"></i>
+            <span>Begging friends to be co-founders even when skillsets don't align.</span>
+          </li>
+          <li class="flex items-start gap-sm">
+            <i data-lucide="x" class="icon-sm text-danger"></i>
+            <span>Zero real-time peer feedback on prototypes before burning money.</span>
+          </li>
+          <li class="flex items-start gap-sm">
+            <i data-lucide="x" class="icon-sm text-danger"></i>
+            <span>Stiff webinars where only the guest speaker talks for 60 minutes.</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- The Thinkers Way Box -->
+      <div class="comic-box comic-box-yellow">
+        <div class="flex items-center justify-between mb-md">
+          <span class="comic-badge comic-badge-pink">
+            <i data-lucide="zap" class="icon-sm"></i> THE THINKERS WAY
+          </span>
+          <i data-lucide="check-circle-2" class="icon-lg text-success"></i>
+        </div>
+        <h3 class="mb-sm text-xl">Vibrant Interactive Clubs</h3>
+        <ul class="flex flex-col gap-md font-bold text-base list-unstyled">
+          <li class="flex items-start gap-sm">
+            <i data-lucide="check" class="icon-sm text-success"></i>
+            <span><strong>Niche Clubhouses:</strong> Connect directly with founders in your vertical (AI, D2C, FinTech, GreenTech).</span>
+          </li>
+          <li class="flex items-start gap-sm">
+            <i data-lucide="check" class="icon-sm text-success"></i>
+            <span><strong>60-Second Pitch Walls:</strong> Get upvotes, critique, and angel interest with comic flair.</span>
+          </li>
+          <li class="flex items-start gap-sm">
+            <i data-lucide="check" class="icon-sm text-success"></i>
+            <span><strong>Algorithmic Co-founder Matching:</strong> Filter by technical stack, commitment, and chemistry.</span>
+          </li>
+          <li class="flex items-start gap-sm">
+            <i data-lucide="check" class="icon-sm text-success"></i>
+            <span><strong>Weekly Masterminds:</strong> Rapid-fire AMAs and live pitch teardowns every single week.</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- The 4 Core Pillars -->
+<section class="mb-3xl">
+  <div class="comic-container">
+    <div class="section-header">
+      <span class="comic-sticker comic-sticker-cyan">
+        <i data-lucide="layers"></i> ARCHITECTURE
+      </span>
+      <h2 class="section-title">Built On 4 Foundational Pillars</h2>
+    </div>
+
+    <div class="card-grid-4">
+      <div class="comic-box comic-box-cyan">
+        <div class="mb-md">
+          <i data-lucide="compass" class="icon-xl"></i>
+        </div>
+        <h4 class="mb-xs text-lg">Interactive Clubs</h4>
+        <p class="text-sm text-muted mb-0">
+          Micro-communities managed by passionate student leads with weekly sprint goals and shared repositories.
+        </p>
+      </div>
+
+      <div class="comic-box comic-box-purple">
+        <div class="mb-md">
+          <i data-lucide="rocket" class="icon-xl"></i>
+        </div>
+        <h4 class="mb-xs text-lg">The Pitch Wall</h4>
+        <p class="text-sm text-muted mb-0">
+          Public and club-exclusive showcase boards where prototypes collect feedback and investor eyes.
+        </p>
+      </div>
+
+      <div class="comic-box comic-box-green">
+        <div class="mb-md">
+          <i data-lucide="users" class="icon-xl"></i>
+        </div>
+        <h4 class="mb-xs text-lg">Co-Founder Tinder</h4>
+        <p class="text-sm text-muted mb-0">
+          Skill-based matching pairing hacker engineers with hustler business strategists and visionary designers.
+        </p>
+      </div>
+
+      <div class="comic-box comic-box-pink">
+        <div class="mb-md">
+          <i data-lucide="coffee" class="icon-xl"></i>
+        </div>
+        <h4 class="mb-xs text-lg">Speed Networking</h4>
+        <p class="text-sm text-muted mb-0">
+          Timed 5-minute virtual coffee chats rotating members across universities for rapid brainstorming.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- College Assignment Info -->
+<section class="mb-3xl">
+  <div class="comic-container">
+    <div class="comic-box comic-box-white">
+      <div class="flex items-center gap-md mb-md">
+        <span class="comic-badge comic-badge-purple">
+          <i data-lucide="graduation-cap" class="icon-sm"></i> COLLEGE CAPSTONE BRIEF
+        </span>
+        <span class="font-bold text-sm">Semester 7 Assignment Project</span>
+      </div>
+      <h3 class="mb-md text-2xl">About This Implementation</h3>
+      <p class="mb-lg lead-text text-muted">
+        Developed as an advanced full-stack enterprise web application demonstrating scalable Django architecture. The application separates concerns across 6 decoupled Django apps: <strong>core</strong> (landing &amp; meta), <strong>clubs</strong> (hub management &amp; memberships), <strong>networking</strong> (profiles &amp; speed matching), <strong>collaboration</strong> (pitch wall &amp; co-founder board), <strong>discussions</strong> (masterminds &amp; AMAs), and <strong>accounts</strong> (multi-role authentication).
+      </p>
+      <div class="flex gap-md flex-wrap items-center">
+        <span class="comic-badge comic-badge-yellow">Django 6.1+</span>
+        <span class="comic-badge comic-badge-cyan">Modular Apps Pattern</span>
+        <span class="comic-badge comic-badge-green">Neo-Brutalist Comic UI</span>
+        <span class="comic-badge comic-badge-pink">Lucide Icons</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

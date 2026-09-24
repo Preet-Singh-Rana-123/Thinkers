@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Explore Entrepreneur Clubs | Thinkers Network{% endblock %}
+
+{% block content %}
+
+<section class="page-section">
+  <div class="comic-container">
+    <!-- Breadcrumb -->
+    <div class="comic-breadcrumb">
+      <a href="{% url 'home' %}">Home</a> <span class="comic-breadcrumb-sep">&gt;</span> <span>Explore Clubs</span>
+    </div>
+
+    <!-- Header -->
+    <div class="section-header-row">
+      <div>
+        <span class="comic-sticker comic-sticker-cyan">
+          <i data-lucide="compass"></i> THE SQUAD DIRECTORY
+        </span>
+        <h1 class="section-title">
+          Find Your Entrepreneur Club
+        </h1>
+        <p class="section-subtitle section-subtitle-left">
+          Join an active circle of founders, hackers, and creators building in your specific domain.
+        </p>
+      </div>
+
+      <a href="{% url 'club_create' %}" class="comic-btn comic-btn-pink">
+        <i data-lucide="plus"></i> Launch A New Club
+      </a>
+    </div>
+
+    <!-- Comic Filter & Search Bar -->
+    <div class="comic-filter-bar">
+      <!-- Category Filter Chips -->
+      <div class="filter-chips">
+        <a href="{% url 'club_list' %}" class="filter-chip {% if current_category == 'all' %}active{% endif %}">
+          <i data-lucide="grid" class="icon-sm"></i> All Clubs ({{ total_clubs_count }})
+        </a>
+        <a href="{% url 'club_list' %}?cat=ai" class="filter-chip {% if current_category == 'ai' %}active{% endif %}">
+          <i data-lucide="bot" class="icon-sm"></i> AI &amp; DeepTech
+        </a>
+        <a href="{% url 'club_list' %}?cat=saas" class="filter-chip {% if current_category == 'saas' %}active{% endif %}">
+          <i data-lucide="layers" class="icon-sm"></i> B2B SaaS
+        </a>
+        <a href="{% url 'club_list' %}?cat=d2c" class="filter-chip {% if current_category == 'd2c' %}active{% endif %}">
+          <i data-lucide="shopping-bag" class="icon-sm"></i> D2C Brands
+        </a>
+        <a href="{% url 'club_list' %}?cat=greentech" class="filter-chip {% if current_category == 'greentech' %}active{% endif %}">
+          <i data-lucide="leaf" class="icon-sm"></i> CleanTech
+        </a>
+        <a href="{% url 'club_list' %}?cat=fintech" class="filter-chip {% if current_category == 'fintech' %}active{% endif %}">
+          <i data-lucide="credit-card" class="icon-sm"></i> FinTech
+        </a>
+        <a href="{% url 'club_list' %}?cat=student" class="filter-chip {% if current_category == 'student' %}active{% endif %}">
+          <i data-lucide="flame" class="icon-sm"></i> Student Hustlers
+        </a>
+      </div>
+
+      <!-- Search Input -->
+      <form method="GET" action="{% url 'club_list' %}" class="club-search-form">
+        {% if current_category != 'all' %}
+          <input type="hidden" name="cat" value="{{ current_category }}">
+        {% endif %}
+        <input 
+          type="text" 
+          name="q" 
+          value="{{ search_query }}" 
+          placeholder="Search name, tag, or stack..." 
+          class="comic-input comic-input-sm"
+        >
+        <button type="submit" class="comic-btn comic-btn-sm comic-btn-primary">
+          <i data-lucide="search" class="icon-sm"></i>
+        </button>
+      </form>
+    </div>
+
+    <!-- Clubs Grid -->
+    {% if clubs %}
+      <div class="card-grid-3">
+        {% for club in clubs %}
+          <div class="comic-box comic-box-hoverable {{ club.bg_color }}">
+            <div class="club-card-header">
+              <span class="comic-badge comic-badge-{{ club.badge_color }}">{{ club.category_label }}</span>
+              <span class="club-members-count">
+                <i data-lucide="users" class="icon-sm"></i> {{ club.members_count }}
+              </span>
+            </div>
+
+            <h3 class="club-card-title">
+              <a href="{% url 'club_detail' club.slug %}">{{ club.name }}</a>
+            </h3>
+
+            <p class="club-card-tagline">
+              {{ club.tagline }}
+            </p>
+
+            <div class="club-info-snippet">
+              <div class="club-info-row mb-xs">
+                <i data-lucide="calendar" class="icon-sm"></i> {{ club.frequency }}
+              </div>
+              <div class="club-info-row text-muted">
+                <i data-lucide="crown" class="icon-sm"></i> Hosts: {{ club.lead }}
+              </div>
+            </div>
+
+            <!-- Tags -->
+            <div class="comic-tag-group mb-lg">
+              {% for tag in club.tags %}
+                <span class="comic-tag">#{{ tag }}</span>
+              {% endfor %}
+            </div>
+
+            <!-- Buttons -->
+            <div class="club-card-actions">
+              <a href="{% url 'club_detail' club.slug %}" class="comic-btn comic-btn-sm comic-btn-black flex-1">
+                View Hub <i data-lucide="arrow-right" class="icon-sm"></i>
+              </a>
+              <button onclick="showComicToast('Joined {{ club.name }}!');" class="comic-btn comic-btn-sm comic-btn-yellow">
+                <i data-lucide="plus" class="icon-sm"></i> Join
+              </button>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="comic-box comic-box-yellow text-center p-lg">
+        <div class="mb-md">
+          <i data-lucide="search-x" class="icon-xl"></i>
+        </div>
+        <h3 class="mb-xs text-2xl">No clubs matched your search!</h3>
+        <p class="text-muted mb-lg">
+          Try another search keyword or launch your own club in this space!
+        </p>
+        <div class="flex justify-center gap-md">
+          <a href="{% url 'club_list' %}" class="comic-btn comic-btn-primary">View All Clubs</a>
+          <a href="{% url 'club_create' %}" class="comic-btn comic-btn-pink">
+            <i data-lucide="plus" class="icon-sm"></i> Start This Club
+          </a>
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+</section>
+
+{% endblock %}

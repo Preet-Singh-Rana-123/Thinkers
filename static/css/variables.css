@@ -1,0 +1,56 @@
+/* ==========================================================
+   THINKERS - CSS Variables & Design Tokens
+   Classy Comic-Book / Neo-Brutalist Theme
+   ========================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,700&family=Space+Grotesk:wght@600;700;800&family=Bungee&display=swap');
+
+:root {
+  /* Color Palette - Light & Vibrant Pop Palette */
+  --bg-canvas: #FAF7F2;
+  --bg-card: #FFFFFF;
+  --bg-subtle: #F3F4F6;
+  --ink-black: #161616;
+  --ink-muted: #555555;
+  --ink-light: #71717A;
+  
+  /* Comic Pop Accent Colors */
+  --comic-yellow: #FFE600;
+  --comic-yellow-light: #FFF8C5;
+  --comic-pink: #FF6584;
+  --comic-pink-light: #FFDCE5;
+  --comic-cyan: #3FE0D0;
+  --comic-cyan-light: #DCFCE7;
+  --comic-purple: #B588FF;
+  --comic-purple-light: #F1EAFF;
+  --comic-green: #38EF7D;
+  --comic-green-light: #DCFCE7;
+  --comic-orange: #FFA439;
+  --comic-orange-light: #FFEAD4;
+  --comic-blue: #38BDF8;
+  --comic-blue-light: #E0F2FE;
+
+  /* Comic Dark Borders */
+  --border-thick: 3px solid var(--ink-black);
+  --border-medium: 2.5px solid var(--ink-black);
+  --border-thin: 1.5px solid var(--ink-black);
+
+  /* Hard Drop Shadows (Neo-Brutalist) */
+  --box-shadow-xs: 2px 2px 0px var(--ink-black);
+  --box-shadow-sm: 3px 3px 0px var(--ink-black);
+  --box-shadow-md: 5px 5px 0px var(--ink-black);
+  --box-shadow-lg: 8px 8px 0px var(--ink-black);
+  --box-shadow-hover: 7px 7px 0px var(--ink-black);
+
+  /* Border Radii */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-pill: 9999px;
+
+  /* Typography */
+  --font-display: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-comic: 'Bungee', cursive, sans-serif;
+}

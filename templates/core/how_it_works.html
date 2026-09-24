@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}How It Works | Thinkers Entrepreneur Clubs Playbook{% endblock %}
+
+{% block content %}
+
+<!-- Header -->
+<section class="page-section-sm">
+  <div class="comic-container">
+    <div class="comic-breadcrumb">
+      <a href="{% url 'home' %}">Home</a> <span class="comic-breadcrumb-sep">&gt;</span> <span>How It Works</span>
+    </div>
+
+    <div class="section-header section-header-left">
+      <span class="comic-sticker comic-sticker-cyan">
+        <i data-lucide="book-open"></i> THE PLAYBOOK
+      </span>
+      <h1 class="section-title">
+        From Dorm Room Brainstorm To Funded Startup in 4 Steps.
+      </h1>
+      <p class="section-subtitle section-subtitle-left">
+        Here is the exact playbook student founders follow on Thinkers to turn ideas into revenue-generating ventures.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- 4 Step Comic Strip -->
+<section class="mb-3xl">
+  <div class="comic-container">
+    <div class="flex flex-col gap-lg">
+      
+      <!-- Step 1 -->
+      <div class="comic-box comic-box-yellow step-strip-row">
+        <div class="stat-number flex items-center justify-center comic-box-white step-num-box">
+          01
+        </div>
+        <div>
+          <span class="comic-badge comic-badge-pink mb-xs">
+            <i data-lucide="compass" class="icon-sm"></i> DISCOVER YOUR TRIBE
+          </span>
+          <h3 class="text-2xl mb-xs">Join Specialized Niche Entrepreneur Clubs</h3>
+          <p class="text-base text-muted mb-0">
+            Instead of generic college business groups, select your laser-focused vertical: <strong>GenAI &amp; DeepTech</strong>, <strong>D2C Consumer Brands</strong>, <strong>B2B SaaS</strong>, or <strong>CleanTech</strong>. Every club has weekly active agendas and student club chairs.
+          </p>
+        </div>
+        <div>
+          <a href="{% url 'club_list' %}" class="comic-btn comic-btn-sm comic-btn-black">
+            Browse Clubs <i data-lucide="arrow-right" class="icon-sm"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="comic-box comic-box-cyan step-strip-row">
+        <div class="stat-number flex items-center justify-center comic-box-white step-num-box">
+          02
+        </div>
+        <div>
+          <span class="comic-badge comic-badge-yellow mb-xs">
+            <i data-lucide="rocket" class="icon-sm"></i> PUT IT ON THE RECORD
+          </span>
+          <h3 class="text-2xl mb-xs">Post Your 60-Second Pitch Deck on The Pitch Wall</h3>
+          <p class="text-base text-muted mb-0">
+            Publish what you are building: the problem, your solution prototype, your early metrics, and what you need (e.g. <em>"Seeking Full-Stack Django Dev"</em> or <em>"Seeking $50k University Angel Round"</em>).
+          </p>
+        </div>
+        <div>
+          <a href="{% url 'pitch_wall' %}" class="comic-btn comic-btn-sm comic-btn-black">
+            See Pitches <i data-lucide="arrow-right" class="icon-sm"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="comic-box comic-box-purple step-strip-row">
+        <div class="stat-number flex items-center justify-center comic-box-white step-num-box">
+          03
+        </div>
+        <div>
+          <span class="comic-badge comic-badge-pink mb-xs">
+            <i data-lucide="users" class="icon-sm"></i> PAIR UP &amp; MASTERMIND
+          </span>
+          <h3 class="text-2xl mb-xs">Match With Co-Founders &amp; Run Timed Coffee Chats</h3>
+          <p class="text-base text-muted mb-0">
+            Use our Co-Founder board to find technical hackers or business growth leads. Jump into 5-minute virtual Speed Networking rooms every Tuesday and Thursday to brainstorm without friction.
+          </p>
+        </div>
+        <div>
+          <a href="{% url 'co_founders' %}" class="comic-btn comic-btn-sm comic-btn-black">
+            Find Matches <i data-lucide="arrow-right" class="icon-sm"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="comic-box comic-box-green step-strip-row">
+        <div class="stat-number flex items-center justify-center comic-box-white step-num-box">
+          04
+        </div>
+        <div>
+          <span class="comic-badge comic-badge-yellow mb-xs">
+            <i data-lucide="trophy" class="icon-sm"></i> SCALE &amp; GET FUNDED
+          </span>
+          <h3 class="text-2xl mb-xs">Compete in Club Sprints &amp; Demo Day</h3>
+          <p class="text-base text-muted mb-0">
+            Every month, clubs host Demo Days judged by alumni founders, university venture funds, and angel syndicates. Winners secure university seed grants and fast-track incubator passes.
+          </p>
+        </div>
+        <div>
+          <a href="{% url 'challenges' %}" class="comic-btn comic-btn-sm comic-btn-black">
+            View Sprints <i data-lucide="arrow-right" class="icon-sm"></i>
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Frequently Asked Questions -->
+<section class="mb-3xl">
+  <div class="comic-container">
+    <div class="section-header">
+      <span class="comic-sticker comic-sticker-yellow">
+        <i data-lucide="help-circle"></i> FAQ
+      </span>
+      <h2 class="section-title">Frequently Asked Questions</h2>
+    </div>
+
+    <div class="card-grid-2">
+      <div class="comic-box comic-box-white">
+        <h4 class="mb-xs flex items-center gap-xs text-lg">
+          <i data-lucide="check-circle" class="icon-sm"></i> Can I create a club for my specific college?
+        </h4>
+        <p class="text-muted text-sm mb-0">
+          Yes! Anyone can launch an Entrepreneur Club. You can make it university-specific (e.g. "IIT Delhi Blockchain Club") or global across multiple universities.
+        </p>
+      </div>
+
+      <div class="comic-box comic-box-white">
+        <h4 class="mb-xs flex items-center gap-xs text-lg">
+          <i data-lucide="check-circle" class="icon-sm"></i> Is this platform completely free for students?
+        </h4>
+        <p class="text-muted text-sm mb-0">
+          100% free! Thinkers is built to democratize student entrepreneurship. You can join unlimited clubs, post pitches, and attend mastermind calls for free.
+        </p>
+      </div>
+
+      <div class="comic-box comic-box-white">
+        <h4 class="mb-xs flex items-center gap-xs text-lg">
+          <i data-lucide="check-circle" class="icon-sm"></i> What if I don't have a startup idea yet?
+        </h4>
+        <p class="text-muted text-sm mb-0">
+          Even better! Join clubs as an "Aspiring Hustler" or "Hacker". You can contribute to ongoing open pitches, join as a co-founder, or participate in monthly brainstorm sprints.
+        </p>
+      </div>
+
+      <div class="comic-box comic-box-white">
+        <h4 class="mb-xs flex items-center gap-xs text-lg">
+          <i data-lucide="check-circle" class="icon-sm"></i> Who are the mentors and judges?
+        </h4>
+        <p class="text-muted text-sm mb-0">
+          Our mentor network includes verified alumni founders, university innovation officers, and angel syndicate partners who volunteer hours for college clubs.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

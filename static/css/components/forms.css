@@ -1,0 +1,126 @@
+/* ==========================================================
+   THINKERS - Forms, Inputs & Filters
+   ========================================================== */
+
+/* Filter Bar */
+.comic-filter-bar {
+  background: #FFFFFF;
+  border: var(--border-thick);
+  border-radius: var(--radius-md);
+  box-shadow: var(--box-shadow-sm);
+  padding: 0.9rem 1.3rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2.2rem;
+}
+
+.filter-chips {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.9rem;
+  border: var(--border-medium);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.84rem;
+  background: #FFFFFF;
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
+  color: var(--ink-black);
+}
+
+.filter-chip:hover, .filter-chip.active {
+  background: var(--comic-yellow);
+  box-shadow: var(--box-shadow-xs);
+  transform: translateY(-2px);
+}
+
+/* Input Fields */
+.comic-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 500;
+  border: var(--border-thick);
+  border-radius: var(--radius-sm);
+  background: #FFFFFF;
+  color: var(--ink-black);
+  box-shadow: var(--box-shadow-xs);
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.comic-input:focus {
+  background: #FFFFFF;
+  box-shadow: 4px 4px 0px var(--comic-purple);
+  border-color: var(--ink-black);
+}
+
+.comic-input-sm {
+  padding: 0.45rem 0.8rem;
+  font-size: 0.86rem;
+}
+
+.comic-textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.comic-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23161616%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.9rem center;
+  background-size: 1.1rem auto;
+  padding-right: 2.5rem;
+  background-color: #FFFFFF;
+}
+
+/* Form Label */
+.comic-label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.92rem;
+  margin-bottom: 0.45rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.form-group {
+  margin-bottom: 1.4rem;
+}
+
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+  margin-bottom: 1.4rem;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.85rem;
+  align-items: center;
+}
+
+@media (max-width: 640px) {
+  .form-row-2 {
+    grid-template-columns: 1fr;
+  }
+}

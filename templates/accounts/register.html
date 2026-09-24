@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Join Free | Thinkers Entrepreneur Network{% endblock %}
+
+{% block content %}
+
+<section class="page-section">
+  <div class="comic-container comic-container-narrow">
+    
+    <div class="comic-box comic-box-pink">
+      <div class="auth-header">
+        <span class="comic-sticker comic-sticker-yellow mb-md">
+          <i data-lucide="shield-check"></i> 100% FREE FOR STUDENTS
+        </span>
+        <h1 class="auth-title">Claim Your Founder Pass</h1>
+        <p class="auth-subtitle">
+          Join thousands of collegiate visionaries building the future in specialized entrepreneur clubs.
+        </p>
+      </div>
+
+      <form method="POST" action="{% url 'register' %}">
+        {% csrf_token %}
+
+        <!-- Persona Role Selection -->
+        <div class="form-group">
+          <label class="comic-label">
+            <i data-lucide="user" class="icon-sm"></i> Select Your Persona *
+          </label>
+          <div class="persona-grid">
+            <label class="comic-box persona-card">
+              <input type="radio" name="persona" value="founder" checked>
+              <div>
+                <div class="persona-card-title">
+                  <i data-lucide="rocket" class="icon-sm"></i> Startup Founder
+                </div>
+                <div class="persona-card-subtitle">Building a venture</div>
+              </div>
+            </label>
+
+            <label class="comic-box persona-card">
+              <input type="radio" name="persona" value="hacker">
+              <div>
+                <div class="persona-card-title">
+                  <i data-lucide="code" class="icon-sm"></i> Technical Hacker
+                </div>
+                <div class="persona-card-subtitle">Looking to co-found</div>
+              </div>
+            </label>
+
+            <label class="comic-box persona-card">
+              <input type="radio" name="persona" value="investor">
+              <div>
+                <div class="persona-card-title">
+                  <i data-lucide="dollar-sign" class="icon-sm"></i> Angel / Alumni
+                </div>
+                <div class="persona-card-subtitle">Looking to back teams</div>
+              </div>
+            </label>
+
+            <label class="comic-box persona-card">
+              <input type="radio" name="persona" value="mentor">
+              <div>
+                <div class="persona-card-title">
+                  <i data-lucide="award" class="icon-sm"></i> Mentor / Advisor
+                </div>
+                <div class="persona-card-subtitle">Providing guidance</div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div>
+            <label class="comic-label">
+              <i data-lucide="user" class="icon-sm"></i> Full Name *
+            </label>
+            <input type="text" required placeholder="Preet Rana" class="comic-input">
+          </div>
+          <div>
+            <label class="comic-label">
+              <i data-lucide="map-pin" class="icon-sm"></i> College / University *
+            </label>
+            <input type="text" required placeholder="e.g. IIT, BITS, SRM, Delhi Univ" class="comic-input">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="comic-label">
+            <i data-lucide="mail" class="icon-sm"></i> Student or Work Email *
+          </label>
+          <input type="email" required placeholder="founder@college.edu" class="comic-input">
+        </div>
+
+        <div class="form-group">
+          <label class="comic-label">
+            <i data-lucide="lock" class="icon-sm"></i> Choose Strong Password *
+          </label>
+          <input type="password" required placeholder="••••••••••••" class="comic-input">
+        </div>
+
+        <div class="form-group mb-lg">
+          <label class="comic-label">
+            <i data-lucide="compass" class="icon-sm"></i> Primary Startup Domain / Interest
+          </label>
+          <select class="comic-input comic-select">
+            <option>AI &amp; Autonomous Agents</option>
+            <option>B2B SaaS &amp; Cloud Tools</option>
+            <option>D2C, Consumer &amp; Food Brands</option>
+            <option>CleanTech &amp; Renewable Hardware</option>
+            <option>FinTech &amp; Micro-Payments</option>
+          </select>
+        </div>
+
+        <div class="mb-lg">
+          <button type="submit" class="comic-btn comic-btn-lg comic-btn-black comic-btn-full">
+            <i data-lucide="user-plus" class="icon-sm"></i> Create Free Account
+          </button>
+        </div>
+      </form>
+
+      <div class="auth-footer">
+        Already have an account? 
+        <a href="{% url 'login' %}">
+          Log In Here
+        </a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

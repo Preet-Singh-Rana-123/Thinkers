@@ -1,0 +1,284 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ club.name }} | Thinkers Entrepreneur Club{% endblock %}
+
+{% block content %}
+
+<section class="page-section-sm">
+  <div class="comic-container">
+    <!-- Breadcrumb -->
+    <div class="comic-breadcrumb">
+      <a href="{% url 'home' %}">Home</a> <span class="comic-breadcrumb-sep">&gt;</span> 
+      <a href="{% url 'club_list' %}">Clubs</a> <span class="comic-breadcrumb-sep">&gt;</span> 
+      <span>{{ club.name }}</span>
+    </div>
+
+    <!-- Club Banner Header -->
+    <div class="comic-box {{ club.bg_color }} club-detail-banner">
+      <div class="club-detail-top-row">
+        <div class="club-detail-badges">
+          <span class="comic-badge comic-badge-{{ club.badge_color }}">{{ club.category_label }}</span>
+          <span class="comic-badge comic-box-white">
+            <i data-lucide="map-pin" class="icon-sm"></i> {{ club.university }}
+          </span>
+          <span class="comic-badge comic-badge-yellow">
+            <i data-lucide="users" class="icon-sm"></i> {{ club.members_count }} Active Members
+          </span>
+        </div>
+
+        <div class="flex gap-sm">
+          <button onclick="showComicToast('Joined {{ club.name }}! Meeting invites will arrive via email.');" class="comic-btn comic-btn-sm comic-btn-black">
+            <i data-lucide="plus" class="icon-sm"></i> Join This Club
+          </button>
+          <button onclick="showComicToast('Club invite link copied to clipboard!');" class="comic-btn comic-btn-sm comic-btn-white">
+            <i data-lucide="share-2" class="icon-sm"></i> Share
+          </button>
+        </div>
+      </div>
+
+      <h1 class="club-detail-title">{{ club.name }}</h1>
+      <p class="club-detail-tagline">
+        {{ club.tagline }}
+      </p>
+
+      <p class="club-detail-desc">
+        {{ club.description }}
+      </p>
+
+      <div class="club-detail-stats-bar">
+        <div>
+          <div class="club-stat-col-label">Club Host(s)</div>
+          <div class="club-stat-col-val">
+            <i data-lucide="crown" class="icon-sm"></i> {{ club.lead }}
+          </div>
+        </div>
+        <div>
+          <div class="club-stat-col-label">Meeting Cadence</div>
+          <div class="club-stat-col-val">
+            <i data-lucide="calendar" class="icon-sm"></i> {{ club.frequency }}
+          </div>
+        </div>
+        <div>
+          <div class="club-stat-col-label">Focus Stacks</div>
+          <div class="comic-tag-group mt-xs">
+            {% for tag in club.tags %}
+              <span class="comic-tag">#{{ tag }}</span>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 Column Layout: Main Interactive Hub + Sidebar -->
+    <div class="club-hub-grid">
+      
+      <!-- Main Content Column with Comic Tabs -->
+      <div class="comic-tabs-wrapper">
+        <div class="comic-tabs">
+          <button class="comic-tab active" data-tab="tab-feed">
+            <i data-lucide="radio" class="icon-sm"></i> Feed &amp; Updates
+          </button>
+          <button class="comic-tab" data-tab="tab-pitches">
+            <i data-lucide="rocket" class="icon-sm"></i> Club Pitches
+          </button>
+          <button class="comic-tab" data-tab="tab-events">
+            <i data-lucide="calendar" class="icon-sm"></i> Masterminds
+          </button>
+          <button class="comic-tab" data-tab="tab-members">
+            <i data-lucide="users" class="icon-sm"></i> Members ({{ club.members|length }})
+          </button>
+        </div>
+
+        <!-- Panel 1: Announcements Feed -->
+        <div id="tab-feed" class="tab-content-panel">
+          <!-- Post to Feed Box -->
+          <div class="comic-box comic-box-white mb-lg">
+            <h4 class="mb-sm flex items-center gap-xs text-lg">
+              <i data-lucide="message-square" class="icon-sm"></i> Post an update or ask to the club
+            </h4>
+            <textarea class="comic-input comic-textarea mb-sm" placeholder="Share a prototype, ask for feedback, or post a co-founder call..."></textarea>
+            <div class="flex justify-between items-center">
+              <div class="flex gap-sm">
+                <button type="button" class="comic-btn comic-btn-sm comic-btn-white">
+                  <i data-lucide="paperclip" class="icon-sm"></i> Attach Demo
+                </button>
+                <button type="button" class="comic-btn comic-btn-sm comic-btn-white">
+                  <i data-lucide="tag" class="icon-sm"></i> Add Tag
+                </button>
+              </div>
+              <button onclick="showComicToast('Update shared with {{ club.name }} members!');" class="comic-btn comic-btn-sm comic-btn-primary">
+                Post Update
+              </button>
+            </div>
+          </div>
+
+          <!-- Feed Items -->
+          <div class="flex flex-col gap-lg">
+            {% for post in club.announcements %}
+              <div class="comic-box comic-box-white">
+                <div class="flex justify-between items-center mb-sm">
+                  <span class="comic-badge comic-badge-pink">
+                    <i data-lucide="alert-circle" class="icon-sm"></i> {{ post.badge }}
+                  </span>
+                  <span class="text-muted font-bold text-xs">{{ post.date }}</span>
+                </div>
+                <p class="mb-sm text-base leading-normal">
+                  {{ post.content }}
+                </p>
+                <div class="text-muted font-bold text-sm">
+                  &mdash; {{ post.author }}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Panel 2: Pitches in This Club -->
+        <div id="tab-pitches" class="tab-content-panel tab-panel-hidden">
+          <div class="flex justify-between items-center mb-lg">
+            <h3 class="text-xl">Startup Pitches from {{ club.name }}</h3>
+            <a href="{% url 'pitch_wall' %}" class="comic-btn comic-btn-sm comic-btn-yellow">
+              <i data-lucide="plus" class="icon-sm"></i> Submit Pitch
+            </a>
+          </div>
+
+          <div class="flex flex-col gap-lg">
+            {% for pitch in club.pitches %}
+              <div class="comic-box comic-box-white">
+                <div class="flex justify-between items-center mb-xs">
+                  <h4 class="mb-xs text-lg">{{ pitch.title }}</h4>
+                  <span class="comic-badge comic-badge-yellow">
+                    <i data-lucide="target" class="icon-sm"></i> {{ pitch.seeking }}
+                  </span>
+                </div>
+                <p class="mb-md text-muted font-bold text-sm">
+                  By {{ pitch.founder }}
+                </p>
+                <div class="flex justify-between items-center">
+                  <button class="comic-btn comic-btn-sm comic-btn-white comic-upvote-btn">
+                    <i data-lucide="thumbs-up" class="icon-sm"></i> Upvote (<span class="upvote-count">{{ pitch.upvotes }}</span>)
+                  </button>
+                  <a href="{% url 'pitch_wall' %}" class="comic-btn comic-btn-sm comic-btn-black">
+                    View Full Pitch <i data-lucide="arrow-right" class="icon-sm"></i>
+                  </a>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Panel 3: Masterminds & Events -->
+        <div id="tab-events" class="tab-content-panel tab-panel-hidden">
+          <div class="flex flex-col gap-lg">
+            {% for evt in club.upcoming_events %}
+              <div class="comic-box comic-box-cyan">
+                <div class="flex justify-between items-center mb-sm">
+                  <span class="comic-badge comic-badge-yellow">
+                    <i data-lucide="calendar" class="icon-sm"></i> {{ evt.type }}
+                  </span>
+                  <span class="font-black flex items-center gap-xs text-sm">
+                    <i data-lucide="clock" class="icon-sm"></i> {{ evt.date }}
+                  </span>
+                </div>
+                <h4 class="mb-xs text-lg">{{ evt.title }}</h4>
+                <p class="mb-md text-sm text-dim">
+                  Interactive live room with video screen share, breakout pods, and open Q&amp;A.
+                </p>
+                <button onclick="showComicToast('Added to your calendar! Room link will open 5m before.');" class="comic-btn comic-btn-sm comic-btn-black">
+                  <i data-lucide="check" class="icon-sm"></i> RSVP For Session
+                </button>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Panel 4: Members Roster -->
+        <div id="tab-members" class="tab-content-panel tab-panel-hidden">
+          <div class="card-grid-2">
+            {% for m in club.members %}
+              <div class="comic-box comic-box-white flex items-center gap-md">
+                <div class="comic-avatar comic-box-{{ m.color }}">
+                  {{ m.avatar }}
+                </div>
+                <div class="flex-1">
+                  <div class="font-black text-base">{{ m.name }}</div>
+                  <div class="text-muted font-bold text-xs">{{ m.role }}</div>
+                </div>
+                <a href="{% url 'members_list' %}" class="comic-btn comic-btn-sm comic-btn-white">
+                  Connect
+                </a>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Sidebar Column -->
+      <div>
+        <!-- Next Live Room Box -->
+        <div class="comic-box comic-box-yellow mb-xl">
+          <span class="comic-badge comic-badge-pink mb-sm">
+            <i data-lucide="zap" class="icon-sm"></i> NEXT MASTERMIND
+          </span>
+          <h4 class="mb-xs text-lg">{{ club.upcoming_events.0.title }}</h4>
+          <p class="mb-md flex items-center gap-xs text-sm text-dim">
+            <i data-lucide="video" class="icon-sm"></i> {{ club.upcoming_events.0.date }} &bull; Virtual Room
+          </p>
+          <button onclick="showComicToast('Connecting to virtual stage...');" class="comic-btn comic-btn-sm comic-btn-black comic-btn-full">
+            <i data-lucide="video" class="icon-sm"></i> Enter Live Room
+          </button>
+        </div>
+
+        <!-- Club Rules Box -->
+        <div class="comic-box comic-box-white mb-xl">
+          <h4 class="mb-md flex items-center gap-xs text-base">
+            <i data-lucide="shield" class="icon-sm"></i> Club Code of Honor
+          </h4>
+          <ul class="club-rules-list">
+            <li class="club-rules-item">
+              <i data-lucide="lock" class="icon-sm"></i>
+              <span><strong>Zero Pitch Stealing:</strong> Mutual NDAs honored by culture.</span>
+            </li>
+            <li class="club-rules-item">
+              <i data-lucide="message-square" class="icon-sm"></i>
+              <span><strong>Constructive Feedback:</strong> Critique the idea, uplift the founder.</span>
+            </li>
+            <li class="club-rules-item">
+              <i data-lucide="rocket" class="icon-sm"></i>
+              <span><strong>Hustle First:</strong> Show MVPs, not just 50-page slide decks.</span>
+            </li>
+            <li class="club-rules-item">
+              <i data-lucide="users" class="icon-sm"></i>
+              <span><strong>Support Peers:</strong> Test each other's products as alpha users.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Community Channels Box -->
+        <div class="comic-box comic-box-cyan">
+          <h4 class="mb-sm flex items-center gap-xs text-base">
+            <i data-lucide="message-circle" class="icon-sm"></i> Community Channels
+          </h4>
+          <p class="mb-md text-sm">
+            Join the synchronized channels for this club.
+          </p>
+          <div class="flex flex-col gap-sm">
+            <button onclick="showComicToast('Opening Discord invite...');" class="comic-btn comic-btn-sm comic-btn-white comic-btn-full">
+              <i data-lucide="hash" class="icon-sm"></i> Join Club Discord
+            </button>
+            <button onclick="showComicToast('Opening Telegram group...');" class="comic-btn comic-btn-sm comic-btn-white comic-btn-full">
+              <i data-lucide="send" class="icon-sm"></i> Join Telegram Circle
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,293 @@
+/* ==========================================================
+   THINKERS - Base Styles & Global Utilities
+   ========================================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg-canvas);
+  color: var(--ink-black);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-image: radial-gradient(rgba(22, 22, 22, 0.08) 1.5px, transparent 1.5px);
+  background-size: 24px 24px;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  color: var(--ink-black);
+  line-height: 1.2;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Lucide Icon Integration Styling */
+[data-lucide], .lucide {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: -0.18em;
+  width: 1.15em;
+  height: 1.15em;
+  stroke-width: 2.2px;
+  flex-shrink: 0;
+}
+
+.icon-sm {
+  width: 0.95em;
+  height: 0.95em;
+}
+
+.icon-lg {
+  width: 1.45em;
+  height: 1.45em;
+}
+
+.icon-xl {
+  width: 2.2em;
+  height: 2.2em;
+}
+
+/* Layout Containers */
+.comic-container {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.comic-container-narrow {
+  max-width: 860px;
+}
+
+.comic-container-auth {
+  max-width: 540px;
+}
+
+/* Page Section Spacing */
+.page-section {
+  padding: 3rem 0 5rem;
+}
+
+.page-section-sm {
+  padding: 2.5rem 0 3.5rem;
+}
+
+/* Breadcrumb Component */
+.comic-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--ink-muted);
+}
+
+.comic-breadcrumb a {
+  color: var(--ink-black);
+  text-decoration: underline;
+  transition: opacity 0.15s ease;
+}
+
+.comic-breadcrumb a:hover {
+  opacity: 0.75;
+}
+
+.comic-breadcrumb-sep {
+  color: var(--ink-light);
+  font-weight: 800;
+}
+
+/* Section Header Typography */
+.section-header {
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+
+.section-header-left {
+  text-align: left;
+}
+
+.section-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  margin-bottom: 2.2rem;
+}
+
+.section-title {
+  font-size: 2.4rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.section-subtitle {
+  color: var(--ink-muted);
+  font-size: 1.05rem;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.section-subtitle-left {
+  margin: 0;
+  text-align: left;
+}
+
+/* Comic Stripe Accent */
+.comic-stripe {
+  height: 7px;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--ink-black),
+    var(--ink-black) 10px,
+    var(--comic-yellow) 10px,
+    var(--comic-yellow) 20px
+  );
+  border-bottom: var(--border-medium);
+}
+
+/* Pulse animation */
+@keyframes comicPulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.25); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.pulse-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--comic-green);
+  border: 1.5px solid var(--ink-black);
+  animation: comicPulse 2s infinite ease-in-out;
+  margin-right: 6px;
+}
+
+/* Flex & Grid Utilities */
+.flex { display: flex; }
+.flex-col { display: flex; flex-direction: column; }
+.flex-row { display: flex; flex-direction: row; }
+.items-center { align-items: center; }
+.items-start { align-items: flex-start; }
+.items-end { align-items: flex-end; }
+.justify-between { justify-content: space-between; }
+.justify-center { justify-content: center; }
+.justify-end { justify-content: flex-end; }
+.flex-wrap { flex-wrap: wrap; }
+.flex-1 { flex: 1; }
+.grid { display: grid; }
+
+/* Spacing Utilities */
+.gap-xs { gap: 0.35rem; }
+.gap-sm { gap: 0.5rem; }
+.gap-md { gap: 0.8rem; }
+.gap-lg { gap: 1.2rem; }
+.gap-xl { gap: 1.8rem; }
+
+.mb-xs { margin-bottom: 0.35rem; }
+.mb-sm { margin-bottom: 0.6rem; }
+.mb-md { margin-bottom: 1rem; }
+.mb-lg { margin-bottom: 1.5rem; }
+.mb-xl { margin-bottom: 2rem; }
+.mb-2xl { margin-bottom: 3rem; }
+.mb-3xl { margin-bottom: 4rem; }
+
+.mt-xs { margin-top: 0.35rem; }
+.mt-sm { margin-top: 0.6rem; }
+.mt-md { margin-top: 1rem; }
+.mt-lg { margin-top: 1.5rem; }
+.mt-xl { margin-top: 2rem; }
+
+.p-sm { padding: 0.6rem; }
+.p-md { padding: 1rem; }
+.p-lg { padding: 1.5rem; }
+
+/* Typography & Visual Utilities */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+.text-muted { color: var(--ink-muted); }
+.text-success { color: #16A34A; }
+.text-danger { color: #DC2626; }
+.font-bold { font-weight: 700; }
+.font-black { font-weight: 800; }
+.w-full { width: 100%; }
+.underline-link { text-decoration: underline; color: inherit; }
+.border-top-dashed { border-top: 2px dashed #E5E7EB; padding-top: 0.85rem; }
+
+/* Global Alert & Message Container */
+.django-messages-wrap { margin-top: 1.5rem; }
+.django-message-box { display: flex; align-items: center; justify-content: space-between; padding: 0.8rem 1.2rem; margin-bottom: 1rem; }
+.django-message-content { display: flex; align-items: center; gap: 0.6rem; font-weight: 700; }
+.django-message-close { position: static; width: 28px; height: 28px; }
+.main-content { flex: 1; }
+
+/* Micro-Typography Classes */
+.text-xs { font-size: 0.75rem; }
+.text-sm { font-size: 0.84rem; }
+.text-base { font-size: 0.95rem; }
+.text-lg { font-size: 1.15rem; }
+.text-xl { font-size: 1.35rem; }
+.text-2xl { font-size: 1.6rem; }
+.text-3xl { font-size: 2.2rem; }
+.text-4xl { font-size: 3rem; }
+
+.m-0 { margin: 0; }
+.mb-0 { margin-bottom: 0; }
+.mt-0 { margin-top: 0; }
+.mx-auto { margin-left: auto; margin-right: auto; }
+.col-span-full { grid-column: 1 / -1; }
+.relative { position: relative; }
+.lead-text { font-size: 1.05rem; line-height: 1.6; }
+.list-unstyled { list-style: none; padding-left: 0; }
+.font-semibold { font-weight: 600; }
+.text-ink { color: var(--ink-black); }
+.text-dark { color: #222222; }
+.text-dim { color: #333333; }
+.text-pink-accent { color: #D946EF; }
+.leading-tight { line-height: 1.1; }
+.leading-snug { line-height: 1.25; }
+.leading-normal { line-height: 1.5; }
+.leading-relaxed { line-height: 1.6; }
+.min-h-40 { min-height: 40px; }
+.max-w-680 { max-width: 680px; }
+
+/* Step Strip Helper (How It Works) */
+.step-strip-row {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.step-num-box {
+  border: var(--border-thick);
+  border-radius: var(--radius-sm);
+  height: 80px;
+  box-shadow: var(--box-shadow-sm);
+}
+
+@media (max-width: 640px) {
+  .step-strip-row {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+}

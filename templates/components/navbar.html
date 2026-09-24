@@ -1,0 +1,74 @@
+{% load static %}
+<nav class="comic-navbar">
+  <div class="comic-container">
+    <div class="navbar-inner">
+      <!-- Brand Logo -->
+      <a href="{% url 'home' %}" class="brand-logo">
+        <span class="brand-icon">
+          <i data-lucide="zap"></i>
+        </span>
+        <span>THINKERS</span>
+        <span class="brand-badge">CLUBS</span>
+      </a>
+
+      <!-- Primary Navigation Links -->
+      <ul class="nav-links">
+        <li>
+          <a href="{% url 'club_list' %}" class="nav-link-item {% if request.resolver_match.url_name in 'club_list club_detail club_create' %}active{% endif %}">
+            <i data-lucide="compass" class="icon-sm"></i>
+            <span>Explore Clubs</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'pitch_wall' %}" class="nav-link-item {% if request.resolver_match.url_name in 'pitch_wall challenges' %}active{% endif %}">
+            <i data-lucide="rocket" class="icon-sm"></i>
+            <span>Pitch Wall</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'co_founders' %}" class="nav-link-item {% if request.resolver_match.url_name == 'co_founders' %}active{% endif %}">
+            <i data-lucide="users" class="icon-sm"></i>
+            <span>Find Co-Founders</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'members_list' %}" class="nav-link-item {% if request.resolver_match.url_name in 'members_list member_profile speed_networking' %}active{% endif %}">
+            <i data-lucide="sparkles" class="icon-sm"></i>
+            <span>Networking</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'forum_list' %}" class="nav-link-item {% if request.resolver_match.url_name in 'forum_list thread_detail' %}active{% endif %}">
+            <i data-lucide="message-square" class="icon-sm"></i>
+            <span>Discussions</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'how_it_works' %}" class="nav-link-item {% if request.resolver_match.url_name == 'how_it_works' %}active{% endif %}">
+            <i data-lucide="book-open" class="icon-sm"></i>
+            <span>How It Works</span>
+          </a>
+        </li>
+      </ul>
+
+      <!-- Action Buttons -->
+      <div class="nav-actions">
+        <a href="{% url 'club_create' %}" class="comic-btn comic-btn-sm comic-btn-pink">
+          <i data-lucide="plus" class="icon-sm"></i>
+          <span>Launch Club</span>
+        </a>
+        <a href="{% url 'login' %}" class="comic-btn comic-btn-sm comic-btn-white">
+          <i data-lucide="log-in" class="icon-sm"></i>
+          <span>Login</span>
+        </a>
+        <a href="{% url 'register' %}" class="comic-btn comic-btn-sm comic-btn-primary">
+          <i data-lucide="user-plus" class="icon-sm"></i>
+          <span>Join Free</span>
+        </a>
+        <button class="mobile-nav-toggle" aria-label="Toggle navigation menu">
+          <i data-lucide="menu"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>

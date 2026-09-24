@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Virtual Speed Networking Lounge | Thinkers{% endblock %}
+
+{% block content %}
+
+<section class="page-section">
+  <div class="comic-container">
+    <!-- Breadcrumb -->
+    <div class="comic-breadcrumb">
+      <a href="{% url 'home' %}">Home</a> <span class="comic-breadcrumb-sep">&gt;</span> 
+      <a href="{% url 'members_list' %}">Network</a> <span class="comic-breadcrumb-sep">&gt;</span> 
+      <span>Speed Networking</span>
+    </div>
+
+    <!-- Hero Comic Box -->
+    <div class="comic-box comic-box-yellow speed-lounge-box">
+      <span class="comic-sticker comic-sticker-pink mb-md">
+        <i data-lucide="zap"></i> RAPID 5-MINUTE ROTATIONS
+      </span>
+      <h1 class="mb-sm text-4xl leading-tight">
+        The Virtual Founder Speed Lounge
+      </h1>
+      <p class="mb-xl text-muted text-lg max-w-680 mx-auto">
+        No awkward small talk. Every Tuesday and Thursday, get automatically paired with 6 collegiate founders for 5-minute timed video rounds.
+      </p>
+
+      <!-- Countdown Ticker Box -->
+      <div class="speed-timer-container">
+        <div class="speed-timer-unit">
+          <span class="speed-timer-num">02</span>
+          <div class="speed-timer-lbl">HOURS</div>
+        </div>
+        <span class="speed-timer-sep">:</span>
+        <div class="speed-timer-unit">
+          <span class="speed-timer-num">45</span>
+          <div class="speed-timer-lbl">MINUTES</div>
+        </div>
+        <span class="speed-timer-sep">:</span>
+        <div class="speed-timer-unit">
+          <span class="speed-timer-num">18</span>
+          <div class="speed-timer-lbl">SECONDS</div>
+        </div>
+      </div>
+
+      <div>
+        <button onclick="openModal('matchSimModal')" class="comic-btn comic-btn-lg comic-btn-black">
+          <i data-lucide="sparkles"></i> Join Waitlist / Test Match Simulator
+        </button>
+      </div>
+    </div>
+
+    <!-- How A Speed Round Works -->
+    <div class="mb-3xl">
+      <div class="section-header">
+        <span class="comic-sticker comic-sticker-cyan">
+          <i data-lucide="clock"></i> THE 5-MINUTE FORMAT
+        </span>
+        <h2 class="section-title">Anatomy of A Speed Round</h2>
+      </div>
+
+      <div class="card-grid-3">
+        <div class="comic-box comic-box-cyan">
+          <span class="comic-badge comic-badge-yellow mb-md">
+            <i data-lucide="clock" class="icon-sm"></i> MINUTE 0:00 - 1:00
+          </span>
+          <h3 class="mb-xs text-xl">Elevator Pitch</h3>
+          <p class="text-base text-dark">
+            Founder A pitches what they are building, the problem, and current milestone in 60 seconds.
+          </p>
+        </div>
+
+        <div class="comic-box comic-box-purple">
+          <span class="comic-badge comic-badge-pink mb-md">
+            <i data-lucide="clock" class="icon-sm"></i> MINUTE 1:00 - 2:00
+          </span>
+          <h3 class="mb-xs text-xl">The Counter-Pitch</h3>
+          <p class="text-base text-dark">
+            Founder B shares their venture, superpower, and what they need to reach product-market fit.
+          </p>
+        </div>
+
+        <div class="comic-box comic-box-green">
+          <span class="comic-badge comic-badge-yellow mb-md">
+            <i data-lucide="clock" class="icon-sm"></i> MINUTE 2:00 - 5:00
+          </span>
+          <h3 class="mb-xs text-xl">Collaborate &amp; Connect</h3>
+          <p class="text-base text-dark">
+            Brainstorm synergy, swap contacts with 1-click, and advance to the next exciting founder pair!
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Attendees in Queue -->
+    <div class="comic-box comic-box-white">
+      <div class="flex justify-between items-center mb-lg flex-wrap gap-md">
+        <div>
+          <h3 class="mb-0 text-xl">Founders in Queue For Tonight's Lounge ({{ active_queue_count }})</h3>
+          <span class="text-muted font-bold text-sm">Verified student builders from 14 colleges</span>
+        </div>
+        <span class="comic-badge comic-badge-green">
+          <i data-lucide="radio" class="icon-sm"></i> 42 IN ROOM
+        </span>
+      </div>
+
+      <div class="card-grid-4">
+        {% for att in sample_attendees %}
+          <div class="comic-box comic-box-{{ att.role_badge }} text-center p-md">
+            <div class="comic-avatar comic-box-white mb-sm mx-auto">{{ att.avatar }}</div>
+            <div class="font-black text-base">{{ att.name }}</div>
+            <div class="text-muted font-bold mb-sm text-xs">{{ att.college }}</div>
+            <span class="comic-badge comic-badge-yellow comic-badge-xs">{{ att.role }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Match Simulator Modal -->
+<div id="matchSimModal" class="comic-modal-overlay">
+  <div class="comic-modal">
+    <button class="modal-close-btn" onclick="closeModal('matchSimModal')">&times;</button>
+    <div class="modal-header text-center">
+      <span class="comic-sticker comic-sticker-yellow">
+        <i data-lucide="zap"></i> MATCH FOUND!
+      </span>
+      <h2 class="modal-title">You Got Paired With Aarav Sharma</h2>
+      <p class="modal-subtitle">AI Tech Lead &bull; IIT Delhi &bull; Building AgentOps Studio</p>
+    </div>
+
+    <div class="comic-box comic-box-cyan mb-lg">
+      <div class="flex items-center gap-md mb-sm">
+        <div class="comic-avatar comic-box-white">AS</div>
+        <div>
+          <h4 class="mb-0">Aarav is in the video pod</h4>
+          <span class="text-success font-bold flex items-center gap-xs text-xs">
+            <i data-lucide="video" class="icon-sm"></i> Camera &amp; Mic Connected
+          </span>
+        </div>
+      </div>
+      <p class="mb-0 text-sm text-dark">
+        "Hey! Excited to chat. I have 15 minutes before my compiler class &mdash; what are you building?"
+      </p>
+    </div>
+
+    <div class="flex gap-md">
+      <button onclick="closeModal('matchSimModal'); showComicToast('Connected to video pod!');" class="comic-btn comic-btn-black flex-1">
+        <i data-lucide="video" class="icon-sm"></i> Enter Video Pod
+      </button>
+      <button onclick="closeModal('matchSimModal')" class="comic-btn comic-btn-white">
+        Skip Match
+      </button>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,118 @@
+/* ==========================================================
+   THINKERS - Navbar Component Styles
+   ========================================================== */
+
+.comic-navbar {
+  background: var(--bg-card);
+  border-bottom: var(--border-thick);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding: 0.85rem 0;
+}
+
+.navbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+/* Brand Logo */
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.55rem;
+  letter-spacing: -0.02em;
+  color: var(--ink-black);
+}
+
+.brand-icon {
+  background: var(--comic-yellow);
+  border: var(--border-medium);
+  border-radius: var(--radius-xs);
+  box-shadow: var(--box-shadow-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  transform: rotate(-3deg);
+}
+
+.brand-badge {
+  background: var(--comic-yellow);
+  border: var(--border-medium);
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--radius-xs);
+  font-size: 0.72rem;
+  font-family: var(--font-comic);
+  box-shadow: var(--box-shadow-xs);
+}
+
+/* Navigation Links */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  list-style: none;
+}
+
+.nav-link-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.92rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s ease;
+  border: 2px solid transparent;
+  color: var(--ink-black);
+}
+
+.nav-link-item:hover {
+  background: var(--comic-yellow-light);
+  border: 2px solid var(--ink-black);
+  box-shadow: var(--box-shadow-xs);
+  transform: translate(-1px, -1px);
+}
+
+.nav-link-item.active {
+  background: var(--comic-yellow);
+  border: 2px solid var(--ink-black);
+  box-shadow: var(--box-shadow-sm);
+}
+
+/* Nav Action Buttons */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+/* Mobile Toggle */
+.mobile-nav-toggle {
+  display: none;
+  background: var(--comic-yellow);
+  border: var(--border-medium);
+  padding: 0.5rem;
+  border-radius: var(--radius-sm);
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: var(--box-shadow-xs);
+}
+
+@media (max-width: 992px) {
+  .nav-links {
+    display: none;
+  }
+
+  .mobile-nav-toggle {
+    display: flex;
+  }
+}

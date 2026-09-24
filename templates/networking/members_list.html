@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Entrepreneur Matchmaking &amp; Directory | Thinkers{% endblock %}
+
+{% block content %}
+
+<section class="page-section">
+  <div class="comic-container">
+    <!-- Breadcrumb -->
+    <div class="comic-breadcrumb">
+      <a href="{% url 'home' %}">Home</a> <span class="comic-breadcrumb-sep">&gt;</span> <span>Entrepreneur Directory</span>
+    </div>
+
+    <!-- Live Lounge Highlight Strip -->
+    <div class="comic-box comic-box-pink networking-highlight-strip">
+      <div class="networking-highlight-content">
+        <div class="brand-icon">
+          <i data-lucide="coffee" class="icon-lg"></i>
+        </div>
+        <div>
+          <h3 class="text-xl m-0">Virtual Speed Networking Lounge</h3>
+          <p class="mb-0 text-sm text-dim">
+            Quick 5-minute 1-on-1 video rotations with peer campus founders. Next session: Thursday @ 7:00 PM.
+          </p>
+        </div>
+      </div>
+      <a href="{% url 'speed_networking' %}" class="comic-btn comic-btn-black">
+        Enter Speed Lounge <i data-lucide="arrow-right" class="icon-sm"></i>
+      </a>
+    </div>
+
+    <!-- Header -->
+    <div class="section-header section-header-left mb-xl">
+      <span class="comic-sticker comic-sticker-cyan">
+        <i data-lucide="network"></i> THE INNOVATOR ROSTER
+      </span>
+      <h1 class="section-title">
+        Connect With Collegiate Founders
+      </h1>
+      <p class="section-subtitle section-subtitle-left">
+        Filter by skillset, university, and what they are actively looking to build or co-found.
+      </p>
+    </div>
+
+    <!-- Filter & Search Bar -->
+    <div class="comic-filter-bar">
+      <div class="filter-chips">
+        <a href="{% url 'members_list' %}" class="filter-chip {% if current_role == 'all' %}active{% endif %}">
+          <i data-lucide="users" class="icon-sm"></i> All Hustlers ({{ members|length }})
+        </a>
+        <a href="{% url 'members_list' %}?role=technical" class="filter-chip {% if current_role == 'technical' %}active{% endif %}">
+          <i data-lucide="code" class="icon-sm"></i> Technical Hackers
+        </a>
+        <a href="{% url 'members_list' %}?role=growth" class="filter-chip {% if current_role == 'growth' %}active{% endif %}">
+          <i data-lucide="trending-up" class="icon-sm"></i> Growth &amp; Biz
+        </a>
+        <a href="{% url 'members_list' %}?role=product" class="filter-chip {% if current_role == 'product' %}active{% endif %}">
+          <i data-lucide="palette" class="icon-sm"></i> Product Designers
+        </a>
+        <a href="{% url 'members_list' %}?role=hardware" class="filter-chip {% if current_role == 'hardware' %}active{% endif %}">
+          <i data-lucide="cpu" class="icon-sm"></i> Hardware / IoT
+        </a>
+      </div>
+
+      <form method="GET" action="{% url 'members_list' %}" class="flex gap-sm">
+        <input 
+          type="text" 
+          name="q" 
+          value="{{ search_q }}" 
+          placeholder="Search skills, college..." 
+          class="comic-input comic-input-sm"
+        >
+        <button type="submit" class="comic-btn comic-btn-sm comic-btn-primary">
+          <i data-lucide="search" class="icon-sm"></i>
+        </button>
+      </form>
+    </div>
+
+    <!-- Members Grid -->
+    <div class="card-grid-3">
+      {% for member in members %}
+        <div class="comic-box comic-box-hoverable comic-box-white">
+          <div class="member-card-header">
+            <span class="comic-badge comic-badge-{{ member.role_badge }}">{{ member.role }}</span>
+            <span class="text-muted font-bold text-xs">{{ member.college }}</span>
+          </div>
+
+          <div class="member-card-profile">
+            <div class="comic-avatar comic-avatar-lg comic-box-{{ member.role_badge }}">
+              {{ member.avatar }}
+            </div>
+            <div>
+              <h3 class="text-xl m-0">
+                <a href="{% url 'member_profile' member.username %}">{{ member.name }}</a>
+              </h3>
+              <div class="text-muted font-bold flex items-center gap-xs text-xs">
+                <i data-lucide="compass" class="icon-sm"></i> {{ member.club }}
+              </div>
+            </div>
+          </div>
+
+          <p class="font-bold mb-md text-sm text-dark min-h-40">
+            "{{ member.headline }}"
+          </p>
+
+          <!-- Seeking Pill -->
+          <div class="member-seeking-pill">
+            <i data-lucide="target" class="icon-sm"></i> {{ member.seeking }}
+          </div>
+
+          <!-- Skills -->
+          <div class="comic-tag-group mb-lg">
+            {% for s in member.skills %}
+              <span class="comic-tag">{{ s }}</span>
+            {% endfor %}
+          </div>
+
+          <!-- Actions -->
+          <div class="flex gap-sm">
+            <a href="{% url 'member_profile' member.username %}" class="comic-btn comic-btn-sm comic-btn-black flex-1">
+              View Bio <i data-lucide="arrow-right" class="icon-sm"></i>
+            </a>
+            <button onclick="showComicToast('Coffee chat request sent to {{ member.name }}!');" class="comic-btn comic-btn-sm comic-btn-yellow">
+              <i data-lucide="coffee" class="icon-sm"></i> Connect
+            </button>
+          </div>
+        </div>
+      {% empty %}
+        <div class="comic-box comic-box-yellow text-center p-lg col-span-full">
+          <div class="mb-md">
+            <i data-lucide="search-x" class="icon-xl"></i>
+          </div>
+          <h3>No founders found matching your criteria.</h3>
+          <p class="mt-sm">
+            <a href="{% url 'members_list' %}" class="comic-btn comic-btn-black">Clear Filters</a>
+          </p>
+        </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

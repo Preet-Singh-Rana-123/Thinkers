@@ -1,0 +1,306 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Thinkers | Online Interactive Entrepreneur Clubs Platform{% endblock %}
+
+{% block content %}
+
+<!-- Hero Section -->
+<section class="comic-hero">
+  <div class="comic-container">
+    <div class="hero-grid">
+      <!-- Left Column: Headline & Action Buttons -->
+      <div>
+        <div class="hero-tag">
+          <span class="comic-sticker comic-sticker-cyan">
+            <i data-lucide="zap"></i> COLLEGE ENTREPRENEUR NETWORK
+          </span>
+        </div>
+        <h1 class="hero-title">
+          Where <span class="highlight-yellow">Visionary Students</span> Build &amp; Scale In 
+          <span class="highlight-pink">Interactive Clubs!</span>
+        </h1>
+        <p class="hero-subtitle">
+          Stop pitching into the void. Join high-energy, niche entrepreneur circles to test prototypes, find technical co-founders, pitch to alumni angels, and run weekly masterminds.
+        </p>
+
+        <div class="hero-cta-group">
+          <a href="{% url 'club_list' %}" class="comic-btn comic-btn-lg comic-btn-primary">
+            <i data-lucide="compass"></i> Explore All Clubs
+          </a>
+          <a href="{% url 'pitch_wall' %}" class="comic-btn comic-btn-lg comic-btn-white">
+            <i data-lucide="rocket"></i> See Live Pitches
+          </a>
+          <a href="{% url 'co_founders' %}" class="comic-btn comic-btn-lg comic-btn-pink">
+            <i data-lucide="users"></i> Find Co-Founders
+          </a>
+        </div>
+
+        <!-- Mini Live Badge -->
+        <div class="hero-live-badge">
+          <div class="flex items-center">
+            <span class="pulse-dot"></span>
+            <span>14 Live Pitch Sessions happening this week!</span>
+          </div>
+          <span class="comic-badge comic-badge-yellow">
+            <i data-lucide="shield-check" class="icon-sm"></i> FREE FOR STUDENTS
+          </span>
+        </div>
+      </div>
+
+      <!-- Right Column: Comic Visual Card Panel -->
+      <div>
+        <div class="comic-box comic-box-yellow hero-preview-box">
+          <div class="hero-preview-header">
+            <span class="comic-badge comic-badge-pink">
+              <i data-lucide="flame" class="icon-sm"></i> CLUB DEMO NIGHT
+            </span>
+            <span class="hero-preview-time">
+              <i data-lucide="clock" class="icon-sm"></i> THURSDAY @ 7 PM
+            </span>
+          </div>
+          
+          <div class="comic-box hero-preview-subcard">
+            <div class="hero-preview-author">
+              <div class="comic-avatar comic-box-purple">
+                <i data-lucide="bot"></i>
+              </div>
+              <div>
+                <h4>GenAI Disruptors Club</h4>
+                <span class="stat-label">642 Active Founders &amp; Devs</span>
+              </div>
+            </div>
+            <p class="mb-sm text-base">
+              "Live teardown of 4 campus LLM apps. Alumni partner from Peak Ventures in the hot seat!"
+            </p>
+            <div class="flex gap-xs flex-wrap">
+              <span class="comic-badge comic-badge-cyan">
+                <i data-lucide="users" class="icon-sm"></i> 3 Slots Left
+              </span>
+              <span class="comic-badge comic-badge-yellow">
+                <i data-lucide="ticket" class="icon-sm"></i> Free Pitch Pass
+              </span>
+            </div>
+          </div>
+
+          <!-- Comic Speech Dialog Mock -->
+          <div class="comic-speech-bubble mb-lg">
+            <p class="font-bold mb-xs text-base">
+              "Need a Rust backend wizard for our micro-payments startup!"
+            </p>
+            <span class="font-bold text-muted text-xs">
+              &mdash; Priya (Fintech Club Co-Lead)
+            </span>
+          </div>
+
+          <div class="hero-preview-footer">
+            <a href="{% url 'club_create' %}" class="comic-btn comic-btn-sm comic-btn-black">
+              <i data-lucide="plus" class="icon-sm"></i> Start Your Club
+            </a>
+            <span class="hero-hashtag">#ThinkersHustle</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Ticker -->
+<section class="stats-section">
+  <div class="comic-container">
+    <div class="comic-box comic-box-white">
+      <div class="stats-grid">
+        {% for stat in stats %}
+          <div class="stat-box comic-box-{{ stat.color }}">
+            <div class="stat-number">{{ stat.number }}</div>
+            <div class="stat-label">{{ stat.label }}</div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Clubs Section -->
+<section class="spotlight-section">
+  <div class="comic-container">
+    <div class="section-header">
+      <div class="comic-sticker comic-sticker-pink mb-md">
+        <i data-lucide="compass"></i> THE CLUBHOUSE
+      </div>
+      <h2 class="section-title">Spotlight Entrepreneur Clubs</h2>
+      <p class="section-subtitle">
+        Curated interactive hubs where students brainstorm, prototype, and scale with peers in their exact industry.
+      </p>
+    </div>
+
+    <div class="card-grid-2">
+      {% for club in featured_clubs %}
+        <div class="comic-box comic-box-hoverable {{ club.bg_color }}">
+          <div class="club-card-header">
+            <span class="comic-badge comic-badge-{{ club.badge_color }}">{{ club.category }}</span>
+            <span class="club-members-count">
+              <i data-lucide="users" class="icon-sm"></i> {{ club.members }} Members
+            </span>
+          </div>
+
+          <h3 class="club-card-title">
+            <a href="{% url 'club_detail' club.slug %}">{{ club.name }}</a>
+          </h3>
+          <p class="club-card-tagline">
+            {{ club.tagline }}
+          </p>
+
+          <!-- Club Detail Highlights -->
+          <div class="club-info-snippet">
+            <div class="club-info-row mb-xs">
+              <i data-lucide="calendar" class="icon-sm"></i> Next Event: <span>{{ club.weekly_event }}</span>
+            </div>
+            <div class="club-info-row">
+              <i data-lucide="crown" class="icon-sm"></i> Host: <span>{{ club.leads }}</span>
+            </div>
+          </div>
+
+          <!-- Tags -->
+          <div class="tag-list-wrap">
+            {% for tag in club.tags %}
+              <span class="comic-tag">#{{ tag }}</span>
+            {% endfor %}
+          </div>
+
+          <!-- CTA Buttons -->
+          <div class="club-card-actions">
+            <a href="{% url 'club_detail' club.slug %}" class="comic-btn comic-btn-sm comic-btn-black flex-1">
+              Enter Club Hub <i data-lucide="arrow-right" class="icon-sm"></i>
+            </a>
+            <button onclick="showComicToast('Joined {{ club.name }}!');" class="comic-btn comic-btn-sm comic-btn-yellow">
+              <i data-lucide="plus" class="icon-sm"></i> Join
+            </button>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="home-browse-cta">
+      <a href="{% url 'club_list' %}" class="comic-btn comic-btn-lg comic-btn-primary">
+        Browse All 180+ Campus Clubs <i data-lucide="arrow-right"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Trending Pitch Wall Preview -->
+<section class="pitch-arena-strip">
+  <div class="comic-container">
+    <div class="section-header-row">
+      <div>
+        <span class="comic-sticker comic-sticker-cyan">
+          <i data-lucide="rocket"></i> THE PITCH ARENA
+        </span>
+        <h2 class="section-title">Trending Student Pitches</h2>
+        <p class="section-subtitle section-subtitle-left">
+          Founders post 60-second elevator pitches. Club members vote, critique, and invest.
+        </p>
+      </div>
+      <a href="{% url 'pitch_wall' %}" class="comic-btn comic-btn-pink">
+        <i data-lucide="plus"></i> Submit Your Elevator Pitch
+      </a>
+    </div>
+
+    <div class="card-grid-3">
+      {% for pitch in trending_pitches %}
+        <div class="comic-box comic-box-hoverable comic-box-white">
+          <div class="flex items-center justify-between mb-md">
+            <span class="comic-badge comic-badge-yellow">
+              <i data-lucide="flame" class="icon-sm"></i> {{ pitch.badge }}
+            </span>
+            <span class="text-muted font-bold text-sm">{{ pitch.category }}</span>
+          </div>
+
+          <h3 class="mb-xs text-xl">{{ pitch.title }}</h3>
+          <div class="flex items-center gap-xs text-muted font-bold mb-md text-sm">
+            <i data-lucide="user" class="icon-sm"></i> {{ pitch.founder }}
+          </div>
+
+          <p class="mb-lg pitch-preview-quote">
+            "{{ pitch.one_liner }}"
+          </p>
+
+          <div class="member-seeking-pill">
+            <i data-lucide="target" class="icon-sm"></i> {{ pitch.seeking }}
+          </div>
+
+          <div class="flex items-center justify-between">
+            <button class="comic-btn comic-btn-sm comic-btn-white comic-upvote-btn">
+              <i data-lucide="thumbs-up" class="icon-sm"></i> Upvote (<span class="upvote-count">{{ pitch.upvotes }}</span>)
+            </button>
+            <a href="{% url 'pitch_wall' %}" class="comic-btn comic-btn-sm comic-btn-black">
+              Review Deck
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testimonials-section">
+  <div class="comic-container">
+    <div class="section-header">
+      <div class="comic-sticker comic-sticker-yellow mb-md">
+        <i data-lucide="message-square"></i> FOUNDER VOICES
+      </div>
+      <h2 class="section-title">Heard In The Club Rooms</h2>
+      <p class="section-subtitle">Real founders who found co-founders, angels, and first customers right inside Thinkers.</p>
+    </div>
+
+    <div class="card-grid-2">
+      {% for item in testimonials %}
+        <div class="comic-box comic-box-cyan">
+          <div class="comic-speech-bubble mb-lg">
+            <p class="testimonial-quote">
+              "{{ item.quote }}"
+            </p>
+          </div>
+          <div class="testimonial-author-row">
+            <div class="comic-avatar comic-box-yellow">
+              <i data-lucide="star"></i>
+            </div>
+            <div>
+              <div class="testimonial-author-name">{{ item.author }}</div>
+              <div class="testimonial-author-meta">{{ item.role }} &bull; {{ item.club }}</div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Big Comic Action Callout -->
+<section class="callout-section">
+  <div class="comic-container">
+    <div class="comic-box callout-box">
+      <span class="comic-sticker comic-sticker-cyan">
+        <i data-lucide="zap"></i> START YOUR MOVEMENT
+      </span>
+      <h2 class="callout-title">
+        Ready To Launch Your Own Entrepreneur Club?
+      </h2>
+      <p class="callout-subtitle">
+        Whether it's for Aerospace, EdTech, Web3, or Campus Food Startups &mdash; create your club in 60 seconds, invite peers, and unlock university sponsorship perks.
+      </p>
+      <div class="callout-buttons">
+        <a href="{% url 'club_create' %}" class="comic-btn comic-btn-lg comic-btn-primary">
+          <i data-lucide="plus"></i> Launch A New Club Free
+        </a>
+        <a href="{% url 'register' %}" class="comic-btn comic-btn-lg comic-btn-white">
+          <i data-lucide="user-plus"></i> Create Founder Account
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Masterminds &amp; Founder Discussions | Thinkers{% endblock %}
+
+{% block content %}
+
+<section class="page-section">
+  <div class="comic-container">
+    <!-- Breadcrumb -->
+    <div class="comic-breadcrumb">
+      <a href="{% url 'home' %}">Home</a> <span class="comic-breadcrumb-sep">&gt;</span> <span>Community Discussions</span>
+    </div>
+
+    <!-- Header -->
+    <div class="section-header-row">
+      <div>
+        <span class="comic-sticker comic-sticker-cyan">
+          <i data-lucide="message-square"></i> FOUNDER MASTERMINDS
+        </span>
+        <h1 class="section-title">
+          Club Discussion Boards
+        </h1>
+        <p class="section-subtitle section-subtitle-left">
+          Ask technical architecture questions, get brutally honest pitch roasts, and share grant intelligence.
+        </p>
+      </div>
+
+      <button onclick="openModal('newThreadModal')" class="comic-btn comic-btn-pink">
+        <i data-lucide="plus"></i> Start A Mastermind Thread
+      </button>
+    </div>
+
+    <!-- Channel Filter Chips -->
+    <div class="comic-filter-bar">
+      <div class="filter-chips">
+        <a href="{% url 'forum_list' %}" class="filter-chip {% if current_channel == 'all' %}active{% endif %}">
+          <i data-lucide="grid" class="icon-sm"></i> All Channels ({{ threads|length }})
+        </a>
+        <a href="{% url 'forum_list' %}?channel=roast" class="filter-chip {% if current_channel == 'roast' %}active{% endif %}">
+          <i data-lucide="flame" class="icon-sm"></i> Pitch Roasts
+        </a>
+        <a href="{% url 'forum_list' %}?channel=funding" class="filter-chip {% if current_channel == 'funding' %}active{% endif %}">
+          <i data-lucide="dollar-sign" class="icon-sm"></i> Grants &amp; Funding
+        </a>
+        <a href="{% url 'forum_list' %}?channel=tech" class="filter-chip {% if current_channel == 'tech' %}active{% endif %}">
+          <i data-lucide="code" class="icon-sm"></i> Tech Stack &amp; Code
+        </a>
+        <a href="{% url 'forum_list' %}?channel=growth" class="filter-chip {% if current_channel == 'growth' %}active{% endif %}">
+          <i data-lucide="trending-up" class="icon-sm"></i> Growth &amp; Outbound
+        </a>
+      </div>
+
+      <span class="font-bold flex items-center gap-xs text-sm">
+        <i data-lucide="zap" class="icon-sm"></i> Active 24/7 Peer Support
+      </span>
+    </div>
+
+    <!-- Threads List -->
+    <div class="flex flex-col gap-lg">
+      {% for t in threads %}
+        <div class="comic-box comic-box-hoverable comic-box-white">
+          <div class="thread-card-header">
+            <div class="flex gap-sm items-center">
+              <span class="comic-badge comic-badge-yellow">{{ t.channel }}</span>
+              <span class="text-muted font-bold text-xs">
+                Posted {{ t.created_at }} in {{ t.club }}
+              </span>
+            </div>
+
+            <div class="flex gap-md items-center">
+              <span class="font-bold flex items-center gap-xs text-sm">
+                <i data-lucide="message-circle" class="icon-sm"></i> {{ t.replies_count }} Replies
+              </span>
+              <span class="comic-badge comic-badge-yellow comic-badge-sm">
+                <i data-lucide="thumbs-up" class="icon-sm"></i> {{ t.upvotes }} Upvotes
+              </span>
+            </div>
+          </div>
+
+          <h2 class="thread-card-title">
+            <a href="{% url 'thread_detail' t.id %}" class="underline-link">
+              {{ t.title }}
+            </a>
+          </h2>
+
+          <p class="mb-md text-base text-dim leading-normal">
+            {{ t.content }}
+          </p>
+
+          <div class="thread-card-footer">
+            <div class="flex items-center gap-sm">
+              <div class="comic-avatar comic-avatar-sm comic-box-cyan">
+                {{ t.author_avatar }}
+              </div>
+              <span class="font-bold text-sm">
+                {{ t.author }} <span class="text-muted font-semibold">({{ t.author_role }})</span>
+              </span>
+            </div>
+
+            <a href="{% url 'thread_detail' t.id %}" class="comic-btn comic-btn-sm comic-btn-black">
+              Join Discussion <i data-lucide="arrow-right" class="icon-sm"></i>
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+<!-- New Thread Modal -->
+<div id="newThreadModal" class="comic-modal-overlay">
+  <div class="comic-modal">
+    <button class="modal-close-btn" onclick="closeModal('newThreadModal')">&times;</button>
+    
+    <div class="modal-header">
+      <span class="comic-sticker comic-sticker-yellow">
+        <i data-lucide="message-square"></i> START MASTERMIND
+      </span>
+      <h2 class="modal-title">Create Discussion Thread</h2>
+      <p class="modal-subtitle">
+        Ask for advice, propose a live debate, or request honest peer feedback.
+      </p>
+    </div>
+
+    <form onsubmit="event.preventDefault(); closeModal('newThreadModal'); showComicToast('Thread posted to the clubhouse board!');">
+      <div class="form-group">
+        <label class="comic-label">Select Discussion Channel *</label>
+        <select class="comic-input comic-select">
+          <option>Weekly Pitch Roasts &amp; Pricing Feedback</option>
+          <option>Grants, Government Schemes &amp; Angel Intel</option>
+          <option>Tech Stack &amp; Software Architecture</option>
+          <option>Growth Hacks &amp; Cold Sales Tactics</option>
+          <option>Founder Failures &amp; Hard Lessons</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="comic-label">Thread Question / Headline *</label>
+        <input type="text" required placeholder="e.g. How do we reduce churn for B2B campus food tech?" class="comic-input">
+      </div>
+
+      <div class="form-group mb-lg">
+        <label class="comic-label">Full Details &amp; Context *</label>
+        <textarea required rows="4" class="comic-input comic-textarea" placeholder="Provide background, numbers, metrics, or the specific code bottleneck..."></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" onclick="closeModal('newThreadModal')" class="comic-btn comic-btn-white">Cancel</button>
+        <button type="submit" class="comic-btn comic-btn-primary">
+          <i data-lucide="send" class="icon-sm"></i> Post Thread
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

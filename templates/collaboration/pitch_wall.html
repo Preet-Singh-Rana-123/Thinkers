@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Pitch Wall &amp; Showcase | Thinkers Entrepreneur Platform{% endblock %}
+
+{% block content %}
+
+<section class="page-section">
+  <div class="comic-container">
+    <!-- Breadcrumb -->
+    <div class="comic-breadcrumb">
+      <a href="{% url 'home' %}">Home</a> <span class="comic-breadcrumb-sep">&gt;</span> <span>Pitch Wall</span>
+    </div>
+
+    <!-- Header -->
+    <div class="section-header-row">
+      <div>
+        <span class="comic-sticker comic-sticker-yellow">
+          <i data-lucide="rocket"></i> 60-SECOND PITCH ARENA
+        </span>
+        <h1 class="section-title">
+          The Collegiate Pitch Wall
+        </h1>
+        <p class="section-subtitle section-subtitle-left">
+          Read elevator pitches, review early traction, vote for your favorite ventures, and offer feedback.
+        </p>
+      </div>
+
+      <button onclick="openModal('submitPitchModal')" class="comic-btn comic-btn-pink">
+        <i data-lucide="plus"></i> Submit Your Pitch Deck
+      </button>
+    </div>
+
+    <!-- Filter Chips -->
+    <div class="comic-filter-bar">
+      <div class="filter-chips">
+        <a href="{% url 'pitch_wall' %}" class="filter-chip {% if current_category == 'all' %}active{% endif %}">
+          <i data-lucide="grid" class="icon-sm"></i> All Pitches ({{ pitches|length }})
+        </a>
+        <a href="{% url 'pitch_wall' %}?cat=developer" class="filter-chip {% if current_category == 'developer' %}active{% endif %}">
+          <i data-lucide="bot" class="icon-sm"></i> Dev &amp; AI Tools
+        </a>
+        <a href="{% url 'pitch_wall' %}?cat=climate" class="filter-chip {% if current_category == 'climate' %}active{% endif %}">
+          <i data-lucide="leaf" class="icon-sm"></i> CleanTech
+        </a>
+        <a href="{% url 'pitch_wall' %}?cat=fintech" class="filter-chip {% if current_category == 'fintech' %}active{% endif %}">
+          <i data-lucide="credit-card" class="icon-sm"></i> FinTech
+        </a>
+        <a href="{% url 'pitch_wall' %}?cat=saas" class="filter-chip {% if current_category == 'saas' %}active{% endif %}">
+          <i data-lucide="layers" class="icon-sm"></i> B2B SaaS
+        </a>
+      </div>
+
+      <div class="flex items-center gap-xs font-bold text-muted text-sm">
+        <i data-lucide="flame" class="icon-sm"></i> Ranked by Community Upvotes
+      </div>
+    </div>
+
+    <!-- Pitches List -->
+    <div class="flex flex-col gap-xl">
+      {% for pitch in pitches %}
+        <div class="comic-box pitch-card">
+          <!-- Top Row -->
+          <div class="pitch-card-top">
+            <div class="pitch-card-meta">
+              <span class="comic-badge comic-badge-{{ pitch.stage_color }}">
+                {{ pitch.stage }}
+              </span>
+              <span class="comic-badge comic-badge-neutral">
+                <i data-lucide="compass" class="icon-sm"></i> {{ pitch.club }}
+              </span>
+              <span class="text-muted font-bold flex items-center gap-xs text-sm">
+                <i data-lucide="user" class="icon-sm"></i> {{ pitch.founder }} ({{ pitch.college }})
+              </span>
+            </div>
+
+            <!-- Upvote Button -->
+            <button class="comic-btn comic-btn-sm comic-btn-white comic-upvote-btn">
+              <i data-lucide="thumbs-up" class="icon-sm"></i> Upvote (<span class="upvote-count">{{ pitch.upvotes }}</span>)
+            </button>
+          </div>
+
+          <!-- Pitch Title & One-Liner -->
+          <h2 class="pitch-card-title">{{ pitch.title }}</h2>
+          <p class="pitch-card-oneliner">
+            "{{ pitch.one_liner }}"
+          </p>
+
+          <!-- Problem vs Solution Split Comic Boxes -->
+          <div class="pitch-split-grid">
+            <div class="pitch-box-problem">
+              <div class="pitch-box-label">
+                <i data-lucide="alert-triangle" class="icon-sm"></i> THE PROBLEM
+              </div>
+              <p class="mb-0 text-base text-dark">
+                {{ pitch.problem }}
+              </p>
+            </div>
+
+            <div class="pitch-box-solution">
+              <div class="pitch-box-label">
+                <i data-lucide="lightbulb" class="icon-sm"></i> THE SOLUTION &amp; TECH
+              </div>
+              <p class="mb-0 text-base text-dark">
+                {{ pitch.solution }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Traction & What They're Seeking -->
+          <div class="pitch-footer-bar">
+            <div>
+              <span class="stat-label">Current Traction</span>
+              <div class="font-bold flex items-center gap-xs text-base text-ink">
+                <i data-lucide="trending-up" class="icon-sm"></i> {{ pitch.traction }}
+              </div>
+            </div>
+
+            <div>
+              <span class="stat-label">Founder Request</span>
+              <div class="font-black flex items-center gap-xs text-base text-pink-accent">
+                <i data-lucide="target" class="icon-sm"></i> {{ pitch.seeking }}
+              </div>
+            </div>
+
+            <div class="flex gap-sm">
+              <button onclick="showComicToast('Pitch deck preview link emailed to you!');" class="comic-btn comic-btn-sm comic-btn-black">
+                <i data-lucide="file-text" class="icon-sm"></i> Review Deck
+              </button>
+              <button onclick="showComicToast('Intro note sent to {{ pitch.founder }}!');" class="comic-btn comic-btn-sm comic-btn-yellow">
+                <i data-lucide="message-square" class="icon-sm"></i> Connect
+              </button>
+            </div>
+          </div>
+
+        </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+<!-- Submit Pitch Modal -->
+<div id="submitPitchModal" class="comic-modal-overlay">
+  <div class="comic-modal">
+    <button class="modal-close-btn" onclick="closeModal('submitPitchModal')">&times;</button>
+    
+    <div class="modal-header">
+      <span class="comic-sticker comic-sticker-pink">
+        <i data-lucide="rocket"></i> SUBMIT PITCH
+      </span>
+      <h2 class="modal-title">Drop Your Pitch on the Wall</h2>
+      <p class="modal-subtitle">
+        Showcase your venture to over 5,000 collegiate founders and angel investors.
+      </p>
+    </div>
+
+    <form onsubmit="event.preventDefault(); closeModal('submitPitchModal'); showComicToast('Your pitch has been posted to the Pitch Wall!');">
+      <div class="form-group">
+        <label class="comic-label">Startup / Project Name *</label>
+        <input type="text" required placeholder="e.g., OmniDocs AI" class="comic-input">
+      </div>
+
+      <div class="form-group">
+        <label class="comic-label">60-Second Elevator Hook (One-Liner) *</label>
+        <input type="text" required placeholder="What are you building and for whom?" class="comic-input">
+      </div>
+
+      <div class="form-row-2">
+        <div>
+          <label class="comic-label">Category</label>
+          <select class="comic-input comic-select">
+            <option>Developer &amp; AI Tools</option>
+            <option>CleanTech &amp; Hardware</option>
+            <option>Fintech &amp; Payments</option>
+            <option>B2B SaaS</option>
+            <option>D2C &amp; Consumer</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="comic-label">Current Stage</label>
+          <select class="comic-input comic-select">
+            <option>Idea / Prototype</option>
+            <option>Alpha / Waitlist</option>
+            <option>Live Beta</option>
+            <option>Revenue Generating</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group mb-lg">
+        <label class="comic-label">What are you seeking? *</label>
+        <input type="text" required placeholder="e.g. Full-stack co-founder, $50k angel grant, 10 beta testers" class="comic-input">
+      </div>
+
+      <div class="form-actions">
+        <button type="button" onclick="closeModal('submitPitchModal')" class="comic-btn comic-btn-white">Cancel</button>
+        <button type="submit" class="comic-btn comic-btn-primary">
+          <i data-lucide="rocket" class="icon-sm"></i> Publish Pitch
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
