@@ -80,20 +80,31 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Pitch Deck / Upvote comic interaction
+  // Pitch Deck / Upvote comic interaction with AJAX persistence
   document.querySelectorAll('.comic-upvote-btn').forEach(btn => {
     btn.addEventListener('click', function(e) {
       e.preventDefault();
       const countSpan = this.querySelector('.upvote-count');
+      const url = this.getAttribute('data-url');
       if (countSpan) {
         let count = parseInt(countSpan.innerText.replace(',', '')) || 0;
         if (!this.classList.contains('upvoted')) {
           this.classList.add('upvoted');
           countSpan.innerText = (count + 1);
-          showComicToast('Upvoted pitch! Founders appreciate your hype!');
+          showComicToast('Upvoted! Founders appreciate your hype!');
+          if (url) {
+            fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+              .then(res => res.json())
+              .then(data => {
+                if (data && data.upvotes !== undefined) {
+                  countSpan.innerText = data.upvotes;
+                }
+              })
+              .catch(err => console.log('Upvote registered locally:', err));
+          }
         } else {
           this.classList.remove('upvoted');
-          countSpan.innerText = (count - 1);
+          countSpan.innerText = Math.max(0, count - 1);
         }
       }
     });

@@ -57,7 +57,7 @@
               </div>
             </div>
 
-            <button onclick="openModal('applyCoFounderModal')" class="comic-btn comic-btn-black">
+            <button onclick="document.getElementById('applyPostId').value='{{ post.id }}'; openModal('applyCoFounderModal');" class="comic-btn comic-btn-black">
               Apply as Co-Founder <i data-lucide="arrow-right" class="icon-sm"></i>
             </button>
           </div>
@@ -106,28 +106,32 @@
       </p>
     </div>
 
-    <form onsubmit="event.preventDefault(); closeModal('applyCoFounderModal'); showComicToast('Application submitted to founder!');">
+    <form method="POST" action="{% url 'co_founders' %}">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="apply">
+      <input type="hidden" name="post_id" id="applyPostId" value="">
+
       <div class="form-group">
         <label class="comic-label">
           <i data-lucide="link" class="icon-sm"></i> GitHub / Portfolio / LinkedIn Link *
         </label>
-        <input type="url" required placeholder="https://github.com/yourhandle" class="comic-input">
+        <input type="url" name="portfolio" required placeholder="https://github.com/yourhandle" class="comic-input">
       </div>
 
       <div class="form-group">
         <label class="comic-label">
           <i data-lucide="clock" class="icon-sm"></i> Weekly Hours You Can Commit *
         </label>
-        <select class="comic-input comic-select">
-          <option>10 - 15 Hours / Week (Part-time student)</option>
-          <option>20 - 30 Hours / Week</option>
-          <option>40+ Hours / Week (Full-time committed)</option>
+        <select name="commitment" class="comic-input comic-select">
+          <option value="10 - 15 Hours / Week">10 - 15 Hours / Week (Part-time student)</option>
+          <option value="20 - 30 Hours / Week">20 - 30 Hours / Week</option>
+          <option value="40+ Hours / Week">40+ Hours / Week (Full-time committed)</option>
         </select>
       </div>
 
       <div class="form-group mb-lg">
         <label class="comic-label">Why are you the perfect co-founder? *</label>
-        <textarea required rows="4" class="comic-input comic-textarea" placeholder="Tell the founder about your relevant experience, technical chops, and hustle..."></textarea>
+        <textarea name="pitch_note" required rows="4" class="comic-input comic-textarea" placeholder="Tell the founder about your relevant experience, technical chops, and hustle..."></textarea>
       </div>
 
       <div class="form-actions">
@@ -154,35 +158,42 @@
       </p>
     </div>
 
-    <form onsubmit="event.preventDefault(); closeModal('postCoFounderModal'); showComicToast('Co-Founder call posted to the board!');">
+    <form method="POST" action="{% url 'co_founders' %}">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="create_post">
       <div class="form-group">
         <label class="comic-label">Startup / Project Name *</label>
-        <input type="text" required placeholder="e.g. CleanFleet AI" class="comic-input">
+        <input type="text" name="startup_name" required placeholder="e.g. CleanFleet AI" class="comic-input">
       </div>
 
       <div class="form-group">
         <label class="comic-label">Role Needed *</label>
-        <input type="text" required placeholder="e.g. Technical CTO &amp; Django Specialist" class="comic-input">
+        <input type="text" name="role_needed" required placeholder="e.g. Technical CTO &amp; Django Specialist" class="comic-input">
       </div>
 
       <div class="form-row-2">
         <div>
           <label class="comic-label">Equity Offering</label>
-          <input type="text" placeholder="e.g. 20% - 25% Equity" class="comic-input">
+          <input type="text" name="equity" placeholder="e.g. 20% - 25% Equity" class="comic-input">
         </div>
         <div>
           <label class="comic-label">Location / Mode</label>
-          <select class="comic-input comic-select">
-            <option>Remote</option>
-            <option>Hybrid</option>
-            <option>On-Campus</option>
+          <select name="location" class="comic-input comic-select">
+            <option value="Remote">Remote</option>
+            <option value="Hybrid">Hybrid</option>
+            <option value="On-Campus">On-Campus</option>
           </select>
         </div>
       </div>
 
+      <div class="form-group">
+        <label class="comic-label">Required Skills (Comma separated) *</label>
+        <input type="text" name="skills_required" required placeholder="e.g. Django, React, Docker, PostgreSQL" class="comic-input">
+      </div>
+
       <div class="form-group mb-lg">
         <label class="comic-label">What will they build / lead? *</label>
-        <textarea required rows="3" class="comic-input comic-textarea" placeholder="Explain the key milestones and responsibilities..."></textarea>
+        <textarea name="description" required rows="3" class="comic-input comic-textarea" placeholder="Explain the key milestones and responsibilities..."></textarea>
       </div>
 
       <div class="form-actions">

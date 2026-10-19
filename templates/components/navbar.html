@@ -57,14 +57,24 @@
           <i data-lucide="plus" class="icon-sm"></i>
           <span>Launch Club</span>
         </a>
-        <a href="{% url 'login' %}" class="comic-btn comic-btn-sm comic-btn-white">
-          <i data-lucide="log-in" class="icon-sm"></i>
-          <span>Login</span>
-        </a>
-        <a href="{% url 'register' %}" class="comic-btn comic-btn-sm comic-btn-primary">
-          <i data-lucide="user-plus" class="icon-sm"></i>
-          <span>Join Free</span>
-        </a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'profile' %}" class="comic-btn comic-btn-sm comic-btn-yellow">
+            <i data-lucide="user" class="icon-sm"></i>
+            <span>{{ user.first_name|default:user.username }}</span>
+          </a>
+          <a href="{% url 'logout' %}" class="comic-btn comic-btn-sm comic-btn-white" title="Log Out">
+            <i data-lucide="log-out" class="icon-sm"></i>
+          </a>
+        {% else %}
+          <a href="{% url 'login' %}" class="comic-btn comic-btn-sm comic-btn-white">
+            <i data-lucide="log-in" class="icon-sm"></i>
+            <span>Login</span>
+          </a>
+          <a href="{% url 'register' %}" class="comic-btn comic-btn-sm comic-btn-primary">
+            <i data-lucide="user-plus" class="icon-sm"></i>
+            <span>Join Free</span>
+          </a>
+        {% endif %}
         <button class="mobile-nav-toggle" aria-label="Toggle navigation menu">
           <i data-lucide="menu"></i>
         </button>

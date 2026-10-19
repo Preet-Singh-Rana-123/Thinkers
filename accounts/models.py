@@ -48,6 +48,10 @@ class UserProfile(models.Model):
             return membership.club.name
         return "Thinkers Network"
 
+    @property
+    def projects(self):
+        return self.user.projects.all()
+
 
 class UserProject(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='projects')

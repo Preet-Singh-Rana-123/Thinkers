@@ -124,26 +124,27 @@
       </p>
     </div>
 
-    <form onsubmit="event.preventDefault(); closeModal('newThreadModal'); showComicToast('Thread posted to the clubhouse board!');">
+    <form method="POST" action="{% url 'forum_list' %}">
+      {% csrf_token %}
       <div class="form-group">
         <label class="comic-label">Select Discussion Channel *</label>
-        <select class="comic-input comic-select">
-          <option>Weekly Pitch Roasts &amp; Pricing Feedback</option>
-          <option>Grants, Government Schemes &amp; Angel Intel</option>
-          <option>Tech Stack &amp; Software Architecture</option>
-          <option>Growth Hacks &amp; Cold Sales Tactics</option>
-          <option>Founder Failures &amp; Hard Lessons</option>
+        <select name="channel" class="comic-input comic-select">
+          <option value="roasts">Weekly Pitch Roasts &amp; Pricing Feedback</option>
+          <option value="funding">Grants, Government Schemes &amp; Angel Intel</option>
+          <option value="tech">Tech Stack &amp; Software Architecture</option>
+          <option value="growth">Growth Hacks &amp; Cold Sales Tactics</option>
+          <option value="lessons">Founder Failures &amp; Hard Lessons</option>
         </select>
       </div>
 
       <div class="form-group">
         <label class="comic-label">Thread Question / Headline *</label>
-        <input type="text" required placeholder="e.g. How do we reduce churn for B2B campus food tech?" class="comic-input">
+        <input type="text" name="title" required placeholder="e.g. How do we reduce churn for B2B campus food tech?" class="comic-input">
       </div>
 
       <div class="form-group mb-lg">
         <label class="comic-label">Full Details &amp; Context *</label>
-        <textarea required rows="4" class="comic-input comic-textarea" placeholder="Provide background, numbers, metrics, or the specific code bottleneck..."></textarea>
+        <textarea name="content" required rows="4" class="comic-input comic-textarea" placeholder="Provide background, numbers, metrics, or the specific code bottleneck..."></textarea>
       </div>
 
       <div class="form-actions">

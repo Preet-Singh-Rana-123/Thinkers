@@ -24,7 +24,7 @@
           </span>
         </div>
 
-        <button class="comic-btn comic-btn-sm comic-btn-white comic-upvote-btn">
+        <button class="comic-btn comic-btn-sm comic-btn-white comic-upvote-btn" data-url="{% url 'upvote_thread' thread.id %}">
           <i data-lucide="thumbs-up" class="icon-sm"></i> Upvote (<span class="upvote-count">{{ thread.upvotes }}</span>)
         </button>
       </div>
@@ -104,9 +104,10 @@
         Share personal experience, metrics from your own startup, or technical code snippets.
       </p>
 
-      <form onsubmit="event.preventDefault(); showComicToast('Your reply was posted to the mastermind!'); document.getElementById('replyTextarea').value='';">
+      <form method="POST" action="{% url 'thread_detail' thread.id %}">
+        {% csrf_token %}
         <div class="form-group">
-          <textarea id="replyTextarea" required rows="4" class="comic-input comic-textarea" placeholder="Write your response, feedback or roast here..."></textarea>
+          <textarea id="replyTextarea" name="content" required rows="4" class="comic-input comic-textarea" placeholder="Write your response, feedback or roast here..."></textarea>
         </div>
 
         <div class="flex justify-between items-center">

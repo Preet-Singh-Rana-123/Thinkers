@@ -1,106 +1,54 @@
-from django.shortcuts import render, Http404
-
-CHANNELS = [
-    {"name": "Weekly Pitch Roasts", "slug": "roasts", "badge": "POPULAR", "badge_color": "yellow"},
-    {"name": "Grants & Angel Funding", "slug": "funding", "badge": "INTEL", "badge_color": "green"},
-    {"name": "Tech Stack & Dev Advice", "slug": "tech", "badge": "DEV", "badge_color": "purple"},
-    {"name": "Growth & Cold Outbound", "slug": "growth", "badge": "SALES", "badge_color": "pink"},
-    {"name": "Post-Mortem & Lessons", "slug": "lessons", "badge": "LEARNING", "badge_color": "cyan"},
-]
-
-THREADS_DATA = [
-    {
-        "id": 1,
-        "title": "Roast My Pitch: Why do college students hesitate to pay ₹49/month for SaaS?",
-        "author": "Tanvi Chawla",
-        "author_avatar": "TC",
-        "author_role": "SaaS Founder",
-        "channel": "Weekly Pitch Roasts",
-        "club": "SaaS Growth Syndicate",
-        "created_at": "3 hours ago",
-        "upvotes": 48,
-        "replies_count": 14,
-        "content": "Hey everyone, we built a campus notes summarizer with citations. Free tier has 1,200 active users, but conversion to our ₹49/mo Pro tier is under 1.2%. Are college students structurally allergic to subscriptions, or is our pricing anchor wrong? Brutal roasts welcome!",
-        "replies": [
-            {
-                "author": "Aarav Sharma",
-                "author_avatar": "AS",
-                "author_role": "AI Lead",
-                "created_at": "2 hours ago",
-                "content": "Students don't buy subscriptions because their pocket money is unpredictable. Switch to one-time semester passes (e.g. ₹199 per semester exam season) or sell bulk society licenses directly to college departments!",
-                "upvotes": 32,
-                "is_top_answer": True,
-            },
-            {
-                "author": "Rohan Mehta",
-                "author_avatar": "RM",
-                "author_role": "D2C Growth",
-                "created_at": "1 hour ago",
-                "content": "100% agree with Aarav. In India, recurring e-mandates on student debit cards have huge friction. UPI payment links for exam-week bundles will 5x your conversion overnight.",
-                "upvotes": 19,
-                "is_top_answer": False,
-            },
-        ]
-    },
-    {
-        "id": 2,
-        "title": "Government DST NIDHI PRAYAS Grant: Complete application breakdown & tips",
-        "author": "Maya Verma",
-        "author_avatar": "MV",
-        "author_role": "ClimateTech Researcher",
-        "channel": "Grants & Angel Funding",
-        "club": "ClimateTech Hub",
-        "created_at": "Yesterday",
-        "upvotes": 95,
-        "replies_count": 22,
-        "content": "We just cleared stage 2 of the PRAYAS grant (up to ₹10 Lakhs non-dilutive for hardware prototypes). Here are the 5 critical mistakes most college applicants make in their patent disclosure section...",
-        "replies": [
-            {
-                "author": "Vikram Sethi",
-                "author_avatar": "VS",
-                "author_role": "Hardware Lead",
-                "created_at": "18 hours ago",
-                "content": "Bookmarking this! Did they ask for a functional 3D printed prototype in the stage 2 presentation or were CAD simulations sufficient?",
-                "upvotes": 12,
-                "is_top_answer": False,
-            }
-        ]
-    },
-    {
-        "id": 3,
-        "title": "Django + WebSockets vs FastAPI for real-time club collaboration canvases?",
-        "author": "Siddharth Ray",
-        "author_avatar": "SR",
-        "author_role": "AI Tech Lead",
-        "channel": "Tech Stack & Dev Advice",
-        "club": "GenAI Disruptors",
-        "created_at": "2 days ago",
-        "upvotes": 62,
-        "replies_count": 9,
-        "content": "We are building our shared whiteboard system. We love Django for its ORM, auth, and admin, but wondering if Django Channels is fast enough or if we should offload WebSockets to a dedicated microservice?",
-        "replies": [
-            {
-                "author": "Tanvi Chawla",
-                "author_avatar": "TC",
-                "author_role": "SaaS Founder",
-                "created_at": "Yesterday",
-                "content": "Django Channels with Redis channel layers handles 10,000+ concurrent socket connections without breaking a sweat. Keep your stack unified as a college team so you don't waste time managing multi-repo DevOps!",
-                "upvotes": 28,
-                "is_top_answer": True,
-            }
-        ]
-    },
-]
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
+from django.contrib import messages
+from .models import DiscussionChannel, Thread, ThreadReply, ThreadUpvote
+from clubs.models import Club
 
 def forum_list(request):
-    """Explore discussion boards, AMAs, and club mastermind threads."""
+    """Explore discussion boards, AMAs, and club mastermind threads from DB."""
+    channels = DiscussionChannel.objects.all()
+
+    if request.method == "POST":
+        title = request.POST.get("title", "").strip()
+        channel_slug = request.POST.get("channel", "roasts")
+        content = request.POST.get("content", "").strip()
+        club_name = request.POST.get("club", "General Community").strip()
+
+        if title and content:
+            channel = DiscussionChannel.objects.filter(slug=channel_slug).first() or channels.first()
+            author_user = request.user if request.user.is_authenticated else None
+            author_name = (request.user.get_full_name() or request.user.username) if request.user.is_authenticated else "Founder"
+            author_role = "Founder"
+            author_avatar = "TH"
+            if request.user.is_authenticated and hasattr(request.user, 'profile'):
+                author_role = request.user.profile.role
+                author_avatar = request.user.profile.avatar or request.user.username[:2].upper()
+
+            club_obj = Club.objects.filter(name__icontains=club_name).first()
+
+            thread = Thread.objects.create(
+                channel=channel,
+                title=title,
+                content=content,
+                author_user=author_user,
+                author_name=author_name,
+                author_role=author_role,
+                author_avatar=author_avatar,
+                club=club_obj,
+                club_name_fallback=club_name,
+                upvotes=1
+            )
+            messages.success(request, f"Your mastermind thread has been started!")
+            return redirect('thread_detail', thread_id=thread.id)
+
     channel_filter = request.GET.get('channel', 'all')
-    threads = THREADS_DATA
+    threads = Thread.objects.select_related('channel', 'club', 'author_user').all()
+
     if channel_filter != 'all':
-        threads = [t for t in threads if channel_filter.lower() in t['channel'].lower()]
+        threads = threads.filter(channel__slug__icontains=channel_filter)
 
     context = {
-        "channels": CHANNELS,
+        "channels": channels,
         "threads": threads,
         "current_channel": channel_filter,
     }
@@ -109,11 +57,48 @@ def forum_list(request):
 
 def thread_detail(request, thread_id):
     """Single discussion thread with comic speech dialogue between founders."""
-    thread = next((t for t in THREADS_DATA if t['id'] == thread_id), None)
-    if not thread:
-        raise Http404("Discussion Thread Not Found")
+    thread = get_object_or_404(Thread, id=thread_id)
+
+    if request.method == "POST":
+        content = request.POST.get("content", "").strip()
+        if content:
+            author_user = request.user if request.user.is_authenticated else None
+            author_name = (request.user.get_full_name() or request.user.username) if request.user.is_authenticated else "Peer Founder"
+            author_role = "Active Member"
+            author_avatar = "TH"
+            if request.user.is_authenticated and hasattr(request.user, 'profile'):
+                author_role = request.user.profile.role
+                author_avatar = request.user.profile.avatar or request.user.username[:2].upper()
+
+            ThreadReply.objects.create(
+                thread=thread,
+                author_user=author_user,
+                author_name=author_name,
+                author_role=author_role,
+                author_avatar=author_avatar,
+                content=content,
+                upvotes=0
+            )
+            messages.success(request, "Your reply has been posted to the discussion!")
+            return redirect('thread_detail', thread_id=thread.id)
 
     context = {
         "thread": thread,
     }
     return render(request, "discussions/thread_detail.html", context)
+
+
+def upvote_thread(request, thread_id):
+    """AJAX or redirect endpoint to upvote a discussion thread."""
+    thread = get_object_or_404(Thread, id=thread_id)
+    thread.upvotes += 1
+    thread.save(update_fields=['upvotes'])
+
+    if request.user.is_authenticated:
+        ThreadUpvote.objects.get_or_create(thread=thread, user=request.user)
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest' or request.GET.get('format') == 'json':
+        return JsonResponse({"success": True, "upvotes": thread.upvotes})
+
+    messages.success(request, "Upvoted discussion thread!")
+    return redirect('thread_detail', thread_id=thread.id)

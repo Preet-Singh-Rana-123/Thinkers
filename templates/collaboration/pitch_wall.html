@@ -75,7 +75,7 @@
             </div>
 
             <!-- Upvote Button -->
-            <button class="comic-btn comic-btn-sm comic-btn-white comic-upvote-btn">
+            <button class="comic-btn comic-btn-sm comic-btn-white comic-upvote-btn" data-url="{% url 'upvote_pitch' pitch.id %}">
               <i data-lucide="thumbs-up" class="icon-sm"></i> Upvote (<span class="upvote-count">{{ pitch.upvotes }}</span>)
             </button>
           </div>
@@ -155,43 +155,44 @@
       </p>
     </div>
 
-    <form onsubmit="event.preventDefault(); closeModal('submitPitchModal'); showComicToast('Your pitch has been posted to the Pitch Wall!');">
+    <form method="POST" action="{% url 'pitch_wall' %}">
+      {% csrf_token %}
       <div class="form-group">
         <label class="comic-label">Startup / Project Name *</label>
-        <input type="text" required placeholder="e.g., OmniDocs AI" class="comic-input">
+        <input type="text" name="title" required placeholder="e.g., OmniDocs AI" class="comic-input">
       </div>
 
       <div class="form-group">
         <label class="comic-label">60-Second Elevator Hook (One-Liner) *</label>
-        <input type="text" required placeholder="What are you building and for whom?" class="comic-input">
+        <input type="text" name="one_liner" required placeholder="What are you building and for whom?" class="comic-input">
       </div>
 
       <div class="form-row-2">
         <div>
           <label class="comic-label">Category</label>
-          <select class="comic-input comic-select">
-            <option>Developer &amp; AI Tools</option>
-            <option>CleanTech &amp; Hardware</option>
-            <option>Fintech &amp; Payments</option>
-            <option>B2B SaaS</option>
-            <option>D2C &amp; Consumer</option>
+          <select name="category" class="comic-input comic-select">
+            <option value="Developer Tools">Developer &amp; AI Tools</option>
+            <option value="CleanTech">CleanTech &amp; Hardware</option>
+            <option value="Fintech">Fintech &amp; Payments</option>
+            <option value="B2B SaaS">B2B SaaS</option>
+            <option value="D2C">D2C &amp; Consumer</option>
           </select>
         </div>
 
         <div>
           <label class="comic-label">Current Stage</label>
-          <select class="comic-input comic-select">
-            <option>Idea / Prototype</option>
-            <option>Alpha / Waitlist</option>
-            <option>Live Beta</option>
-            <option>Revenue Generating</option>
+          <select name="stage" class="comic-input comic-select">
+            <option value="Idea / Prototype">Idea / Prototype</option>
+            <option value="Alpha / Waitlist">Alpha / Waitlist</option>
+            <option value="Live Beta">Live Beta</option>
+            <option value="Revenue Generating">Revenue Generating</option>
           </select>
         </div>
       </div>
 
       <div class="form-group mb-lg">
         <label class="comic-label">What are you seeking? *</label>
-        <input type="text" required placeholder="e.g. Full-stack co-founder, $50k angel grant, 10 beta testers" class="comic-input">
+        <input type="text" name="seeking" required placeholder="e.g. Full-stack co-founder, $50k angel grant, 10 beta testers" class="comic-input">
       </div>
 
       <div class="form-actions">

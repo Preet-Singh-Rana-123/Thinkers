@@ -49,6 +49,17 @@ class Club(models.Model):
         return real_count if real_count > 0 else self.members_count_cache
 
     @property
+    def leads(self):
+        return self.lead
+
+    @property
+    def weekly_event(self):
+        first_event = self.events.first()
+        if first_event:
+            return f"{first_event.date}: {first_event.title}"
+        return self.frequency
+
+    @property
     def announcements(self):
         return self.club_announcements.all().order_by('-created_at')
 

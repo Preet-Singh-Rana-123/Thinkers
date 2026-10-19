@@ -28,9 +28,9 @@
         </div>
 
         <div class="flex gap-sm">
-          <button onclick="showComicToast('Joined {{ club.name }}! Meeting invites will arrive via email.');" class="comic-btn comic-btn-sm comic-btn-black">
+          <a href="{% url 'club_join' club.slug %}" class="comic-btn comic-btn-sm comic-btn-black">
             <i data-lucide="plus" class="icon-sm"></i> Join This Club
-          </button>
+          </a>
           <button onclick="showComicToast('Club invite link copied to clipboard!');" class="comic-btn comic-btn-sm comic-btn-white">
             <i data-lucide="share-2" class="icon-sm"></i> Share
           </button>
@@ -97,20 +97,18 @@
             <h4 class="mb-sm flex items-center gap-xs text-lg">
               <i data-lucide="message-square" class="icon-sm"></i> Post an update or ask to the club
             </h4>
-            <textarea class="comic-input comic-textarea mb-sm" placeholder="Share a prototype, ask for feedback, or post a co-founder call..."></textarea>
-            <div class="flex justify-between items-center">
-              <div class="flex gap-sm">
-                <button type="button" class="comic-btn comic-btn-sm comic-btn-white">
-                  <i data-lucide="paperclip" class="icon-sm"></i> Attach Demo
-                </button>
-                <button type="button" class="comic-btn comic-btn-sm comic-btn-white">
-                  <i data-lucide="tag" class="icon-sm"></i> Add Tag
+            <form method="POST" action="{% url 'club_detail' club.slug %}">
+              {% csrf_token %}
+              <textarea name="content" required class="comic-input comic-textarea mb-sm" placeholder="Share a prototype, ask for feedback, or post a co-founder call..."></textarea>
+              <div class="flex justify-between items-center">
+                <div class="flex gap-sm">
+                  <span class="text-muted font-bold text-xs">Share updates with {{ club.name }} founders</span>
+                </div>
+                <button type="submit" class="comic-btn comic-btn-sm comic-btn-primary">
+                  Post Update
                 </button>
               </div>
-              <button onclick="showComicToast('Update shared with {{ club.name }} members!');" class="comic-btn comic-btn-sm comic-btn-primary">
-                Post Update
-              </button>
-            </div>
+            </form>
           </div>
 
           <!-- Feed Items -->
@@ -156,7 +154,7 @@
                   By {{ pitch.founder }}
                 </p>
                 <div class="flex justify-between items-center">
-                  <button class="comic-btn comic-btn-sm comic-btn-white comic-upvote-btn">
+                  <button class="comic-btn comic-btn-sm comic-btn-white comic-upvote-btn" data-url="{% url 'upvote_pitch' pitch.id %}">
                     <i data-lucide="thumbs-up" class="icon-sm"></i> Upvote (<span class="upvote-count">{{ pitch.upvotes }}</span>)
                   </button>
                   <a href="{% url 'pitch_wall' %}" class="comic-btn comic-btn-sm comic-btn-black">

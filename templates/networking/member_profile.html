@@ -133,20 +133,21 @@
       </p>
     </div>
 
-    <form onsubmit="event.preventDefault(); closeModal('coffeeChatModal'); showComicToast('Coffee chat invite dispatched to {{ member.name }}!');">
+    <form method="POST" action="{% url 'member_profile' member.username %}">
+      {% csrf_token %}
       <div class="form-group">
         <label class="comic-label">Conversation Focus</label>
-        <select class="comic-input comic-select">
-          <option>Discuss Co-Founding Opportunity</option>
-          <option>Get Technical / Design Feedback</option>
-          <option>Cross-Club Collaboration</option>
-          <option>Casual Founder Brainstorm</option>
+        <select name="focus" class="comic-input comic-select">
+          <option value="Discuss Co-Founding Opportunity">Discuss Co-Founding Opportunity</option>
+          <option value="Get Technical / Design Feedback">Get Technical / Design Feedback</option>
+          <option value="Cross-Club Collaboration">Cross-Club Collaboration</option>
+          <option value="Casual Founder Brainstorm">Casual Founder Brainstorm</option>
         </select>
       </div>
 
       <div class="form-group">
         <label class="comic-label">Your Note / Pitch Hook</label>
-        <textarea class="comic-input comic-textarea" rows="3" placeholder="Hey {{ member.name }}, I saw your project and would love to brainstorm how we can team up..."></textarea>
+        <textarea name="note" required class="comic-input comic-textarea" rows="3" placeholder="Hey {{ member.name }}, I saw your project and would love to brainstorm how we can team up..."></textarea>
       </div>
 
       <div class="form-actions">
