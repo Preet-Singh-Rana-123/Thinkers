@@ -201,4 +201,24 @@ document.addEventListener('DOMContentLoaded', () => {
       toast.classList.remove('show');
     }, 3200);
   };
+
+  // Live polling for navbar unread messages count
+  const chatBadge = document.getElementById('chatUnreadCountBadge');
+  if (chatBadge) {
+    setInterval(() => {
+      fetch('/chat/api/unread-count/')
+        .then(res => res.json())
+        .then(data => {
+          if (data && typeof data.unread_count === 'number') {
+            if (data.unread_count > 0) {
+              chatBadge.innerText = data.unread_count;
+              chatBadge.style.display = 'flex';
+            } else {
+              chatBadge.style.display = 'none';
+            }
+          }
+        })
+        .catch(() => {});
+    }, 15000);
+  }
 });

@@ -37,7 +37,7 @@
           <button onclick="openModal('coffeeChatModal')" class="comic-btn comic-btn-black">
             <i data-lucide="coffee" class="icon-sm"></i> Request Coffee Chat
           </button>
-          <button onclick="showComicToast('Direct message dialog opened!');" class="comic-btn comic-btn-white">
+          <button onclick="openModal('directMessageModal')" class="comic-btn comic-btn-white">
             <i data-lucide="message-square" class="icon-sm"></i> Message
           </button>
         </div>
@@ -154,6 +154,39 @@
         <button type="button" onclick="closeModal('coffeeChatModal')" class="comic-btn comic-btn-white">Cancel</button>
         <button type="submit" class="comic-btn comic-btn-primary">
           <i data-lucide="send" class="icon-sm"></i> Send Invite
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Direct Message Modal -->
+<div id="directMessageModal" class="comic-modal-overlay">
+  <div class="comic-modal">
+    <button class="modal-close-btn" onclick="closeModal('directMessageModal')">&times;</button>
+    <div class="modal-header">
+      <span class="comic-sticker comic-sticker-yellow">
+        <i data-lucide="message-circle"></i> DIRECT MESSAGE
+      </span>
+      <h2 class="modal-title">Chat with {{ member.name }}</h2>
+      <p class="modal-subtitle">
+        Start a real-time founder conversation. You'll jump straight into the chat room.
+      </p>
+    </div>
+
+    <form method="POST" action="{% url 'start_chat' member.username %}">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="comic-label">Introductory Message</label>
+        <textarea name="message" required class="comic-input comic-textarea" rows="3" placeholder="Hey {{ member.name }}, I saw your {{ member.role }} background and wanted to connect..."></textarea>
+      </div>
+
+      <div class="form-actions flex justify-between items-center">
+        <a href="{% url 'start_chat' member.username %}" class="comic-btn comic-btn-white">
+          <i data-lucide="external-link" class="icon-sm"></i> Open Chat Directly
+        </a>
+        <button type="submit" class="comic-btn comic-btn-primary">
+          <i data-lucide="send" class="icon-sm"></i> Send Message
         </button>
       </div>
     </form>

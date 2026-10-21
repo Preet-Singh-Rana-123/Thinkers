@@ -118,6 +118,49 @@
       <!-- Right Column: Match & Coffee Chat Requests -->
       <div class="dashboard-column">
         
+        <!-- Direct Messages Box -->
+        <div class="comic-box comic-box-white mb-xl">
+          <div class="flex justify-between items-center mb-md">
+            <div class="flex items-center gap-xs">
+              <span class="comic-sticker comic-sticker-yellow">
+                <i data-lucide="message-circle"></i> CHAT
+              </span>
+              <h3 class="mb-0 text-xl">Direct Messages</h3>
+            </div>
+            <a href="{% url 'inbox' %}" class="comic-btn comic-btn-sm comic-btn-black">
+              Open Messenger <i data-lucide="arrow-right" class="icon-sm"></i>
+            </a>
+          </div>
+
+          <div class="flex flex-col gap-sm">
+            {% for c in user_data.conversations %}
+              <a href="{% url 'conversation_detail' c.id %}" class="comic-box comic-box-hoverable comic-box-white p-sm flex items-center justify-between text-dark" style="text-decoration: none;">
+                <div class="flex items-center gap-sm min-w-0">
+                  <div class="comic-avatar comic-avatar-sm comic-box-yellow flex-shrink-0">
+                    {{ c.other_avatar }}
+                  </div>
+                  <div class="min-w-0">
+                    <h4 class="mb-0 text-sm font-black truncate">{{ c.other_name }}</h4>
+                    <p class="mb-0 text-xs text-muted truncate" style="max-width: 220px;">{{ c.last_message }}</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-xs flex-shrink-0">
+                  {% if c.unread_count > 0 %}
+                    <span class="comic-badge comic-badge-pink comic-badge-xs">{{ c.unread_count }} NEW</span>
+                  {% endif %}
+                  <span class="text-xs text-muted font-bold">{{ c.time }}</span>
+                </div>
+              </a>
+            {% empty %}
+              <div class="comic-box comic-box-white p-md text-center text-muted">
+                <i data-lucide="message-square" class="icon-md mb-xs"></i>
+                <p class="mb-0 text-sm font-bold">No active conversations yet.</p>
+                <a href="{% url 'inbox' %}" class="comic-btn comic-btn-xs comic-btn-yellow mt-xs">Start a Conversation</a>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
         <!-- Requests Box -->
         <div class="comic-box comic-box-cyan mb-xl">
           <div class="flex justify-between items-center mb-md">
@@ -142,9 +185,16 @@
                 </p>
                 <div class="flex gap-sm">
                   {% if req.status == 'accepted' %}
-                    <span class="comic-badge comic-badge-green font-black">
-                      <i data-lucide="check-circle" class="icon-sm"></i> Accepted &bull; Video Room Active
-                    </span>
+                    <div class="flex items-center justify-between gap-sm flex-1 flex-wrap">
+                      <span class="comic-badge comic-badge-green font-black">
+                        <i data-lucide="check-circle" class="icon-sm"></i> Accepted &bull; Video Room Active
+                      </span>
+                      {% if req.from_username %}
+                        <a href="{% url 'start_chat' req.from_username %}" class="comic-btn comic-btn-xs comic-btn-yellow">
+                          <i data-lucide="message-circle" class="icon-xs"></i> Chat Now
+                        </a>
+                      {% endif %}
+                    </div>
                   {% elif req.status == 'declined' %}
                     <span class="comic-badge comic-badge-neutral font-bold">
                       Declined

@@ -132,10 +132,33 @@ def profile_view(request):
         match_requests.append({
             "id": req.id,
             "from_user": req.from_user.get_full_name() or req.from_user.username,
+            "from_username": req.from_user.username,
             "focus": req.focus,
             "topic": req.topic,
             "status": req.status,
             "time": req.created_at.strftime("%b %d, %H:%M"),
+        })
+
+    # Load recent conversations for dashboard
+    from chat.models import Conversation
+    recent_convs = (
+        Conversation.objects.filter(participants=user)
+        .prefetch_related('participants', 'messages', 'participants__profile')
+        .order_by('-updated_at')[:4]
+    ) if user else []
+    dashboard_conversations = []
+    for c in recent_convs:
+        other = c.get_other_participant(user)
+        last_m = c.last_message
+        unread_cnt = c.unread_count_for(user)
+        dashboard_conversations.append({
+            'id': c.id,
+            'other_name': other.get_full_name() or other.username if other else 'Founder',
+            'other_username': other.username if other else '',
+            'other_avatar': getattr(getattr(other, 'profile', None), 'avatar', '') or (other.username[:2].upper() if other else 'TH'),
+            'last_message': last_m.content[:40] if last_m else 'No messages yet',
+            'time': last_m.formatted_time if last_m else '',
+            'unread_count': unread_cnt,
         })
 
     user_data = {
@@ -148,6 +171,7 @@ def profile_view(request):
         "clubs_joined": clubs_joined,
         "my_pitches": my_pitches,
         "match_requests": match_requests,
+        "conversations": dashboard_conversations,
     }
 
     return render(request, "accounts/profile.html", {"user_data": user_data})

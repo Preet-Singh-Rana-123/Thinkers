@@ -124,6 +124,15 @@
             <span>How It Works</span>
           </a>
         </li>
+        <li class="mobile-only-nav-item">
+          <a href="{% url 'inbox' %}" class="nav-link-item {% if request.resolver_match.url_name in 'inbox conversation_detail' %}active{% endif %}">
+            <i data-lucide="message-circle" class="icon-sm"></i>
+            <span>Messages</span>
+            {% if unread_messages_count > 0 %}
+              <span class="comic-badge comic-badge-pink comic-badge-xs">{{ unread_messages_count }}</span>
+            {% endif %}
+          </a>
+        </li>
       </ul>
 
       <!-- Action Buttons -->
@@ -131,6 +140,14 @@
         <a href="{% url 'club_create' %}" class="comic-btn comic-btn-sm comic-btn-pink nav-action-launch">
           <i data-lucide="plus" class="icon-sm"></i>
           <span class="btn-label">Launch Club</span>
+        </a>
+
+        <!-- Direct Messages Button -->
+        <a href="{% url 'inbox' %}" class="notification-bell-btn {% if request.resolver_match.url_name in 'inbox conversation_detail' %}active-nav-icon{% endif %}" title="Founder Direct Messages" aria-label="Founder Direct Messages">
+          <i data-lucide="message-circle" class="icon-sm"></i>
+          {% if unread_messages_count > 0 %}
+            <span class="notification-count-badge message-count-badge" id="chatUnreadCountBadge">{{ unread_messages_count }}</span>
+          {% endif %}
         </a>
 
         <!-- Notification Bell Dropdown -->

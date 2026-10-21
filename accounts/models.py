@@ -92,6 +92,7 @@ class Notification(models.Model):
         ('thread_reply', 'Thread Reply'),
         ('club_joined', 'Club Joined'),
         ('pitch_upvoted', 'Pitch Upvoted'),
+        ('direct_message', 'Direct Message'),
         ('general', 'General'),
     ]
 

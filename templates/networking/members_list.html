@@ -121,9 +121,9 @@
             <a href="{% url 'member_profile' member.username %}" class="comic-btn comic-btn-sm comic-btn-black flex-1">
               View Bio <i data-lucide="arrow-right" class="icon-sm"></i>
             </a>
-            <button onclick="showComicToast('Coffee chat request sent to {{ member.name }}!');" class="comic-btn comic-btn-sm comic-btn-yellow">
-              <i data-lucide="coffee" class="icon-sm"></i> Connect
-            </button>
+            <a href="{% url 'start_chat' member.username %}" class="comic-btn comic-btn-sm comic-btn-yellow" title="Message {{ member.name }}">
+              <i data-lucide="message-square" class="icon-sm"></i> Chat
+            </a>
           </div>
         </div>
       {% empty %}

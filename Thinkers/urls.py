@@ -25,5 +25,6 @@ urlpatterns = [
     path('collaboration/', include('collaboration.urls')),
     path('community/', include('discussions.urls')),
     path('accounts/', include('accounts.urls')),
+    path('chat/', include('chat.urls')),
 ]
 

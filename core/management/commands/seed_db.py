@@ -6,6 +6,7 @@ from collaboration.models import Pitch, CoFounderPost, StartupChallenge
 from discussions.models import DiscussionChannel, Thread, ThreadReply
 from core.models import PlatformStat, Testimonial
 from networking.models import SpeedNetworkingSession
+from chat.models import Conversation, Message
 
 class Command(BaseCommand):
     help = "Seed the database with initial Thinkers entrepreneur club data"
@@ -808,5 +809,38 @@ class Command(BaseCommand):
                 "is_active": True,
             }
         )
+
+        # 10. Seed Direct Messages and Conversations
+        preet_user = User.objects.filter(username="preet_builder").first()
+        aarav_user = User.objects.filter(username="aarav_sharma").first()
+        priya_user = User.objects.filter(username="priya_sen").first()
+        rohan_user = User.objects.filter(username="rohan_mehta").first()
+
+        if preet_user and aarav_user:
+            c1, _ = Conversation.get_or_create_direct_chat(preet_user, aarav_user)
+            if not c1.messages.exists():
+                Message.objects.create(conversation=c1, sender=aarav_user, content="Hey Preet! Saw your Thinkers Network architecture repo. Super clean stack!", is_read=True)
+                Message.objects.create(conversation=c1, sender=preet_user, content="Thanks Aarav! Love what you're doing with AgentOps Studio. Are you guys evaluating multi-agent orchestration for backend pipelines?", is_read=True)
+                Message.objects.create(conversation=c1, sender=aarav_user, content="Yes exactly! We're benchmarking LangGraph and custom Rust workers. Would love to run a test integration if you're open to it.", is_read=True)
+                Message.objects.create(conversation=c1, sender=preet_user, content="Definitely. Let's sync up this Thursday during founder speed networking or grab a virtual coffee.", is_read=True)
+                Message.objects.create(conversation=c1, sender=aarav_user, content="Awesome, I'll send over the API specs tonight! 🚀", is_read=False)
+                c1.save()
+
+        if preet_user and priya_user:
+            c2, _ = Conversation.get_or_create_direct_chat(preet_user, priya_user)
+            if not c2.messages.exists():
+                Message.objects.create(conversation=c2, sender=priya_user, content="Hey Preet, loved the neo-brutalist comic style of Thinkers! The typography and hard drop shadows pop really well.", is_read=True)
+                Message.objects.create(conversation=c2, sender=preet_user, content="Hey Priya, that means a lot coming from you! I've been admiring the Aura Design System you published.", is_read=True)
+                Message.objects.create(conversation=c2, sender=priya_user, content="Happy to share some Figma component specs if you want to standardize button states and badge palettes.", is_read=True)
+                Message.objects.create(conversation=c2, sender=preet_user, content="That would be huge. Let's do a design review session this weekend!", is_read=True)
+                c2.save()
+
+        if preet_user and rohan_user:
+            c3, _ = Conversation.get_or_create_direct_chat(preet_user, rohan_user)
+            if not c3.messages.exists():
+                Message.objects.create(conversation=c3, sender=rohan_user, content="Yo Preet! Quick question: how are you planning campus distribution for Thinkers Clubs across Delhi University?", is_read=True)
+                Message.objects.create(conversation=c3, sender=preet_user, content="Hey Rohan, we're setting up club reps at SRCC, NSUT, and DTU first, with weekly pitch nights.", is_read=True)
+                Message.objects.create(conversation=c3, sender=rohan_user, content="Brilliant! I can connect you with the entrepreneur cell presidents at SRCC and Hansraj.", is_read=True)
+                c3.save()
 
         self.stdout.write(self.style.SUCCESS("Thinkers database seeding completed successfully!"))

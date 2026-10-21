@@ -80,9 +80,15 @@
               <a href="{% url 'pitch_wall' %}" class="comic-btn comic-btn-sm comic-btn-white">
                 View Startup Pitch
               </a>
-              <button onclick="showComicToast('Chat room opened with {{ post.founder }}!');" class="comic-btn comic-btn-sm comic-btn-yellow">
-                <i data-lucide="message-square" class="icon-sm"></i> Message Founder
-              </button>
+              {% if post.founder_user %}
+                <a href="{% url 'start_chat' post.founder_user.username %}" class="comic-btn comic-btn-sm comic-btn-yellow">
+                  <i data-lucide="message-square" class="icon-sm"></i> Message Founder
+                </a>
+              {% else %}
+                <button onclick="showComicToast('Direct chat requested with {{ post.founder }}!');" class="comic-btn comic-btn-sm comic-btn-yellow">
+                  <i data-lucide="message-square" class="icon-sm"></i> Message Founder
+                </button>
+              {% endif %}
             </div>
           </div>
         </div>

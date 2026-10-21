@@ -1,0 +1,524 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Direct Messages &amp; Founder Chat | Thinkers{% endblock %}
+
+{% block content %}
+<section class="page-section chat-page-section">
+  <div class="comic-container">
+    
+    <!-- Breadcrumb & Top Bar -->
+    <div class="chat-top-bar">
+      <div class="comic-breadcrumb mb-0">
+        <a href="{% url 'home' %}">Home</a> 
+        <span class="comic-breadcrumb-sep">&gt;</span> 
+        <a href="{% url 'members_list' %}">Network</a> 
+        <span class="comic-breadcrumb-sep">&gt;</span> 
+        <span>Founder Chat &amp; DMs</span>
+      </div>
+
+      <div class="flex items-center gap-sm">
+        {% if is_demo_mode %}
+          <span class="comic-badge comic-badge-yellow" title="Viewing in demo mode">
+            <i data-lucide="user-check" class="icon-sm"></i> Demo Founder: Preet Rana
+          </span>
+        {% endif %}
+        <button type="button" onclick="openModal('newChatModal')" class="comic-btn comic-btn-sm comic-btn-yellow">
+          <i data-lucide="user-plus" class="icon-sm"></i> New Chat
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Chat Workspace Shell -->
+    <div class="comic-box comic-box-white chat-dashboard-container" id="chatDashboard">
+      
+      <!-- LEFT: Conversations Sidebar -->
+      <aside class="chat-sidebar {% if active_conv %}has-active-conv{% endif %}" id="chatSidebar">
+        <div class="chat-sidebar-header">
+          <div class="flex justify-between items-center mb-sm">
+            <div class="flex items-center gap-xs">
+              <span class="comic-sticker comic-sticker-cyan">
+                <i data-lucide="message-square"></i> INBOX
+              </span>
+              <h2 class="chat-sidebar-title mb-0">Direct Messages</h2>
+            </div>
+            <span class="comic-badge comic-badge-sm comic-badge-pink" id="totalConversationsBadge">
+              {{ conversations_data|length }}
+            </span>
+          </div>
+
+          <!-- Quick Search Filter in Sidebar -->
+          <div class="chat-search-wrapper">
+            <i data-lucide="search" class="chat-search-icon"></i>
+            <input 
+              type="text" 
+              id="conversationSearchInput" 
+              placeholder="Search conversations..." 
+              class="comic-input comic-input-sm chat-search-input"
+              onkeyup="filterConversations()"
+            >
+          </div>
+        </div>
+
+        <!-- Conversations List -->
+        <div class="chat-threads-list" id="chatThreadsList">
+          {% for item in conversations_data %}
+            <a 
+              href="{% url 'conversation_detail' item.conversation.id %}" 
+              class="chat-thread-item {% if active_conv and active_conv.id == item.conversation.id %}active{% endif %}"
+              data-founder-name="{{ item.other_user.get_full_name|default:item.other_user.username|lower }}"
+              data-conv-id="{{ item.conversation.id }}"
+            >
+              <div class="comic-avatar comic-avatar-md comic-box-{{ item.other_profile.role_badge|default:'yellow' }} chat-thread-avatar">
+                {{ item.other_profile.avatar|default:item.other_user.username|slice:":2"|upper }}
+              </div>
+
+              <div class="chat-thread-info">
+                <div class="chat-thread-top">
+                  <span class="chat-thread-name">{{ item.other_user.get_full_name|default:item.other_user.username }}</span>
+                  <span class="chat-thread-time">
+                    {% if item.last_message %}{{ item.last_message.formatted_time }}{% endif %}
+                  </span>
+                </div>
+
+                <div class="chat-thread-bottom">
+                  <p class="chat-thread-preview">
+                    {% if item.last_message %}
+                      {% if item.last_message.sender_id == current_user.id %}
+                        <span class="text-muted font-bold">You: </span>
+                      {% endif %}
+                      {{ item.last_message.content|truncatechars:38 }}
+                    {% else %}
+                      <span class="text-muted italic">No messages yet</span>
+                    {% endif %}
+                  </p>
+
+                  {% if item.unread_count > 0 %}
+                    <span class="comic-badge comic-badge-pink comic-badge-xs chat-thread-unread-badge">
+                      {{ item.unread_count }}
+                    </span>
+                  {% endif %}
+                </div>
+              </div>
+            </a>
+          {% empty %}
+            <div class="chat-empty-threads">
+              <i data-lucide="message-square-dashed" class="icon-lg text-muted mb-xs"></i>
+              <h4 class="mb-xs text-base">No chats yet!</h4>
+              <p class="text-xs text-muted mb-md">Connect with co-founders and founders in the network.</p>
+              <button type="button" onclick="openModal('newChatModal')" class="comic-btn comic-btn-sm comic-btn-yellow">
+                <i data-lucide="plus" class="icon-sm"></i> Launch Conversation
+              </button>
+            </div>
+          {% endfor %}
+        </div>
+      </aside>
+
+      <!-- RIGHT: Active Chat Window -->
+      <main class="chat-main {% if active_conv %}active-view{% endif %}" id="chatMain">
+        {% if active_conv and active_other %}
+          <!-- Chat Top Navigation Bar -->
+          <div class="chat-header">
+            <div class="chat-header-user">
+              <!-- Mobile Back Button -->
+              <a href="{% url 'inbox' %}" class="comic-btn comic-btn-sm comic-btn-white chat-mobile-back" title="Back to conversations">
+                <i data-lucide="arrow-left" class="icon-sm"></i>
+              </a>
+
+              <div class="comic-avatar comic-avatar-md comic-box-{{ active_other_profile.role_badge|default:'yellow' }}">
+                {{ active_other_profile.avatar|default:active_other.username|slice:":2"|upper }}
+              </div>
+
+              <div>
+                <div class="flex items-center gap-xs flex-wrap">
+                  <h3 class="chat-header-name mb-0">{{ active_other.get_full_name|default:active_other.username }}</h3>
+                  {% if active_other_profile.role %}
+                    <span class="comic-badge comic-badge-{{ active_other_profile.role_badge|default:'yellow' }} comic-badge-xs">
+                      {{ active_other_profile.role }}
+                    </span>
+                  {% endif %}
+                </div>
+                <div class="chat-header-sub text-xs text-muted">
+                  {% if active_other_profile.college %}
+                    <i data-lucide="map-pin" class="icon-xxs"></i> {{ active_other_profile.college }} &bull;
+                  {% endif %}
+                  <span class="chat-online-pill">
+                    <span class="online-indicator-dot"></span> Active in Network
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Header Action Controls -->
+            <div class="chat-header-actions">
+              <a href="{% url 'member_profile' active_other.username %}" class="comic-btn comic-btn-sm comic-btn-white" title="View Full Bio Card">
+                <i data-lucide="user" class="icon-sm"></i> <span class="header-btn-text">View Profile</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Chat Stream Messages Box -->
+          <div class="chat-messages-container" id="chatMessagesContainer">
+            <div class="chat-date-separator">
+              <span>Today's Founder Exchange</span>
+            </div>
+
+            <div class="chat-messages-flow" id="chatMessagesFlow">
+              {% for msg in messages_list %}
+                <div class="chat-message-row {% if msg.sender_id == current_user.id %}row-me{% else %}row-them{% endif %}" data-message-id="{{ msg.id }}">
+                  {% if msg.sender_id != current_user.id %}
+                    <div class="comic-avatar comic-avatar-xs comic-box-{{ active_other_profile.role_badge|default:'yellow' }} message-sender-avatar">
+                      {{ msg.sender_avatar }}
+                    </div>
+                  {% endif %}
+
+                  <div class="message-bubble-wrapper">
+                    <div class="message-bubble {% if msg.sender_id == current_user.id %}bubble-me{% else %}bubble-them{% endif %}">
+                      <p class="message-text">{{ msg.content|linebreaksbr }}</p>
+                    </div>
+                    <div class="message-meta {% if msg.sender_id == current_user.id %}meta-me{% else %}meta-them{% endif %}">
+                      <span class="message-timestamp">{{ msg.formatted_time }}</span>
+                      {% if msg.sender_id == current_user.id %}
+                        <span class="message-status" title="Delivered">&#10003;&#10003;</span>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              {% empty %}
+                <div class="chat-thread-initial-greeting" id="initialGreetingBox">
+                  <div class="greeting-icon-box">
+                    <i data-lucide="sparkles" class="icon-lg"></i>
+                  </div>
+                  <h3>Direct Channel Opened with {{ active_other.get_full_name|default:active_other.username }}!</h3>
+                  <p class="text-sm text-dim">
+                    Introduce yourself, collaborate on startup projects, review pitch decks, or exchange technical ideas.
+                  </p>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Quick Conversation Starters -->
+          <div class="chat-quick-starters">
+            <span class="quick-starter-label"><i data-lucide="zap" class="icon-xs"></i> Quick Pitch:</span>
+            <button type="button" class="quick-chip" onclick="insertQuickMessage('👋 Hey! Loved your pitch and would love to chat.')">
+              👋 Loved your pitch
+            </button>
+            <button type="button" class="quick-chip" onclick="insertQuickMessage('☕ Up for a quick 15-min virtual coffee chat this week?')">
+              ☕ 15-min Coffee Chat
+            </button>
+            <button type="button" class="quick-chip" onclick="insertQuickMessage('🚀 Saw your skill set. Interested in teaming up for the upcoming hackathon?')">
+              🚀 Hackathon Team-up
+            </button>
+            <button type="button" class="quick-chip" onclick="insertQuickMessage('🤝 Looking for feedback on our MVP. Would value your thoughts!')">
+              🤝 Feedback on MVP
+            </button>
+          </div>
+
+          <!-- Chat Message Input Bar -->
+          <div class="chat-input-area">
+            <form id="chatMessageForm" method="POST" action="{% url 'send_message_api' active_conv.id %}" class="chat-input-form" onsubmit="handleSendMessage(event)">
+              {% csrf_token %}
+              <div class="chat-input-inner">
+                <input 
+                  type="text" 
+                  name="content" 
+                  id="chatMessageInput" 
+                  class="comic-input chat-input-field" 
+                  placeholder="Type message to {{ active_other.get_full_name|default:active_other.username }}... (Press Enter to send)" 
+                  autocomplete="off"
+                  required
+                >
+                <button type="submit" id="chatSendBtn" class="comic-btn comic-btn-primary chat-send-btn">
+                  <span>Send</span>
+                  <i data-lucide="send" class="icon-sm"></i>
+                </button>
+              </div>
+            </form>
+          </div>
+
+        {% else %}
+          <!-- Empty State when no conversation is selected -->
+          <div class="chat-no-selection">
+            <div class="comic-box comic-box-yellow no-selection-card">
+              <div class="no-selection-icon">
+                <i data-lucide="message-square-plus" class="icon-xl"></i>
+              </div>
+              <h2 class="text-2xl mb-xs">Thinkers Founder Direct Messaging</h2>
+              <p class="text-muted text-base mb-lg">
+                Connect directly with entrepreneurs, hackers, product designers, and growth leads across campus hubs.
+              </p>
+              <div class="flex gap-md justify-center flex-wrap">
+                <button type="button" onclick="openModal('newChatModal')" class="comic-btn comic-btn-black">
+                  <i data-lucide="plus-circle" class="icon-sm"></i> Start a New Chat
+                </button>
+                <a href="{% url 'members_list' %}" class="comic-btn comic-btn-white">
+                  <i data-lucide="compass" class="icon-sm"></i> Explore Network
+                </a>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      </main>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- MODAL: Start New Chat with a Founder -->
+<div id="newChatModal" class="comic-modal-overlay">
+  <div class="comic-modal comic-modal-md">
+    <div class="comic-modal-header comic-box-yellow">
+      <div class="flex items-center gap-xs">
+        <i data-lucide="message-circle" class="icon-md"></i>
+        <h3 class="mb-0 text-xl">Start a Founder Conversation</h3>
+      </div>
+      <button type="button" onclick="closeModal('newChatModal')" class="modal-close-btn" aria-label="Close modal">&times;</button>
+    </div>
+
+    <div class="comic-modal-body">
+      <p class="text-sm text-dim mb-md">
+        Select a fellow builder to open a direct messaging channel or send an introductory note.
+      </p>
+
+      <!-- Founder Filter Input -->
+      <div class="mb-md">
+        <input 
+          type="text" 
+          id="modalFounderSearch" 
+          placeholder="Filter by founder name, role, college..." 
+          class="comic-input"
+          onkeyup="filterModalFounders()"
+        >
+      </div>
+
+      <!-- Scrollable Founders List -->
+      <div class="modal-founders-grid" id="modalFoundersGrid">
+        {% for founder in network_members %}
+          <div class="modal-founder-card comic-box comic-box-white" data-founder-card-name="{{ founder.get_full_name|default:founder.username|lower }} {{ founder.profile.role|lower }} {{ founder.profile.college|lower }}">
+            <div class="flex items-center gap-sm">
+              <div class="comic-avatar comic-avatar-md comic-box-{{ founder.profile.role_badge|default:'yellow' }}">
+                {{ founder.profile.avatar|default:founder.username|slice:":2"|upper }}
+              </div>
+              <div class="flex-1 min-w-0">
+                <h4 class="mb-0 text-base font-black truncate">{{ founder.get_full_name|default:founder.username }}</h4>
+                <div class="text-xs text-muted font-bold truncate">
+                  {{ founder.profile.role|default:'Founder' }} &bull; {{ founder.profile.college|default:'Campus' }}
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-sm pt-xs border-top flex justify-between items-center">
+              <span class="comic-badge comic-badge-yellow comic-badge-xs">
+                {{ founder.profile.club|default:'Thinkers Network' }}
+              </span>
+              <a href="{% url 'start_chat' founder.username %}" class="comic-btn comic-btn-xs comic-btn-black">
+                <i data-lucide="message-square" class="icon-xs"></i> Message
+              </a>
+            </div>
+          </div>
+        {% empty %}
+          <p class="text-muted text-center py-md">No other founders in the network yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/pages/chat.css' %}?v=1.0">
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const ACTIVE_CONV_ID = {% if active_conv %}{{ active_conv.id }}{% else %}null{% endif %};
+  const CURRENT_USER_ID = {{ current_user.id }};
+  let lastMessageId = {% if messages_list %}{{ messages_list.last.id }}{% else %}0{% endif %};
+
+  // Scroll messages container to bottom on load
+  function scrollToBottom() {
+    const container = document.getElementById('chatMessagesContainer');
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+    }
+  }
+
+  // Quick message inserter
+  function insertQuickMessage(text) {
+    const input = document.getElementById('chatMessageInput');
+    if (input) {
+      input.value = text;
+      input.focus();
+    }
+  }
+
+  // Filter conversations in sidebar
+  function filterConversations() {
+    const query = document.getElementById('conversationSearchInput').value.toLowerCase().trim();
+    const items = document.querySelectorAll('.chat-thread-item');
+    items.forEach(item => {
+      const name = item.getAttribute('data-founder-name') || '';
+      if (name.includes(query)) {
+        item.style.display = 'flex';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  }
+
+  // Filter founders in modal
+  function filterModalFounders() {
+    const query = document.getElementById('modalFounderSearch').value.toLowerCase().trim();
+    const cards = document.querySelectorAll('.modal-founder-card');
+    cards.forEach(card => {
+      const cardText = card.getAttribute('data-founder-card-name') || '';
+      if (cardText.includes(query)) {
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+
+  // AJAX message sender
+  async function handleSendMessage(event) {
+    event.preventDefault();
+    const form = document.getElementById('chatMessageForm');
+    const input = document.getElementById('chatMessageInput');
+    const content = input.value.trim();
+    if (!content || !ACTIVE_CONV_ID) return;
+
+    const sendBtn = document.getElementById('chatSendBtn');
+    sendBtn.disabled = true;
+
+    const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]').value;
+    const formData = new FormData();
+    formData.append('content', content);
+    formData.append('csrfmiddlewaretoken', csrfToken);
+
+    // Optimistically clear input and append message
+    input.value = '';
+
+    try {
+      const response = await fetch(`/chat/api/${ACTIVE_CONV_ID}/send/`, {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: formData
+      });
+
+      const data = await response.json();
+      if (data.success && data.message) {
+        appendMessage(data.message);
+        lastMessageId = data.message.id;
+        
+        // Remove empty greeting if visible
+        const greeting = document.getElementById('initialGreetingBox');
+        if (greeting) greeting.remove();
+
+        // Update thread preview snippet in sidebar
+        const activeThread = document.querySelector(`.chat-thread-item[data-conv-id="${ACTIVE_CONV_ID}"] .chat-thread-preview`);
+        if (activeThread) {
+          activeThread.innerHTML = `<span class="text-muted font-bold">You: </span>${escapeHtml(data.message.content.substring(0, 38))}`;
+        }
+      }
+    } catch (err) {
+      console.error('Error sending message:', err);
+      showComicToast('Failed to deliver message. Please retry!');
+    } finally {
+      sendBtn.disabled = false;
+      input.focus();
+    }
+  }
+
+  // Append a message object to the chat flow
+  function appendMessage(msg) {
+    const flow = document.getElementById('chatMessagesFlow');
+    if (!flow) return;
+
+    // Check if already appended
+    if (document.querySelector(`[data-message-id="${msg.id}"]`)) return;
+
+    const row = document.createElement('div');
+    row.className = `chat-message-row ${msg.is_me ? 'row-me' : 'row-them'}`;
+    row.setAttribute('data-message-id', msg.id);
+
+    let avatarHtml = '';
+    if (!msg.is_me) {
+      avatarHtml = `
+        <div class="comic-avatar comic-avatar-xs comic-box-white message-sender-avatar">
+          ${escapeHtml(msg.sender_avatar || 'TH')}
+        </div>
+      `;
+    }
+
+    const checkmarks = msg.is_me ? '<span class="message-status" title="Delivered">&#10003;&#10003;</span>' : '';
+
+    row.innerHTML = `
+      ${avatarHtml}
+      <div class="message-bubble-wrapper">
+        <div class="message-bubble ${msg.is_me ? 'bubble-me' : 'bubble-them'}">
+          <p class="message-text">${escapeHtml(msg.content).replace(/\\n/g, '<br>')}</p>
+        </div>
+        <div class="message-meta ${msg.is_me ? 'meta-me' : 'meta-them'}">
+          <span class="message-timestamp">${escapeHtml(msg.time)}</span>
+          ${checkmarks}
+        </div>
+      </div>
+    `;
+
+    flow.appendChild(row);
+    scrollToBottom();
+
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  }
+
+  function escapeHtml(text) {
+    if (!text) return '';
+    const map = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    };
+    return text.toString().replace(/[&<>"']/g, m => map[m]);
+  }
+
+  // Polling for incoming new messages every 3.5 seconds
+  async function pollNewMessages() {
+    if (!ACTIVE_CONV_ID) return;
+
+    try {
+      const response = await fetch(`/chat/api/${ACTIVE_CONV_ID}/poll/?after_id=${lastMessageId}`);
+      if (!response.ok) return;
+
+      const data = await response.json();
+      if (data.success && data.messages && data.messages.length > 0) {
+        data.messages.forEach(msg => {
+          appendMessage(msg);
+          lastMessageId = Math.max(lastMessageId, msg.id);
+        });
+
+        // Remove empty greeting if visible
+        const greeting = document.getElementById('initialGreetingBox');
+        if (greeting) greeting.remove();
+      }
+    } catch (e) {
+      // Silent fail on polling errors
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    scrollToBottom();
+    if (ACTIVE_CONV_ID) {
+      setInterval(pollNewMessages, 3500);
+    }
+  });
+</script>
+{% endblock %}
