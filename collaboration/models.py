@@ -94,6 +94,7 @@ class CoFounderApplication(models.Model):
     post = models.ForeignKey(CoFounderPost, on_delete=models.CASCADE, related_name='applications')
     applicant = models.ForeignKey(User, on_delete=models.CASCADE, related_name='cofounder_applications')
     pitch_note = models.TextField()
+    status = models.CharField(max_length=20, choices=[('pending', 'Pending'), ('accepted', 'Accepted'), ('declined', 'Declined')], default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

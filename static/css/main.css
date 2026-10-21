@@ -10,7 +10,7 @@
 @import url('base.css');
 
 /* 3. Reusable UI Components */
-@import url('components/navbar.css');
+@import url('components/navbar.css?v=12.0');
 @import url('components/footer.css');
 @import url('components/boxes.css');
 @import url('components/buttons.css');

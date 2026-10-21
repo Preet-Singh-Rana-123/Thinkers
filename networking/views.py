@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
 from django.contrib import messages
-from accounts.models import UserProfile, CoffeeChatRequest
+from accounts.models import UserProfile, CoffeeChatRequest, create_notification
 from .models import SpeedNetworkingSession, SpeedNetworkingQueue
 
 def members_list(request):
@@ -46,6 +46,13 @@ def member_profile(request, username):
                 focus=focus,
                 topic=note or f"Coffee chat requested by {request.user.get_full_name() or request.user.username}",
                 status="pending"
+            )
+            create_notification(
+                recipient=member.user,
+                actor=request.user,
+                verb=f"sent you a 1-on-1 coffee chat invite for '{focus}'",
+                notification_type='coffee_chat_request',
+                target_url='/accounts/profile/'
             )
             messages.success(request, f"Coffee chat invite dispatched to {member.name}!")
         else:

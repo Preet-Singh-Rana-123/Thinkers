@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import UserProfile, UserProject, CoffeeChatRequest
+from .models import UserProfile, UserProject, CoffeeChatRequest, Notification
 
 @admin.register(UserProfile)
 class UserProfileAdmin(admin.ModelAdmin):
@@ -16,3 +16,9 @@ class UserProjectAdmin(admin.ModelAdmin):
 class CoffeeChatRequestAdmin(admin.ModelAdmin):
     list_display = ('from_user', 'to_user', 'focus', 'status', 'created_at')
     list_filter = ('status', 'focus')
+
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ('recipient', 'actor_name', 'verb', 'notification_type', 'is_read', 'created_at')
+    list_filter = ('notification_type', 'is_read')
+    search_fields = ('recipient__username', 'verb')

@@ -130,8 +130,11 @@ def profile_view(request):
     match_requests = []
     for req in chat_requests:
         match_requests.append({
+            "id": req.id,
             "from_user": req.from_user.get_full_name() or req.from_user.username,
+            "focus": req.focus,
             "topic": req.topic,
+            "status": req.status,
             "time": req.created_at.strftime("%b %d, %H:%M"),
         })
 
@@ -148,6 +151,77 @@ def profile_view(request):
     }
 
     return render(request, "accounts/profile.html", {"user_data": user_data})
+
+
+def respond_coffee_chat(request, request_id):
+    """Handle accept/decline action on a coffee chat request and send notification."""
+    chat_req = get_object_or_404(CoffeeChatRequest, id=request_id)
+    action = request.POST.get('action') or request.GET.get('action', 'accept')
+
+    if action == 'accept':
+        chat_req.status = 'accepted'
+        chat_req.save(update_fields=['status'])
+        # Notify the sender
+        from .models import create_notification
+        create_notification(
+            recipient=chat_req.from_user,
+            actor=request.user if request.user.is_authenticated else chat_req.to_user,
+            verb=f"accepted your coffee chat invite for '{chat_req.focus}'! Let's connect.",
+            notification_type='coffee_chat_accepted',
+            target_url=f"/networking/member/{chat_req.to_user.username}/"
+        )
+        messages.success(request, f"Accepted coffee chat with {chat_req.from_user.get_full_name() or chat_req.from_user.username}! Room details shared.")
+    elif action == 'decline':
+        chat_req.status = 'declined'
+        chat_req.save(update_fields=['status'])
+        from .models import create_notification
+        create_notification(
+            recipient=chat_req.from_user,
+            actor=request.user if request.user.is_authenticated else chat_req.to_user,
+            verb=f"was unable to accept your coffee chat invite at this time.",
+            notification_type='coffee_chat_declined',
+            target_url='/accounts/profile/'
+        )
+        messages.info(request, "Coffee chat request declined.")
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        from django.http import JsonResponse
+        return JsonResponse({"success": True, "status": chat_req.status})
+
+    return redirect('profile')
+
+
+def open_notification(request, notification_id):
+    """Mark a specific notification as read and redirect to its target URL."""
+    from .models import Notification
+    notification = get_object_or_404(Notification, id=notification_id)
+    if not notification.is_read:
+        notification.is_read = True
+        notification.save(update_fields=['is_read'])
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        from django.http import JsonResponse
+        return JsonResponse({"success": True, "target_url": notification.target_url or '/accounts/profile/'})
+
+    target = notification.target_url or '/accounts/profile/'
+    return redirect(target)
+
+
+def mark_notifications_read(request):
+    """Mark all notifications for logged in user (or demo preview user) as read."""
+    from .models import Notification
+    if request.user.is_authenticated:
+        Notification.objects.filter(recipient=request.user, is_read=False).update(is_read=True)
+    else:
+        demo_user = User.objects.filter(username="preet_builder").first()
+        if demo_user:
+            Notification.objects.filter(recipient=demo_user, is_read=False).update(is_read=True)
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        from django.http import JsonResponse
+        return JsonResponse({"success": True})
+    messages.success(request, "All notifications marked as read.")
+    return redirect(request.META.get('HTTP_REFERER', 'profile'))
 
 
 def logout_view(request):

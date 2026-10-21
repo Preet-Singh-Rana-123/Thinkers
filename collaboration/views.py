@@ -89,11 +89,20 @@ def co_founders(request):
             pitch_note = request.POST.get("pitch_note", "").strip()
             if post_id and request.user.is_authenticated:
                 post = get_object_or_404(CoFounderPost, id=post_id)
-                CoFounderApplication.objects.create(
+                app = CoFounderApplication.objects.create(
                     post=post,
                     applicant=request.user,
                     pitch_note=pitch_note or "Interested in connecting!"
                 )
+                if post.founder_user:
+                    from accounts.models import create_notification
+                    create_notification(
+                        recipient=post.founder_user,
+                        actor=request.user,
+                        verb=f"applied for {post.role_needed} at {post.startup_name}",
+                        notification_type='cofounder_applied',
+                        target_url='/collaboration/co-founders/'
+                    )
                 messages.success(request, f"Application sent to {post.founder} for {post.startup_name}!")
             else:
                 messages.success(request, "Application sent! Founder will review your profile.")
@@ -141,3 +150,35 @@ def challenges(request):
         "challenges": challenge_list,
     }
     return render(request, "collaboration/challenges.html", context)
+
+
+def respond_cofounder_application(request, application_id):
+    """Founder accepts or declines a co-founder application."""
+    app = get_object_or_404(CoFounderApplication, id=application_id)
+    action = request.POST.get('action') or request.GET.get('action', 'accept')
+
+    from accounts.models import create_notification
+    if action == 'accept':
+        app.status = 'accepted'
+        app.save(update_fields=['status'])
+        create_notification(
+            recipient=app.applicant,
+            actor=request.user if request.user.is_authenticated else app.post.founder_user,
+            verb=f"accepted your co-founder application for {app.post.startup_name}! Let's team up.",
+            notification_type='cofounder_accepted',
+            target_url='/collaboration/co-founders/'
+        )
+        messages.success(request, f"Accepted {app.applicant.get_full_name() or app.applicant.username}'s application!")
+    elif action == 'decline':
+        app.status = 'declined'
+        app.save(update_fields=['status'])
+        create_notification(
+            recipient=app.applicant,
+            actor=request.user if request.user.is_authenticated else app.post.founder_user,
+            verb=f"has reviewed your application for {app.post.startup_name}.",
+            notification_type='cofounder_declined',
+            target_url='/collaboration/co-founders/'
+        )
+        messages.info(request, "Application declined.")
+
+    return redirect('co_founders')

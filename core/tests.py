@@ -133,3 +133,76 @@ class ThinkersPlatformTests(TestCase):
         response = self.client.get(reverse('profile'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Test Founder")
+
+    def test_coffee_chat_send_and_accept_notifications(self):
+        # Create second user
+        user2 = User.objects.create_user(username="founder2", password="password123", first_name="Founder", last_name="Two")
+        UserProfile.objects.create(user=user2, role="Designer")
+
+        # User 1 logs in and invites User 2
+        self.client.login(username="testfounder", password="testpassword123")
+        response = self.client.post(reverse('member_profile', kwargs={'username': user2.username}), {
+            'focus': 'Discuss Co-Founding Opportunity',
+            'note': 'Let us collaborate on QuantumFlow!'
+        })
+        self.assertEqual(response.status_code, 302)
+
+        # Check notification created for user2
+        from accounts.models import Notification, CoffeeChatRequest
+        self.assertTrue(Notification.objects.filter(recipient=user2, notification_type='coffee_chat_request').exists())
+        chat_req = CoffeeChatRequest.objects.filter(from_user=self.user, to_user=user2).first()
+        self.assertIsNotNone(chat_req)
+
+        # User 2 logs in and accepts the coffee chat
+        self.client.login(username="founder2", password="password123")
+        response = self.client.get(reverse('respond_coffee_chat', kwargs={'request_id': chat_req.id}) + '?action=accept')
+        self.assertEqual(response.status_code, 302)
+
+        # Check coffee chat status updated to accepted
+        chat_req.refresh_from_db()
+        self.assertEqual(chat_req.status, 'accepted')
+
+        # Check notification created for User 1
+        self.assertTrue(Notification.objects.filter(recipient=self.user, notification_type='coffee_chat_accepted').exists())
+
+    def test_mark_notifications_read(self):
+        from accounts.models import Notification
+        Notification.objects.create(recipient=self.user, verb="sent you a test alert", is_read=False)
+        self.client.login(username="testfounder", password="testpassword123")
+
+        response = self.client.get(reverse('mark_notifications_read'))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Notification.objects.filter(recipient=self.user, is_read=False).count(), 0)
+
+    def test_navbar_notification_bell_and_badge(self):
+        # Guest user receives navbar with notification bell and count badge
+        response = self.client.get(reverse('home'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="notificationToggleBtn"')
+        self.assertContains(response, 'id="notificationDropdownMenu"')
+
+        # Authenticated user with unread notification
+        from accounts.models import Notification
+        Notification.objects.create(recipient=self.user, verb="applied for your startup", is_read=False)
+        self.client.login(username="testfounder", password="testpassword123")
+        response = self.client.get(reverse('home'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="notificationToggleBtn"')
+        self.assertContains(response, 'notification-count-badge')
+
+    def test_open_notification_redirects_and_marks_read(self):
+        from accounts.models import Notification
+        notif = Notification.objects.create(
+            recipient=self.user,
+            verb="applied for Co-Founder role",
+            target_url="/collaboration/co-founders/",
+            is_read=False
+        )
+        self.client.login(username="testfounder", password="testpassword123")
+
+        response = self.client.get(reverse('open_notification', kwargs={'notification_id': notif.id}))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/collaboration/co-founders/")
+
+        notif.refresh_from_db()
+        self.assertTrue(notif.is_read)

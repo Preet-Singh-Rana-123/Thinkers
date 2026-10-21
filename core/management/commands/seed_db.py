@@ -217,6 +217,58 @@ class Command(BaseCommand):
                 }
             )
 
+            from accounts.models import Notification
+            Notification.objects.get_or_create(
+                recipient=user_objects["preet_builder"],
+                actor=user_objects["aarav_sharma"],
+                verb="sent you a 1-on-1 coffee chat invite for 'Discuss Co-Founding Opportunity'",
+                defaults={
+                    "notification_type": "coffee_chat_request",
+                    "target_url": "/accounts/profile/",
+                    "is_read": False,
+                }
+            )
+            Notification.objects.get_or_create(
+                recipient=user_objects["preet_builder"],
+                actor=user_objects["priya_sen"],
+                verb="sent you a 1-on-1 coffee chat invite for 'Get Technical / Design Feedback'",
+                defaults={
+                    "notification_type": "coffee_chat_request",
+                    "target_url": "/accounts/profile/",
+                    "is_read": False,
+                }
+            )
+            Notification.objects.get_or_create(
+                recipient=user_objects["preet_builder"],
+                actor=user_objects["tanvi_chawla"],
+                verb="replied to your mastermind thread on micro-SaaS pricing!",
+                defaults={
+                    "notification_type": "thread_reply",
+                    "target_url": "/community/",
+                    "is_read": True,
+                }
+            )
+            Notification.objects.get_or_create(
+                recipient=user_objects["preet_builder"],
+                actor=user_objects["maya_verma"],
+                verb="applied for Full-Stack Lead at DevSprint AI",
+                defaults={
+                    "notification_type": "cofounder_applied",
+                    "target_url": "/collaboration/co-founders/",
+                    "is_read": False,
+                }
+            )
+            Notification.objects.get_or_create(
+                recipient=user_objects["preet_builder"],
+                actor=user_objects["vikram_sethi"],
+                verb="joined your club 'GenAI Disruptors Club' as an Active Member!",
+                defaults={
+                    "notification_type": "club_joined",
+                    "target_url": "/clubs/genai-disruptors/",
+                    "is_read": False,
+                }
+            )
+
         # 3. Seed Clubs
         clubs_data = [
             {

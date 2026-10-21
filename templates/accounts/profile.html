@@ -119,12 +119,12 @@
       <div class="dashboard-column">
         
         <!-- Requests Box -->
-        <div class="comic-box comic-box-cyan">
+        <div class="comic-box comic-box-cyan mb-xl">
           <div class="flex justify-between items-center mb-md">
             <h3 class="mb-0 flex items-center gap-xs text-xl">
               <i data-lucide="coffee" class="icon-sm"></i> Coffee Chat Requests
             </h3>
-            <span class="comic-badge comic-badge-yellow">2 PENDING</span>
+            <span class="comic-badge comic-badge-yellow">{{ user_data.match_requests|length }} REQUESTS</span>
           </div>
 
           <div class="flex flex-col gap-md">
@@ -134,18 +134,72 @@
                   <span class="font-black text-base">From: {{ req.from_user }}</span>
                   <span class="text-muted font-bold text-xs">{{ req.time }}</span>
                 </div>
+                {% if req.focus %}
+                  <span class="comic-badge comic-badge-yellow comic-badge-sm mb-xs">{{ req.focus }}</span>
+                {% endif %}
                 <p class="mb-md text-sm text-dim">
                   "{{ req.topic }}"
                 </p>
                 <div class="flex gap-sm">
-                  <button onclick="this.parentElement.innerHTML='<span class=\'text-success font-black\'>Accepted! Video room shared.</span>'; showComicToast('Accepted coffee chat!');" class="comic-btn comic-btn-sm comic-btn-black flex-1">
-                    <i data-lucide="check" class="icon-sm"></i> Accept
-                  </button>
-                  <button onclick="this.closest('.comic-box').remove(); showComicToast('Request dismissed.');" class="comic-btn comic-btn-sm comic-btn-white">
-                    <i data-lucide="x" class="icon-sm"></i> Decline
-                  </button>
+                  {% if req.status == 'accepted' %}
+                    <span class="comic-badge comic-badge-green font-black">
+                      <i data-lucide="check-circle" class="icon-sm"></i> Accepted &bull; Video Room Active
+                    </span>
+                  {% elif req.status == 'declined' %}
+                    <span class="comic-badge comic-badge-neutral font-bold">
+                      Declined
+                    </span>
+                  {% else %}
+                    <a href="{% url 'respond_coffee_chat' req.id %}?action=accept" class="comic-btn comic-btn-sm comic-btn-black flex-1">
+                      <i data-lucide="check" class="icon-sm"></i> Accept
+                    </a>
+                    <a href="{% url 'respond_coffee_chat' req.id %}?action=decline" class="comic-btn comic-btn-sm comic-btn-white">
+                      <i data-lucide="x" class="icon-sm"></i> Decline
+                    </a>
+                  {% endif %}
                 </div>
               </div>
+            {% empty %}
+              <div class="comic-box comic-box-white p-md text-center text-muted">
+                <i data-lucide="coffee" class="icon-md mb-xs"></i>
+                <p class="mb-0 text-sm font-bold">No incoming coffee chat requests.</p>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Alerts & Activity Stream -->
+        <div class="comic-box comic-box-white mb-xl">
+          <div class="flex justify-between items-center mb-md">
+            <div class="flex items-center gap-xs">
+              <span class="comic-sticker comic-sticker-pink">
+                <i data-lucide="bell"></i> ALERTS
+              </span>
+              <h4 class="mb-0 text-lg">Activity &amp; Notifications</h4>
+            </div>
+            {% if unread_notifications_count > 0 %}
+              <a href="{% url 'mark_notifications_read' %}" class="underline-link text-xs font-bold">Mark all read</a>
+            {% endif %}
+          </div>
+
+          <div class="flex flex-col gap-sm">
+            {% for n in recent_notifications %}
+              <div class="comic-box {% if not n.is_read %}comic-box-yellow{% else %}comic-box-white{% endif %} p-sm flex items-start gap-sm">
+                <div class="comic-avatar comic-avatar-sm comic-box-white mt-xs">
+                  {{ n.actor_avatar }}
+                </div>
+                <div class="flex-1">
+                  <p class="mb-0 text-xs text-dark leading-tight">
+                    <strong>{{ n.actor_name }}</strong> {{ n.verb }}
+                  </p>
+                  <span class="text-muted font-bold text-xxs">{{ n.timesince_display }}</span>
+                </div>
+                {% if n.target_url %}
+                  <a href="{{ n.target_url }}" class="comic-btn comic-btn-sm comic-btn-white text-xs p-xs">View</a>
+                {% endif %}
+              </div>
+            {% empty %}
+              <p class="text-sm text-muted font-bold mb-0 text-center p-sm">No recent activity notifications.</p>
             {% endfor %}
           </div>
         </div>

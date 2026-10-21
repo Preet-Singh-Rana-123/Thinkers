@@ -141,6 +141,15 @@ def club_join(request, club_slug):
             defaults={"role": "Active Member"}
         )
         if created:
+            if club.founder and club.founder != request.user:
+                from accounts.models import create_notification
+                create_notification(
+                    recipient=club.founder,
+                    actor=request.user,
+                    verb=f"joined your club '{club.name}' as an Active Member!",
+                    notification_type='club_joined',
+                    target_url=f"/clubs/{club.slug}/"
+                )
             messages.success(request, f"You joined {club.name}!")
         else:
             messages.info(request, f"You are already a member of {club.name}!")

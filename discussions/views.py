@@ -79,6 +79,16 @@ def thread_detail(request, thread_id):
                 content=content,
                 upvotes=0
             )
+            if thread.author_user and thread.author_user != request.user:
+                from accounts.models import create_notification
+                create_notification(
+                    recipient=thread.author_user,
+                    actor=request.user if request.user.is_authenticated else None,
+                    actor_name_fallback=author_name,
+                    verb=f"replied to your mastermind thread: '{thread.title[:40]}...'",
+                    notification_type='thread_reply',
+                    target_url=f"/community/thread/{thread.id}/"
+                )
             messages.success(request, "Your reply has been posted to the discussion!")
             return redirect('thread_detail', thread_id=thread.id)
 

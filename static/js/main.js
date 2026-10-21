@@ -9,14 +9,87 @@ document.addEventListener('DOMContentLoaded', () => {
     window.lucide.createIcons();
   }
 
-  // Mobile Navigation Menu Toggle
-  const mobileToggle = document.querySelector('.mobile-nav-toggle');
-  const navLinks = document.querySelector('.nav-links');
-  if (mobileToggle && navLinks) {
-    mobileToggle.addEventListener('click', () => {
-      navLinks.classList.toggle('mobile-open');
+  // Mobile Navigation Toggle
+  const mobileToggleBtn = document.getElementById('mobileNavToggleBtn');
+  const navbarLinks = document.getElementById('navbarLinks');
+
+  if (mobileToggleBtn && navbarLinks) {
+    mobileToggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      navbarLinks.classList.toggle('show');
     });
   }
+
+  // Notification Dropdown Toggle
+  const notificationBtn = document.getElementById('notificationToggleBtn');
+  const notificationMenu = document.getElementById('notificationDropdownMenu');
+  const notificationCloseBtn = document.getElementById('notificationCloseBtn');
+
+  function openNotifications() {
+    if (!notificationMenu || !notificationBtn) return;
+    notificationMenu.classList.add('show');
+    notificationMenu.style.display = 'block';
+    notificationBtn.setAttribute('aria-expanded', 'true');
+    if (window.lucide) {
+      window.lucide.createIcons();
+    }
+  }
+
+  function closeNotifications() {
+    if (!notificationMenu || !notificationBtn) return;
+    notificationMenu.classList.remove('show');
+    notificationMenu.style.display = 'none';
+    notificationBtn.setAttribute('aria-expanded', 'false');
+  }
+
+  if (notificationBtn && notificationMenu) {
+    notificationBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = notificationMenu.classList.contains('show') || notificationMenu.style.display === 'block';
+      if (isOpen) {
+        closeNotifications();
+      } else {
+        openNotifications();
+      }
+    });
+
+    if (notificationCloseBtn) {
+      notificationCloseBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeNotifications();
+      });
+    }
+
+    notificationMenu.addEventListener('click', (e) => {
+      if (!e.target.closest('a')) {
+        e.stopPropagation();
+      }
+    });
+  }
+
+  // Global click outside to close dropdowns / mobile menus
+  document.addEventListener('click', (e) => {
+    if (notificationMenu && notificationBtn) {
+      if (!notificationMenu.contains(e.target) && !notificationBtn.contains(e.target)) {
+        closeNotifications();
+      }
+    }
+    if (navbarLinks && mobileToggleBtn) {
+      if (!navbarLinks.contains(e.target) && !mobileToggleBtn.contains(e.target)) {
+        navbarLinks.classList.remove('show');
+      }
+    }
+  });
+
+  // Global Escape key handler
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeNotifications();
+      if (navbarLinks && navbarLinks.classList.contains('show')) {
+        navbarLinks.classList.remove('show');
+      }
+    }
+  });
 
   // Interactive Tabs
   const tabButtons = document.querySelectorAll('.comic-tab');

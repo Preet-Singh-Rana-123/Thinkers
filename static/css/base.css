@@ -8,6 +8,13 @@
   padding: 0;
 }
 
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 75px;
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
 body {
   font-family: var(--font-body);
   background-color: var(--bg-canvas);
@@ -19,6 +26,7 @@ body {
   background-image: radial-gradient(rgba(22, 22, 22, 0.08) 1.5px, transparent 1.5px);
   background-size: 24px 24px;
   overflow-x: hidden;
+  max-width: 100%;
 }
 
 h1, h2, h3, h4, h5, h6 {

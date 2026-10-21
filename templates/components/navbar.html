@@ -1,4 +1,79 @@
-{% load static %}
+<style>
+  /* Guaranteed Inlined Dropdown Styles to Prevent Any Unstyled or Cached Misalignment */
+  .comic-navbar { position: relative; z-index: 1000; width: 100%; }
+  .navbar-inner { display: flex; align-items: center; justify-content: space-between; position: relative; min-height: 44px; }
+  .notification-dropdown-wrapper { position: relative; display: inline-flex; align-items: center; }
+  .notification-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 360px;
+    max-width: min(360px, calc(100vw - 24px));
+    background: #ffffff;
+    border: 3px solid #161616;
+    border-radius: 8px;
+    box-shadow: 5px 5px 0 #161616;
+    z-index: 9999;
+    padding: 0;
+    overflow: hidden;
+    text-align: left;
+  }
+  .notification-dropdown-menu.show { display: block !important; }
+  .notification-dropdown-header {
+    padding: 0.65rem 0.85rem;
+    background: #FFDD00;
+    border-bottom: 2.5px solid #161616;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .notification-dropdown-title {
+    font-family: var(--font-display, 'Space Grotesk', sans-serif);
+    font-weight: 800;
+    font-size: 0.88rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: #161616;
+  }
+  .notification-header-actions { display: flex; align-items: center; gap: 0.5rem; }
+  .notification-close-btn {
+    background: transparent;
+    border: none;
+    font-size: 1.3rem;
+    font-weight: 900;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 0.2rem;
+    color: #161616;
+  }
+  .notification-close-btn:hover { transform: scale(1.15); }
+  .notification-list { max-height: 320px; overflow-y: auto; overscroll-behavior: contain; }
+  .notification-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    padding: 0.75rem 0.85rem;
+    border-bottom: 2px solid #f0f0f0;
+    transition: all 0.12s ease;
+    position: relative;
+    text-decoration: none;
+    color: #161616;
+  }
+  .notification-item:hover { background: #FFFDF0; transform: translateX(2px); }
+  .notification-item.unread { background: #fffdf2; border-left: 4px solid #FF5C8D; }
+  .notification-item-content { flex: 1; min-width: 0; }
+  .notification-text { margin: 0 0 0.25rem 0; font-size: 0.82rem; line-height: 1.35; color: #161616; word-break: break-word; }
+  .notification-text strong { font-weight: 800; color: #161616; }
+  .notification-meta-row { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+  .notification-time { font-size: 0.7rem; color: #666666; font-weight: 700; }
+  .notification-action-tag { font-size: 0.68rem; font-weight: 800; text-transform: uppercase; color: #795290; }
+  .notification-dot { width: 8px; height: 8px; border-radius: 50%; background: #FF5C8D; border: 1.5px solid #161616; margin-top: 4px; flex-shrink: 0; }
+  .notification-empty { padding: 2rem 1rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 0.35rem; }
+  .notification-dropdown-footer { padding: 0.55rem 0.75rem; background: #fafafa; border-top: 2px solid #161616; text-align: center; }
+</style>
+
 <nav class="comic-navbar">
   <div class="comic-container">
     <div class="navbar-inner">
@@ -7,16 +82,16 @@
         <span class="brand-icon">
           <i data-lucide="zap"></i>
         </span>
-        <span>THINKERS</span>
+        <span class="brand-name">THINKERS</span>
         <span class="brand-badge">CLUBS</span>
       </a>
 
-      <!-- Primary Navigation Links -->
-      <ul class="nav-links">
+      <!-- Navigation Links -->
+      <ul class="nav-links" id="navbarLinks">
         <li>
           <a href="{% url 'club_list' %}" class="nav-link-item {% if request.resolver_match.url_name in 'club_list club_detail club_create' %}active{% endif %}">
             <i data-lucide="compass" class="icon-sm"></i>
-            <span>Explore Clubs</span>
+            <span>Clubs</span>
           </a>
         </li>
         <li>
@@ -28,7 +103,7 @@
         <li>
           <a href="{% url 'co_founders' %}" class="nav-link-item {% if request.resolver_match.url_name == 'co_founders' %}active{% endif %}">
             <i data-lucide="users" class="icon-sm"></i>
-            <span>Find Co-Founders</span>
+            <span>Co-Founders</span>
           </a>
         </li>
         <li>
@@ -53,29 +128,99 @@
 
       <!-- Action Buttons -->
       <div class="nav-actions">
-        <a href="{% url 'club_create' %}" class="comic-btn comic-btn-sm comic-btn-pink">
+        <a href="{% url 'club_create' %}" class="comic-btn comic-btn-sm comic-btn-pink nav-action-launch">
           <i data-lucide="plus" class="icon-sm"></i>
-          <span>Launch Club</span>
+          <span class="btn-label">Launch Club</span>
         </a>
+
+        <!-- Notification Bell Dropdown -->
+        <div class="notification-dropdown-wrapper">
+          <button id="notificationToggleBtn" type="button" class="notification-bell-btn" title="Founder Alerts" aria-label="Founder Alerts" aria-expanded="false">
+            <i data-lucide="bell" class="icon-sm"></i>
+            {% if unread_notifications_count > 0 %}
+              <span class="notification-count-badge" id="notificationCountBadge">{{ unread_notifications_count }}</span>
+            {% endif %}
+          </button>
+
+          <!-- Dropdown Menu Popup Box -->
+          <div id="notificationDropdownMenu" class="notification-dropdown-menu" style="display: none; position: absolute;" role="menu">
+            <div class="notification-dropdown-header">
+              <div class="notification-dropdown-title">
+                <i data-lucide="bell" class="icon-sm"></i>
+                <span>Founder Alerts</span>
+                {% if unread_notifications_count > 0 %}
+                  <span class="comic-badge comic-badge-pink comic-badge-sm">{{ unread_notifications_count }} NEW</span>
+                {% endif %}
+              </div>
+              <div class="notification-header-actions">
+                {% if unread_notifications_count > 0 %}
+                  <a href="{% url 'mark_notifications_read' %}" class="underline-link text-xs font-bold">Mark read</a>
+                {% endif %}
+                <button type="button" class="notification-close-btn" id="notificationCloseBtn" aria-label="Close notification box">&times;</button>
+              </div>
+            </div>
+
+            <div class="notification-list">
+              {% for n in recent_notifications %}
+                <a href="{% if n.id %}{% url 'open_notification' n.id %}{% else %}{{ n.target_url|default:'/accounts/profile/' }}{% endif %}" class="notification-item {% if not n.is_read %}unread{% endif %}">
+                  <div class="comic-avatar comic-avatar-sm comic-box-yellow">
+                    {{ n.actor_avatar|default:'TH' }}
+                  </div>
+                  <div class="notification-item-content">
+                    <p class="notification-text">
+                      <strong>{{ n.actor_name }}</strong> {{ n.verb }}
+                    </p>
+                    <div class="notification-meta-row">
+                      <span class="notification-time">{{ n.timesince_display }}</span>
+                      <span class="notification-action-tag">Open &rarr;</span>
+                    </div>
+                  </div>
+                  {% if not n.is_read %}
+                    <span class="notification-dot" title="Unread notification"></span>
+                  {% endif %}
+                </a>
+              {% empty %}
+                <div class="notification-empty">
+                  <i data-lucide="check-circle" class="icon-md text-muted mb-xs"></i>
+                  <p class="mb-0 text-sm font-bold text-muted">All caught up, Boss!</p>
+                </div>
+              {% endfor %}
+            </div>
+
+            <div class="notification-dropdown-footer">
+              {% if user.is_authenticated %}
+                <a href="{% url 'profile' %}" class="comic-btn comic-btn-sm comic-btn-yellow comic-btn-full">
+                  View Founder Dashboard <i data-lucide="arrow-right" class="icon-sm"></i>
+                </a>
+              {% else %}
+                <a href="{% url 'login' %}" class="comic-btn comic-btn-sm comic-btn-yellow comic-btn-full">
+                  Login to Manage Invites <i data-lucide="arrow-right" class="icon-sm"></i>
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
         {% if user.is_authenticated %}
-          <a href="{% url 'profile' %}" class="comic-btn comic-btn-sm comic-btn-yellow">
+          <a href="{% url 'profile' %}" class="comic-btn comic-btn-sm comic-btn-yellow nav-action-user" title="My Founder Dashboard">
             <i data-lucide="user" class="icon-sm"></i>
-            <span>{{ user.first_name|default:user.username }}</span>
+            <span class="btn-label">{{ user.first_name|default:user.username }}</span>
           </a>
-          <a href="{% url 'logout' %}" class="comic-btn comic-btn-sm comic-btn-white" title="Log Out">
+          <a href="{% url 'logout' %}" class="comic-btn comic-btn-sm comic-btn-white nav-action-logout" title="Log Out">
             <i data-lucide="log-out" class="icon-sm"></i>
           </a>
         {% else %}
-          <a href="{% url 'login' %}" class="comic-btn comic-btn-sm comic-btn-white">
+          <a href="{% url 'login' %}" class="comic-btn comic-btn-sm comic-btn-white nav-action-auth">
             <i data-lucide="log-in" class="icon-sm"></i>
-            <span>Login</span>
+            <span class="btn-label">Login</span>
           </a>
-          <a href="{% url 'register' %}" class="comic-btn comic-btn-sm comic-btn-primary">
+          <a href="{% url 'register' %}" class="comic-btn comic-btn-sm comic-btn-primary nav-action-auth">
             <i data-lucide="user-plus" class="icon-sm"></i>
-            <span>Join Free</span>
+            <span class="btn-label">Join Free</span>
           </a>
         {% endif %}
-        <button class="mobile-nav-toggle" aria-label="Toggle navigation menu">
+
+        <button class="mobile-nav-toggle" id="mobileNavToggleBtn" aria-label="Toggle navigation menu" type="button">
           <i data-lucide="menu"></i>
         </button>
       </div>
