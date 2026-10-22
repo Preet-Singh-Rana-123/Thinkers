@@ -25,7 +25,9 @@
   <div class="comic-stripe"></div>
 
   <!-- Navbar -->
-  {% include 'components/navbar.html' %}
+  {% block navbar %}
+    {% include 'components/navbar.html' %}
+  {% endblock %}
 
   <!-- Django Messages / Alerts (if any) -->
   {% if messages %}
@@ -51,7 +53,9 @@
   </main>
 
   <!-- Footer -->
-  {% include 'components/footer.html' %}
+  {% block footer %}
+    {% include 'components/footer.html' %}
+  {% endblock %}
 
   <!-- Main Interactive JS -->
   <script src="{% static 'js/main.js' %}?v=12.0"></script>
