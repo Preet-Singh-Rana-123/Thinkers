@@ -183,9 +183,14 @@
                 <p class="mb-md text-sm text-dim">
                   Interactive live room with video screen share, breakout pods, and open Q&amp;A.
                 </p>
-                <button onclick="showComicToast('Added to your calendar! Room link will open 5m before.');" class="comic-btn comic-btn-sm comic-btn-black">
-                  <i data-lucide="check" class="icon-sm"></i> RSVP For Session
-                </button>
+                <div class="flex gap-sm items-center flex-wrap">
+                  <a href="{% url 'join_meeting_room' club.slug %}" class="comic-btn comic-btn-sm comic-btn-pink">
+                    <i data-lucide="video" class="icon-sm"></i> Join Live Mastermind Room
+                  </a>
+                  <button onclick="showComicToast('RSVP confirmed! Added to your calendar &amp; notification alerts.');" class="comic-btn comic-btn-sm comic-btn-white">
+                    <i data-lucide="check" class="icon-sm"></i> RSVP
+                  </button>
+                </div>
               </div>
             {% endfor %}
           </div>
@@ -224,9 +229,9 @@
           <p class="mb-md flex items-center gap-xs text-sm text-dim">
             <i data-lucide="video" class="icon-sm"></i> {{ club.upcoming_events.0.date }} &bull; Virtual Room
           </p>
-          <button onclick="showComicToast('Connecting to virtual stage...');" class="comic-btn comic-btn-sm comic-btn-black comic-btn-full">
-            <i data-lucide="video" class="icon-sm"></i> Enter Live Room
-          </button>
+          <a href="{% url 'join_meeting_room' club.slug %}" class="comic-btn comic-btn-sm comic-btn-black comic-btn-full">
+            <i data-lucide="video" class="icon-sm"></i> Enter Live Room Now
+          </a>
         </div>
 
         <!-- Club Rules Box -->

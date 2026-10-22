@@ -113,9 +113,10 @@
           </a>
         </li>
         <li>
-          <a href="{% url 'forum_list' %}" class="nav-link-item {% if request.resolver_match.url_name in 'forum_list thread_detail' %}active{% endif %}">
+          <a href="{% url 'forum_list' %}" class="nav-link-item {% if request.resolver_match.url_name in 'forum_list thread_detail meeting_directory join_meeting_room' %}active{% endif %}">
             <i data-lucide="message-square" class="icon-sm"></i>
             <span>Discussions</span>
+            <span class="comic-badge comic-badge-green comic-badge-xs hidden lg:inline-flex" style="padding: 1px 4px; font-size: 0.65rem;">LIVE</span>
           </a>
         </li>
         <li>

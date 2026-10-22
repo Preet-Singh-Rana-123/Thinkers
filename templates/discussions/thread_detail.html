@@ -39,6 +39,21 @@
         </p>
       </div>
 
+      <!-- Live Voice/Video Room Banner for this Discussion -->
+      <div class="comic-box comic-box-cyan mb-md flex items-center justify-between flex-wrap gap-sm" style="border-width: 2px;">
+        <div class="flex items-center gap-sm">
+          <span class="comic-badge comic-badge-pink" style="animation: pulse 2s infinite;">
+            <i data-lucide="radio" class="icon-sm"></i> LIVE STAGE
+          </span>
+          <span class="font-bold text-sm text-dark">
+            Turn this thread into a Live Discussion Meeting with camera, mic &amp; screen sharing!
+          </span>
+        </div>
+        <a href="{% url 'join_meeting_room' 'thread-'|add:thread.id|stringformat:'s' %}" class="comic-btn comic-btn-sm comic-btn-black">
+          <i data-lucide="video" class="icon-sm"></i> Join Live Discussion
+        </a>
+      </div>
+
       <div class="flex items-center gap-md">
         <div class="comic-avatar comic-avatar-sm comic-box-purple">
           {{ thread.author_avatar }}

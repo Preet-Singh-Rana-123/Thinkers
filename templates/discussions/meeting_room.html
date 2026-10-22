@@ -1,0 +1,1786 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ room.title }} | Live Discussion Stage{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* Neobrutalist Meeting Room Stage Styles */
+  .meeting-viewport {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 120px);
+    background: #faf8f5;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .meeting-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    border-bottom: 3.5px solid #161616;
+    padding: 0.65rem 1.25rem;
+    box-shadow: 0 4px 0 #161616;
+    z-index: 20;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .stage-layout {
+    display: flex;
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    height: calc(100vh - 190px);
+    min-height: 520px;
+  }
+
+  .stage-main-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    overflow-y: auto;
+    position: relative;
+    background: #f1f3f5;
+  }
+
+  .video-grid {
+    display: grid;
+    gap: 1rem;
+    width: 100%;
+    height: 100%;
+    align-content: center;
+    justify-content: center;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    max-height: 100%;
+  }
+
+  .video-card {
+    background: #161616;
+    border: 3.5px solid #161616;
+    border-radius: 12px;
+    box-shadow: 5px 5px 0 #161616;
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  .video-card.speaking {
+    border-color: #059669;
+    box-shadow: 0 0 0 3px #10b981, 6px 6px 0 #161616;
+  }
+
+  .video-card.hand-raised {
+    border-color: #FFDD00;
+  }
+
+  .video-card video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: #1e1e1e;
+  }
+
+  .video-card video.mirrored {
+    transform: scaleX(-1);
+  }
+
+  .avatar-card-fallback {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    height: 100%;
+    background: #242424;
+    color: #ffffff;
+    user-select: none;
+  }
+
+  .avatar-big-badge {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3.5px solid #161616;
+    font-size: 2rem;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 3px 3px 0 #161616;
+  }
+
+  .video-meta-overlay {
+    position: absolute;
+    bottom: 0.6rem;
+    left: 0.6rem;
+    right: 0.6rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  .participant-tag {
+    background: rgba(22, 22, 22, 0.88);
+    color: #ffffff;
+    padding: 0.25rem 0.65rem;
+    border: 2px solid #ffffff;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    backdrop-filter: blur(4px);
+  }
+
+  .card-status-badges {
+    display: flex;
+    gap: 0.35rem;
+  }
+
+  .status-circle-badge {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 2px solid #161616;
+    color: #161616;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 800;
+    box-shadow: 2px 2px 0 #161616;
+  }
+
+  .status-circle-badge.muted {
+    background: #EF4444;
+    color: #ffffff;
+  }
+
+  .status-circle-badge.speaking {
+    background: #10B981;
+    color: #ffffff;
+    animation: pulse 1.2s infinite;
+  }
+
+  /* Audio Visualizer Waves */
+  .audio-wave {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 14px;
+  }
+
+  .audio-wave-bar {
+    width: 2px;
+    background: #10b981;
+    border-radius: 1px;
+    animation: waveBar 0.8s ease infinite alternate;
+  }
+  .audio-wave-bar:nth-child(2) { animation-delay: 0.2s; }
+  .audio-wave-bar:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes waveBar {
+    0% { height: 3px; }
+    100% { height: 12px; }
+  }
+
+  /* Controls Dock */
+  .controls-dock {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: #ffffff;
+    border-top: 3.5px solid #161616;
+    box-shadow: 0 -4px 0 rgba(22, 22, 22, 0.05);
+    z-index: 25;
+    flex-wrap: wrap;
+  }
+
+  .control-btn {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.45rem 0.75rem;
+    background: #ffffff;
+    border: 2.5px solid #161616;
+    border-radius: 8px;
+    box-shadow: 3px 3px 0 #161616;
+    font-weight: 800;
+    font-size: 0.68rem;
+    color: #161616;
+    cursor: pointer;
+    min-width: 60px;
+    transition: all 0.12s ease;
+    gap: 0.15rem;
+  }
+
+  .control-btn:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 #161616;
+  }
+
+  .control-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 #161616;
+  }
+
+  .control-btn.active {
+    background: #FFDD00;
+  }
+
+  .control-btn.danger {
+    background: #fee2e2;
+    color: #dc2626;
+  }
+  .control-btn.danger.muted {
+    background: #ef4444;
+    color: #ffffff;
+  }
+
+  .control-btn.leave-btn {
+    background: #161616;
+    color: #ffffff;
+    margin-left: 0.5rem;
+  }
+  .control-btn.leave-btn:hover {
+    background: #ef4444;
+  }
+
+  /* Side Drawer Panel */
+  .side-drawer {
+    width: 360px;
+    max-width: 100vw;
+    background: #ffffff;
+    border-left: 3.5px solid #161616;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    z-index: 22;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .side-drawer.hidden-drawer {
+    display: none;
+  }
+
+  .drawer-tabs {
+    display: flex;
+    background: #f1f5f9;
+    border-bottom: 2.5px solid #161616;
+  }
+
+  .drawer-tab {
+    flex: 1;
+    padding: 0.65rem 0.4rem;
+    text-align: center;
+    font-weight: 800;
+    font-size: 0.78rem;
+    border: none;
+    border-right: 2px solid #161616;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+  }
+
+  .drawer-tab:last-child {
+    border-right: none;
+  }
+
+  .drawer-tab.active {
+    background: #FFDD00;
+  }
+
+  .drawer-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.85rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .chat-messages-container {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .chat-bubble-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+
+  .chat-bubble-row.self {
+    flex-direction: row-reverse;
+  }
+
+  .chat-bubble {
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    border: 2px solid #161616;
+    box-shadow: 2px 2px 0 #161616;
+    font-size: 0.82rem;
+    max-width: 82%;
+    word-break: break-word;
+  }
+
+  .chat-bubble.self-bubble {
+    background: #FFDD00;
+    text-align: right;
+  }
+
+  .chat-bubble.other-bubble {
+    background: #ffffff;
+  }
+
+  .chat-bubble.system-bubble {
+    background: #e0f2fe;
+    border-style: dashed;
+    width: 100%;
+    max-width: 100%;
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  /* Pre-Join Screen (Green Room) */
+  .greenroom-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(22, 22, 22, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .greenroom-card {
+    background: #ffffff;
+    border: 4px solid #161616;
+    border-radius: 12px;
+    box-shadow: 8px 8px 0 #161616;
+    width: 100%;
+    max-width: 620px;
+    padding: 1.5rem;
+  }
+
+  .preview-video-container {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #161616;
+    border: 3px solid #161616;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .preview-video-container video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Floating Emoji Reactions */
+  .floating-reaction {
+    position: absolute;
+    bottom: 80px;
+    font-size: 2.2rem;
+    user-select: none;
+    pointer-events: none;
+    z-index: 100;
+    animation: flyUp 2.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  }
+
+  @keyframes flyUp {
+    0% { transform: translateY(0) scale(0.6); opacity: 0; }
+    15% { transform: translateY(-30px) scale(1.2); opacity: 1; }
+    80% { transform: translateY(-320px) scale(1); opacity: 0.9; }
+    100% { transform: translateY(-400px) scale(0.7); opacity: 0; }
+  }
+
+  /* Pitch Timer Box */
+  .pitch-timer-display {
+    font-family: var(--font-display, 'Space Grotesk', monospace);
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: #161616;
+    text-align: center;
+    line-height: 1;
+    padding: 1rem;
+    background: #FFDD00;
+    border: 3px solid #161616;
+    border-radius: 10px;
+    box-shadow: 4px 4px 0 #161616;
+  }
+
+  .pitch-timer-display.danger {
+    background: #ef4444;
+    color: #ffffff;
+    animation: pulse 0.7s infinite;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="meeting-viewport" id="meetingApp">
+
+  <!-- Top Navigation & Room Status Bar -->
+  <div class="meeting-top-bar">
+    <div class="flex items-center gap-sm">
+      <a href="{% url 'meeting_directory' %}" class="comic-btn comic-btn-xs comic-btn-white" title="Back to All Rooms">
+        <i data-lucide="arrow-left" class="icon-sm"></i>
+      </a>
+      <div>
+        <div class="flex items-center gap-xs">
+          <span class="comic-badge comic-badge-{{ room.badge_color }} comic-badge-xs">
+            {{ room.get_meeting_type_display }}
+          </span>
+          <span class="comic-badge comic-badge-green comic-badge-xs flex items-center gap-xs">
+            <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#059669; animation: pulse 1.5s infinite;"></span>
+            <span id="connectionStatusText">Live WebRTC</span>
+          </span>
+        </div>
+        <h1 class="text-base font-bold mb-0" style="line-height: 1.2;">{{ room.title }}</h1>
+      </div>
+    </div>
+
+    <!-- Right Quick Actions -->
+    <div class="flex items-center gap-xs">
+      <button onclick="copyRoomLink()" class="comic-btn comic-btn-xs comic-btn-white" title="Copy Invite Link">
+        <i data-lucide="share-2" class="icon-sm"></i> <span class="hidden sm:inline">Invite Link</span>
+      </button>
+
+      <button id="toggleDemoPeersBtn" onclick="toggleDemoPeers()" class="comic-btn comic-btn-xs comic-btn-yellow" title="Simulate club peers for testing">
+        <i data-lucide="users" class="icon-sm"></i> Simulate Peers
+      </button>
+
+      <span class="comic-badge comic-badge-yellow comic-badge-xs font-bold" id="participantsBadge">
+        <i data-lucide="users" class="icon-sm"></i> <span id="participantsCountDisplay">1</span> on Stage
+      </span>
+    </div>
+  </div>
+
+  <!-- Stage Layout: Main Video Arena + Side Panel Drawer -->
+  <div class="stage-layout">
+    
+    <!-- Left / Center Video Stage Area -->
+    <div class="stage-main-area" id="stageMainArea">
+      
+      <!-- Video Grid -->
+      <div class="video-grid" id="videoGrid">
+        
+        <!-- Local User's Video Card -->
+        <div class="video-card" id="localVideoCard">
+          <video id="localVideo" autoplay playsinline muted class="mirrored"></video>
+          
+          <!-- Avatar Fallback when camera is disabled -->
+          <div class="avatar-card-fallback" id="localAvatarFallback" style="display: none;">
+            <div class="avatar-big-badge comic-box-{{ founder.color|default:'yellow' }}">
+              {{ founder.avatar|default:'TH' }}
+            </div>
+            <div class="font-bold text-sm">{{ founder.name }} (You)</div>
+            <span class="comic-badge comic-badge-xs comic-badge-white">Camera Off</span>
+          </div>
+
+          <!-- Bottom Overlay Tags -->
+          <div class="video-meta-overlay">
+            <div class="participant-tag">
+              <i data-lucide="user" class="icon-xs"></i>
+              <span id="localCardName">{{ founder.name }} (You)</span>
+              {% if is_host %}<span class="comic-badge comic-badge-yellow comic-badge-xs" style="padding: 1px 4px;">HOST</span>{% endif %}
+            </div>
+            <div class="card-status-badges">
+              <div class="status-circle-badge" id="localHandBadge" style="display: none;" title="Hand Raised">✋</div>
+              <div class="status-circle-badge" id="localMicBadge" title="Microphone Status">
+                <i data-lucide="mic" class="icon-xs"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Remote Peer Video Cards will be dynamically inserted here -->
+
+      </div>
+
+      <!-- Floating Reaction Layer -->
+      <div id="reactionsLayer"></div>
+    </div>
+
+    <!-- Right Side Drawer: Chat / Club Activities / Participants -->
+    <div class="side-drawer" id="sideDrawer">
+      
+      <!-- Drawer Navigation Tabs -->
+      <div class="drawer-tabs">
+        <button class="drawer-tab active" id="tabBtnActivities" onclick="switchDrawerTab('activities')">
+          <i data-lucide="zap" class="icon-sm"></i> Activities
+        </button>
+        <button class="drawer-tab" id="tabBtnChat" onclick="switchDrawerTab('chat')">
+          <i data-lucide="message-square" class="icon-sm"></i> Chat
+          <span class="comic-badge comic-badge-pink comic-badge-xs" id="chatUnreadDot" style="display:none;">•</span>
+        </button>
+        <button class="drawer-tab" id="tabBtnRoster" onclick="switchDrawerTab('roster')">
+          <i data-lucide="users" class="icon-sm"></i> Roster (<span id="rosterCount">1</span>)
+        </button>
+      </div>
+
+      <!-- Drawer Panel 1: Club Activities (Pitch Timer, Roast Voting, Topic Spinner, Notes) -->
+      <div class="drawer-body" id="panelActivities">
+        
+        <!-- Activity: 60-Second Pitch Roaster Timer -->
+        <div class="comic-box comic-box-yellow mb-md" style="padding: 0.85rem;">
+          <div class="flex justify-between items-center mb-xs">
+            <span class="comic-badge comic-badge-pink comic-badge-xs">
+              <i data-lucide="flame" class="icon-sm"></i> 60s PITCH ROASTER
+            </span>
+            <span class="text-xs font-bold text-muted">Round Robin</span>
+          </div>
+
+          <!-- Timer Countdown Display -->
+          <div class="pitch-timer-display mb-sm" id="timerDisplay">
+            01:00
+          </div>
+
+          <div class="flex gap-xs mb-sm">
+            <button onclick="startPitchTimer(60)" class="comic-btn comic-btn-xs comic-btn-black flex-1">
+              <i data-lucide="play" class="icon-xs"></i> Start 60s
+            </button>
+            <button onclick="startPitchTimer(180)" class="comic-btn comic-btn-xs comic-btn-white">
+              3m Pitch
+            </button>
+            <button onclick="stopPitchTimer()" class="comic-btn comic-btn-xs comic-btn-white">
+              <i data-lucide="pause" class="icon-xs"></i> Pause
+            </button>
+            <button onclick="resetPitchTimer(60)" class="comic-btn comic-btn-xs comic-btn-white">
+              <i data-lucide="rotate-ccw" class="icon-xs"></i>
+            </button>
+          </div>
+
+          <!-- Pitch Voting & Roast Card -->
+          <div class="comic-box comic-box-white" style="padding: 0.65rem; border-width: 2px;">
+            <div class="font-bold text-xs mb-xs flex items-center justify-between">
+              <span>Rate Current Pitch:</span>
+              <div class="flex gap-xs" id="starRating">
+                <span onclick="setVoteScore(1)" class="cursor-pointer">⭐</span>
+                <span onclick="setVoteScore(2)" class="cursor-pointer">⭐</span>
+                <span onclick="setVoteScore(3)" class="cursor-pointer">⭐</span>
+                <span onclick="setVoteScore(4)" class="cursor-pointer">⭐</span>
+                <span onclick="setVoteScore(5)" class="cursor-pointer">⭐</span>
+              </div>
+            </div>
+            <div class="flex gap-xs flex-wrap mb-xs">
+              <button onclick="toggleVoteTag(this, 'Killer Hook')" class="comic-btn comic-btn-xs comic-btn-white vote-tag">Killer Hook</button>
+              <button onclick="toggleVoteTag(this, 'Huge TAM')" class="comic-btn comic-btn-xs comic-btn-white vote-tag">Huge TAM</button>
+              <button onclick="toggleVoteTag(this, 'Needs Moat')" class="comic-btn comic-btn-xs comic-btn-white vote-tag">Needs Moat</button>
+              <button onclick="toggleVoteTag(this, 'Investable')" class="comic-btn comic-btn-xs comic-btn-white vote-tag">Investable</button>
+            </div>
+            <button onclick="submitPitchVote()" class="comic-btn comic-btn-xs comic-btn-primary comic-btn-full">
+              <i data-lucide="send" class="icon-xs"></i> Submit Roast &amp; Score
+            </button>
+          </div>
+        </div>
+
+        <!-- Activity: Mastermind Topic & Icebreaker Generator -->
+        <div class="comic-box comic-box-cyan mb-md" style="padding: 0.85rem;">
+          <div class="flex justify-between items-center mb-xs">
+            <span class="comic-badge comic-badge-yellow comic-badge-xs">
+              <i data-lucide="lightbulb" class="icon-sm"></i> MASTERMIND TOPIC
+            </span>
+            <button onclick="spinNextTopic()" class="comic-btn comic-btn-xs comic-btn-black">
+              <i data-lucide="shuffle" class="icon-xs"></i> Next Prompt
+            </button>
+          </div>
+          <p class="font-bold text-xs text-dark mb-0" id="currentTopicText" style="line-height: 1.4;">
+            "{{ room.activity_state.current_topic|default:'What is your single biggest bottleneck to 10x growth this month?' }}"
+          </p>
+        </div>
+
+        <!-- Activity: Collaborative Notes Scratchpad -->
+        <div class="comic-box comic-box-white flex-1 flex flex-col" style="padding: 0.85rem;">
+          <div class="flex justify-between items-center mb-xs">
+            <span class="font-bold text-xs flex items-center gap-xs">
+              <i data-lucide="edit-3" class="icon-sm"></i> Collaborative Notes
+            </span>
+            <button onclick="saveRoomNotes()" class="comic-btn comic-btn-xs comic-btn-white">
+              <i data-lucide="save" class="icon-xs"></i> Sync Notes
+            </button>
+          </div>
+          <textarea id="roomNotesText" class="comic-input comic-textarea flex-1 text-xs" style="min-height: 120px;" placeholder="Jot down takeaway links, feedback points, investor intros...">{{ room.activity_state.notes|default:'' }}</textarea>
+        </div>
+
+      </div>
+
+      <!-- Drawer Panel 2: Live In-Meeting Chat -->
+      <div class="drawer-body" id="panelChat" style="display: none;">
+        <div class="chat-messages-container" id="chatMessagesContainer">
+          {% for msg in messages_list %}
+            {% if msg.message_type == 'system' or msg.message_type == 'pitch_vote' %}
+              <div class="chat-bubble system-bubble">
+                {{ msg.sender_avatar }} {{ msg.message }}
+              </div>
+            {% else %}
+              <div class="chat-bubble-row {% if msg.sender_user == founder.user %}self{% endif %}">
+                <div class="comic-avatar comic-avatar-xs comic-box-{{ msg.sender_color|default:'yellow' }}">
+                  {{ msg.sender_avatar|default:'TH' }}
+                </div>
+                <div class="chat-bubble {% if msg.sender_user == founder.user %}self-bubble{% else %}other-bubble{% endif %}">
+                  <div class="text-xs font-bold text-muted mb-xs">{{ msg.sender_name }}</div>
+                  <div>{{ msg.message }}</div>
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        <form onsubmit="sendMeetingChat(event)" class="mt-xs flex gap-xs">
+          <input type="text" id="chatInput" placeholder="Drop a link, question, or reaction..." class="comic-input text-xs" style="padding: 0.45rem 0.65rem;" autocomplete="off" />
+          <button type="submit" class="comic-btn comic-btn-xs comic-btn-primary">
+            <i data-lucide="send" class="icon-xs"></i>
+          </button>
+        </form>
+      </div>
+
+      <!-- Drawer Panel 3: Participants Roster -->
+      <div class="drawer-body" id="panelRoster" style="display: none;">
+        <h4 class="text-xs font-bold text-muted mb-sm uppercase">Active Founders on Stage</h4>
+        <div class="flex flex-col gap-xs" id="rosterList">
+          <!-- Dynamic roster items inserted by heartbeat JS -->
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Bottom Floating Control Dock -->
+  <div class="controls-dock">
+    
+    <!-- Audio Mute / Unmute Button -->
+    <button class="control-btn" id="btnToggleMic" onclick="toggleLocalAudio()" title="Mute / Unmute Mic (M)">
+      <i data-lucide="mic" id="iconMic"></i>
+      <span id="labelMic">Mute</span>
+    </button>
+
+    <!-- Video Camera On / Off Button -->
+    <button class="control-btn" id="btnToggleCam" onclick="toggleLocalVideo()" title="Turn Camera On / Off (V)">
+      <i data-lucide="video" id="iconCam"></i>
+      <span id="labelCam">Stop Cam</span>
+    </button>
+
+    <!-- Screen Share Button -->
+    <button class="control-btn" id="btnScreenShare" onclick="toggleScreenShare()" title="Share Pitch Deck or Prototype">
+      <i data-lucide="monitor" id="iconScreen"></i>
+      <span>Share Screen</span>
+    </button>
+
+    <!-- Raise Hand Button -->
+    <button class="control-btn" id="btnRaiseHand" onclick="toggleRaiseHand()" title="Raise / Lower Hand">
+      <i data-lucide="hand" id="iconHand"></i>
+      <span id="labelHand">Raise Hand</span>
+    </button>
+
+    <!-- Emoji Reactions Button & Palette -->
+    <div style="position: relative; display: inline-block;">
+      <button class="control-btn" onclick="toggleReactionPalette()" title="Send Live Reaction">
+        <i data-lucide="smile"></i>
+        <span>React</span>
+      </button>
+
+      <!-- Emoji Palette Popover -->
+      <div id="reactionPalette" style="display: none; position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: #ffffff; border: 3px solid #161616; border-radius: 8px; box-shadow: 4px 4px 0 #161616; padding: 0.35rem; gap: 0.35rem; z-index: 50;" class="flex">
+        <button onclick="sendEmojiReaction('🚀')" class="comic-btn comic-btn-xs comic-btn-white" style="font-size: 1.2rem; padding: 0.2rem 0.4rem;">🚀</button>
+        <button onclick="sendEmojiReaction('🔥')" class="comic-btn comic-btn-xs comic-btn-white" style="font-size: 1.2rem; padding: 0.2rem 0.4rem;">🔥</button>
+        <button onclick="sendEmojiReaction('👏')" class="comic-btn comic-btn-xs comic-btn-white" style="font-size: 1.2rem; padding: 0.2rem 0.4rem;">👏</button>
+        <button onclick="sendEmojiReaction('💡')" class="comic-btn comic-btn-xs comic-btn-white" style="font-size: 1.2rem; padding: 0.2rem 0.4rem;">💡</button>
+        <button onclick="sendEmojiReaction('❤️')" class="comic-btn comic-btn-xs comic-btn-white" style="font-size: 1.2rem; padding: 0.2rem 0.4rem;">❤️</button>
+        <button onclick="sendEmojiReaction('🤯')" class="comic-btn comic-btn-xs comic-btn-white" style="font-size: 1.2rem; padding: 0.2rem 0.4rem;">🤯</button>
+      </div>
+    </div>
+
+    <!-- Toggle Side Drawer Button -->
+    <button class="control-btn active" id="btnToggleDrawer" onclick="toggleDrawer()" title="Toggle Side Panel">
+      <i data-lucide="sidebar"></i>
+      <span>Panel</span>
+    </button>
+
+    <!-- Leave Discussion Button -->
+    <button class="control-btn leave-btn" onclick="leaveMeeting()" title="Leave Stage">
+      <i data-lucide="phone-off"></i>
+      <span>Leave</span>
+    </button>
+
+  </div>
+
+</div>
+
+<!-- PRE-JOIN GREEN ROOM / PERMISSIONS MODAL -->
+<div id="greenRoomModal" class="greenroom-overlay">
+  <div class="greenroom-card">
+    <div class="flex justify-between items-center mb-sm">
+      <span class="comic-sticker comic-sticker-yellow">
+        <i data-lucide="video"></i> DEVICE &amp; MIC CHECK
+      </span>
+      <span class="comic-badge comic-badge-pink comic-badge-xs">Ready To Join</span>
+    </div>
+
+    <h2 class="text-2xl font-bold mb-xs">{{ room.title }}</h2>
+    <p class="text-xs text-muted font-bold mb-md">Test camera and microphone preview before going live on the discussion stage.</p>
+
+    <!-- Camera Preview Viewport -->
+    <div class="preview-video-container">
+      <video id="previewVideo" autoplay playsinline muted class="mirrored"></video>
+      <div id="previewAvatarPlaceholder" class="avatar-card-fallback" style="display: none;">
+        <div class="avatar-big-badge comic-box-{{ founder.color|default:'yellow' }}">
+          {{ founder.avatar|default:'TH' }}
+        </div>
+        <p class="font-bold text-xs mt-xs text-white">Camera is currently disabled</p>
+      </div>
+    </div>
+
+    <!-- Audio VU Meter Bar -->
+    <div class="mb-md">
+      <div class="flex justify-between items-center text-xs font-bold mb-xs">
+        <span class="flex items-center gap-xs"><i data-lucide="mic" class="icon-xs"></i> Microphone Level</span>
+        <span id="previewAudioLabel" class="text-muted">Speak to test...</span>
+      </div>
+      <div style="width: 100%; height: 8px; background: #e2e8f0; border: 2px solid #161616; border-radius: 4px; overflow: hidden;">
+        <div id="previewVuMeter" style="width: 0%; height: 100%; background: #10b981; transition: width 0.08s ease;"></div>
+      </div>
+    </div>
+
+    <!-- Quick Permission Toggles & Profile Check -->
+    <div class="grid grid-cols-2 gap-sm mb-lg">
+      <div class="comic-form-group">
+        <label class="comic-label text-xs">Your Display Name</label>
+        <input type="text" id="prejoinName" value="{{ founder.name }}" class="comic-input text-xs" style="padding: 0.45rem;" />
+      </div>
+      <div class="comic-form-group">
+        <label class="comic-label text-xs">Club Role / Title</label>
+        <input type="text" id="prejoinRole" value="{{ founder.role }}" class="comic-input text-xs" style="padding: 0.45rem;" />
+      </div>
+    </div>
+
+    <!-- Pre-join Controls & Enter Button -->
+    <div class="flex justify-between items-center flex-wrap gap-sm">
+      <div class="flex gap-xs">
+        <button type="button" id="prejoinMicBtn" onclick="togglePrejoinMic()" class="comic-btn comic-btn-xs comic-btn-white">
+          <i data-lucide="mic" id="prejoinMicIcon" class="icon-xs"></i> <span id="prejoinMicText">Mic On</span>
+        </button>
+        <button type="button" id="prejoinCamBtn" onclick="togglePrejoinCam()" class="comic-btn comic-btn-xs comic-btn-white">
+          <i data-lucide="video" id="prejoinCamIcon" class="icon-xs"></i> <span id="prejoinCamText">Cam On</span>
+        </button>
+      </div>
+
+      <button type="button" onclick="enterLiveStage()" class="comic-btn comic-btn-primary" style="padding: 0.65rem 1.4rem;">
+        <i data-lucide="video" class="icon-sm"></i> Join Discussion Stage
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- WebRTC & Interactive Meeting Engine Scripts -->
+<script>
+  // Configuration and Room State passed from Django
+  const ROOM_SLUG = "{{ room.slug }}";
+  const USER_SESSION_ID = sessionStorage.getItem('thinkers_meeting_session_' + ROOM_SLUG) || ('sess_' + Math.random().toString(36).substring(2, 10) + '_' + Date.now().toString(36));
+  sessionStorage.setItem('thinkers_meeting_session_' + ROOM_SLUG, USER_SESSION_ID);
+
+  const ICE_SERVERS = JSON.parse('{{ ice_servers_json|safe }}');
+  const RTC_CONFIG = { iceServers: ICE_SERVERS };
+
+  let currentFounder = {
+    name: "{{ founder.name|escapejs }}",
+    role: "{{ founder.role|escapejs }}",
+    avatar: "{{ founder.avatar|escapejs }}",
+    color: "{{ founder.color|escapejs }}",
+  };
+
+  // Media streams & tracks
+  let localStream = null;
+  let screenStream = null;
+  let isAudioEnabled = true;
+  let isVideoEnabled = true;
+  let isScreenSharing = false;
+  let isHandRaised = false;
+
+  // PeerConnections: { [remoteSessionId]: RTCPeerConnection }
+  const peerConnections = {};
+  const remoteStreams = {};
+
+  // Polling intervals & signal cursors
+  let heartbeatInterval = null;
+  let signalPollInterval = null;
+  let chatPollInterval = null;
+  let lastSignalId = 0;
+  let lastChatId = 0;
+
+  // Pitch timer
+  let pitchTimerInterval = null;
+  let timerSecondsLeft = 60;
+  let currentVoteScore = 5;
+  let selectedVoteTags = [];
+
+  // =========================================================================
+  // 1. DEVICE PERMISSION & PRE-JOIN GREEN ROOM INITIALIZATION
+  // =========================================================================
+  window.addEventListener('DOMContentLoaded', async () => {
+    lucide.createIcons();
+    await initPreviewMedia();
+  });
+
+  async function initPreviewMedia() {
+    const previewVideo = document.getElementById('previewVideo');
+    try {
+      localStream = await navigator.mediaDevices.getUserMedia({
+        video: { width: { ideal: 1280 }, height: { ideal: 720 } },
+        audio: true
+      });
+      if (previewVideo) {
+        previewVideo.srcObject = localStream;
+      }
+      initAudioMeter(localStream);
+    } catch (err) {
+      console.warn("Camera or mic permission not fully granted, trying audio-only or fallback:", err);
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        isVideoEnabled = false;
+        document.getElementById('previewAvatarPlaceholder').style.display = 'flex';
+        if (previewVideo) previewVideo.style.display = 'none';
+        updatePrejoinCamUI(false);
+        initAudioMeter(localStream);
+      } catch (audioErr) {
+        console.warn("No audio or video device available. Entering in silent observer mode:", audioErr);
+        isAudioEnabled = false;
+        isVideoEnabled = false;
+        document.getElementById('previewAvatarPlaceholder').style.display = 'flex';
+        if (previewVideo) previewVideo.style.display = 'none';
+        updatePrejoinMicUI(false);
+        updatePrejoinCamUI(false);
+      }
+    }
+  }
+
+  function initAudioMeter(stream) {
+    if (!stream || !stream.getAudioTracks().length) return;
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const analyser = audioCtx.createAnalyser();
+      const source = audioCtx.createMediaStreamSource(stream);
+      source.connect(analyser);
+      analyser.fftSize = 256;
+      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+      const vuBar = document.getElementById('previewVuMeter');
+      const vuLabel = document.getElementById('previewAudioLabel');
+
+      function checkLevel() {
+        analyser.getByteFrequencyData(dataArray);
+        let sum = 0;
+        for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
+        const avg = sum / dataArray.length;
+        const pct = Math.min(100, Math.round((avg / 128) * 100));
+
+        if (vuBar) vuBar.style.width = pct + '%';
+        if (vuLabel) {
+          if (pct > 15) {
+            vuLabel.textContent = "Great volume!";
+            vuLabel.style.color = "#059669";
+          } else {
+            vuLabel.textContent = "Listening...";
+            vuLabel.style.color = "#666666";
+          }
+        }
+        requestAnimationFrame(checkLevel);
+      }
+      checkLevel();
+    } catch (e) {
+      console.log("AudioContext not supported or blocked:", e);
+    }
+  }
+
+  function togglePrejoinMic() {
+    isAudioEnabled = !isAudioEnabled;
+    if (localStream && localStream.getAudioTracks().length) {
+      localStream.getAudioTracks()[0].enabled = isAudioEnabled;
+    }
+    updatePrejoinMicUI(isAudioEnabled);
+  }
+
+  function updatePrejoinMicUI(enabled) {
+    const btn = document.getElementById('prejoinMicBtn');
+    const txt = document.getElementById('prejoinMicText');
+    const icon = document.getElementById('prejoinMicIcon');
+    if (enabled) {
+      btn.className = "comic-btn comic-btn-xs comic-btn-white";
+      txt.textContent = "Mic On";
+    } else {
+      btn.className = "comic-btn comic-btn-xs comic-btn-pink";
+      txt.textContent = "Mic Off";
+    }
+  }
+
+  function togglePrejoinCam() {
+    isVideoEnabled = !isVideoEnabled;
+    const previewVideo = document.getElementById('previewVideo');
+    const previewAvatar = document.getElementById('previewAvatarPlaceholder');
+
+    if (localStream && localStream.getVideoTracks().length) {
+      localStream.getVideoTracks()[0].enabled = isVideoEnabled;
+    }
+    if (isVideoEnabled) {
+      previewVideo.style.display = 'block';
+      previewAvatar.style.display = 'none';
+    } else {
+      previewVideo.style.display = 'none';
+      previewAvatar.style.display = 'flex';
+    }
+    updatePrejoinCamUI(isVideoEnabled);
+  }
+
+  function updatePrejoinCamUI(enabled) {
+    const btn = document.getElementById('prejoinCamBtn');
+    const txt = document.getElementById('prejoinCamText');
+    if (enabled) {
+      btn.className = "comic-btn comic-btn-xs comic-btn-white";
+      txt.textContent = "Cam On";
+    } else {
+      btn.className = "comic-btn comic-btn-xs comic-btn-pink";
+      txt.textContent = "Cam Off";
+    }
+  }
+
+  // =========================================================================
+  // 2. ENTER LIVE STAGE & START WEBRTC SIGNALING
+  // =========================================================================
+  function enterLiveStage() {
+    const nameInput = document.getElementById('prejoinName');
+    const roleInput = document.getElementById('prejoinRole');
+    if (nameInput && nameInput.value.trim()) currentFounder.name = nameInput.value.trim();
+    if (roleInput && roleInput.value.trim()) currentFounder.role = roleInput.value.trim();
+
+    // Attach local stream to stage
+    const localVideo = document.getElementById('localVideo');
+    const localAvatar = document.getElementById('localAvatarFallback');
+    const localCardName = document.getElementById('localCardName');
+
+    if (localCardName) localCardName.textContent = currentFounder.name + " (You)";
+
+    if (localStream) {
+      localVideo.srcObject = localStream;
+      if (!isVideoEnabled) {
+        localVideo.style.display = 'none';
+        localAvatar.style.display = 'flex';
+      }
+    } else {
+      localVideo.style.display = 'none';
+      localAvatar.style.display = 'flex';
+    }
+
+    // Update bottom dock states
+    updateMicDockUI();
+    updateCamDockUI();
+
+    // Hide green room overlay
+    document.getElementById('greenRoomModal').style.display = 'none';
+
+    // Start background heartbeats & WebRTC signaling
+    sendHeartbeat();
+    heartbeatInterval = setInterval(sendHeartbeat, 2500);
+    signalPollInterval = setInterval(pollSignals, 1200);
+    chatPollInterval = setInterval(pollChatMessages, 2000);
+
+    showComicToast("Connected to live discussion stage!");
+  }
+
+  // =========================================================================
+  // 3. HEARTBEAT API (Presence, Participant Grid, Activity State)
+  // =========================================================================
+  async function sendHeartbeat() {
+    try {
+      const resp = await fetch("{% url 'meeting_heartbeat_api' room.slug %}", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          session_id: USER_SESSION_ID,
+          display_name: currentFounder.name,
+          role: currentFounder.role,
+          avatar: currentFounder.avatar,
+          color: currentFounder.color,
+          has_video: isVideoEnabled,
+          has_audio: isAudioEnabled,
+          is_screen_sharing: isScreenSharing,
+          hand_raised: isHandRaised,
+        })
+      });
+      const data = await resp.json();
+      if (data.success) {
+        syncParticipants(data.participants);
+        syncActivityState(data.activity_state, data.current_activity);
+      }
+    } catch (err) {
+      console.warn("Heartbeat error:", err);
+    }
+  }
+
+  function syncParticipants(participants) {
+    const count = participants.length;
+    document.getElementById('participantsCountDisplay').textContent = count;
+    document.getElementById('rosterCount').textContent = count;
+
+    // Update roster tab
+    const rosterList = document.getElementById('rosterList');
+    if (rosterList) {
+      rosterList.innerHTML = participants.map(p => `
+        <div class="comic-box comic-box-white flex items-center justify-between p-xs" style="border-width: 2px;">
+          <div class="flex items-center gap-xs">
+            <div class="comic-avatar comic-avatar-xs comic-box-${p.color || 'yellow'}">${p.avatar || 'TH'}</div>
+            <div>
+              <div class="font-bold text-xs">${escapeHtml(p.display_name)} ${p.is_self ? '<span class="text-muted">(You)</span>' : ''}</div>
+              <div class="text-xs text-muted font-bold">${escapeHtml(p.role)}</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-xs">
+            ${p.hand_raised ? '<span title="Hand Raised">✋</span>' : ''}
+            <span class="comic-badge comic-badge-xs ${p.has_audio ? 'comic-badge-green' : 'comic-badge-pink'}">
+              ${p.has_audio ? 'Mic On' : 'Muted'}
+            </span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Establish WebRTC peer connection for every other participant
+    participants.forEach(p => {
+      if (!p.is_self && !peerConnections[p.session_id]) {
+        initiatePeerConnection(p.session_id, p);
+      }
+      updatePeerCardState(p);
+    });
+
+    // Remove any peer cards whose session is no longer active
+    const activeSessions = new Set(participants.map(p => p.session_id));
+    for (let sid in peerConnections) {
+      if (!activeSessions.has(sid)) {
+        removePeerCard(sid);
+      }
+    }
+  }
+
+  function updatePeerCardState(peer) {
+    if (peer.is_self) {
+      const handBadge = document.getElementById('localHandBadge');
+      if (handBadge) handBadge.style.display = peer.hand_raised ? 'flex' : 'none';
+      const micBadge = document.getElementById('localMicBadge');
+      if (micBadge) {
+        micBadge.className = peer.has_audio ? "status-circle-badge" : "status-circle-badge muted";
+        micBadge.innerHTML = peer.has_audio ? '<i data-lucide="mic" class="icon-xs"></i>' : '<i data-lucide="mic-off" class="icon-xs"></i>';
+        lucide.createIcons();
+      }
+      return;
+    }
+
+    let card = document.getElementById('peerCard_' + peer.session_id);
+    if (!card) {
+      card = createPeerCard(peer);
+    }
+
+    // Toggle hand raise badge
+    const handBadge = card.querySelector('.peer-hand-badge');
+    if (handBadge) handBadge.style.display = peer.hand_raised ? 'flex' : 'none';
+
+    // Toggle mic status
+    const micBadge = card.querySelector('.peer-mic-badge');
+    if (micBadge) {
+      micBadge.className = peer.has_audio ? "status-circle-badge" : "status-circle-badge muted";
+      micBadge.innerHTML = peer.has_audio ? '<i data-lucide="mic" class="icon-xs"></i>' : '<i data-lucide="mic-off" class="icon-xs"></i>';
+      lucide.createIcons();
+    }
+
+    // Video vs Avatar display
+    const videoElem = card.querySelector('video');
+    const avatarFallback = card.querySelector('.avatar-card-fallback');
+    if (videoElem && avatarFallback) {
+      if (peer.has_video && videoElem.srcObject) {
+        videoElem.style.display = 'block';
+        avatarFallback.style.display = 'none';
+      } else {
+        videoElem.style.display = 'none';
+        avatarFallback.style.display = 'flex';
+      }
+    }
+  }
+
+  function createPeerCard(peer) {
+    const grid = document.getElementById('videoGrid');
+    const card = document.createElement('div');
+    card.className = 'video-card';
+    card.id = 'peerCard_' + peer.session_id;
+
+    card.innerHTML = `
+      <video autoplay playsinline></video>
+      <div class="avatar-card-fallback">
+        <div class="avatar-big-badge comic-box-${peer.color || 'purple'}">
+          ${escapeHtml(peer.avatar || 'TH')}
+        </div>
+        <div class="font-bold text-sm text-white">${escapeHtml(peer.display_name)}</div>
+        <span class="comic-badge comic-badge-xs comic-badge-white">${escapeHtml(peer.role || 'Member')}</span>
+      </div>
+      <div class="video-meta-overlay">
+        <div class="participant-tag">
+          <i data-lucide="user" class="icon-xs"></i>
+          <span>${escapeHtml(peer.display_name)}</span>
+        </div>
+        <div class="card-status-badges">
+          <div class="status-circle-badge peer-hand-badge" style="display: none;" title="Hand Raised">✋</div>
+          <div class="status-circle-badge peer-mic-badge" title="Microphone Status">
+            <i data-lucide="mic" class="icon-xs"></i>
+          </div>
+        </div>
+      </div>
+    `;
+
+    grid.appendChild(card);
+    lucide.createIcons();
+    return card;
+  }
+
+  function removePeerCard(sessionId) {
+    const card = document.getElementById('peerCard_' + sessionId);
+    if (card) card.remove();
+    if (peerConnections[sessionId]) {
+      try { peerConnections[sessionId].close(); } catch(e){}
+      delete peerConnections[sessionId];
+    }
+  }
+
+  // =========================================================================
+  // 4. WEBRTC P2P SIGNALING (Offers, Answers, ICE Candidates)
+  // =========================================================================
+  async function initiatePeerConnection(remoteSessionId, peerInfo) {
+    const pc = new RTCPeerConnection(RTC_CONFIG);
+    peerConnections[remoteSessionId] = pc;
+
+    // Attach local tracks
+    if (localStream) {
+      localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+    }
+
+    // ICE Candidate handler
+    pc.onicecandidate = (event) => {
+      if (event.candidate) {
+        sendSignal(remoteSessionId, 'ice_candidate', event.candidate);
+      }
+    };
+
+    // Incoming Remote Stream Track
+    pc.ontrack = (event) => {
+      const remoteStream = event.streams[0];
+      remoteStreams[remoteSessionId] = remoteStream;
+      const card = document.getElementById('peerCard_' + remoteSessionId) || createPeerCard(peerInfo);
+      const videoElem = card.querySelector('video');
+      const avatarElem = card.querySelector('.avatar-card-fallback');
+      if (videoElem) {
+        videoElem.srcObject = remoteStream;
+        videoElem.style.display = 'block';
+        if (avatarElem) avatarElem.style.display = 'none';
+      }
+    };
+
+    // Polite peer pattern: If my session ID is alphabetically smaller, create offer
+    if (USER_SESSION_ID < remoteSessionId) {
+      try {
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        sendSignal(remoteSessionId, 'offer', offer);
+      } catch (err) {
+        console.warn("Error creating offer:", err);
+      }
+    }
+  }
+
+  async function sendSignal(toSession, signalType, payload) {
+    try {
+      await fetch("{% url 'meeting_signal_send_api' room.slug %}", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          from_session: USER_SESSION_ID,
+          to_session: toSession,
+          signal_type: signalType,
+          payload: payload
+        })
+      });
+    } catch (err) {
+      console.warn("Signal send failed:", err);
+    }
+  }
+
+  async function pollSignals() {
+    try {
+      const resp = await fetch(`{% url 'meeting_signal_poll_api' room.slug %}?session_id=${USER_SESSION_ID}&last_id=${lastSignalId}`);
+      const data = await resp.json();
+      if (data.success && data.signals && data.signals.length) {
+        lastSignalId = data.last_id;
+        for (const sig of data.signals) {
+          handleIncomingSignal(sig);
+        }
+      }
+    } catch (err) {
+      console.warn("Signal polling error:", err);
+    }
+  }
+
+  async function handleIncomingSignal(sig) {
+    const remoteSid = sig.from_session;
+    let pc = peerConnections[remoteSid];
+
+    if (sig.signal_type === 'offer') {
+      if (!pc) {
+        pc = new RTCPeerConnection(RTC_CONFIG);
+        peerConnections[remoteSid] = pc;
+        if (localStream) {
+          localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+        }
+        pc.onicecandidate = (e) => {
+          if (e.candidate) sendSignal(remoteSid, 'ice_candidate', e.candidate);
+        };
+        pc.ontrack = (e) => {
+          const card = document.getElementById('peerCard_' + remoteSid);
+          if (card) {
+            const v = card.querySelector('video');
+            if (v) {
+              v.srcObject = e.streams[0];
+              v.style.display = 'block';
+            }
+          }
+        };
+      }
+      try {
+        await pc.setRemoteDescription(new RTCSessionDescription(sig.payload));
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+        sendSignal(remoteSid, 'answer', answer);
+      } catch (err) {
+        console.warn("Error handling offer:", err);
+      }
+    } else if (sig.signal_type === 'answer') {
+      if (pc) {
+        try {
+          await pc.setRemoteDescription(new RTCSessionDescription(sig.payload));
+        } catch (err) {
+          console.warn("Error setting remote answer:", err);
+        }
+      }
+    } else if (sig.signal_type === 'ice_candidate') {
+      if (pc && sig.payload) {
+        try {
+          await pc.addIceCandidate(new RTCIceCandidate(sig.payload));
+        } catch (err) {
+          console.warn("Error adding ICE candidate:", err);
+        }
+      }
+    } else if (sig.signal_type === 'reaction') {
+      spawnFloatingReaction(sig.payload.emoji);
+    } else if (sig.signal_type === 'peer_left') {
+      removePeerCard(remoteSid);
+    }
+  }
+
+  // =========================================================================
+  // 5. IN-CALL CONTROLS (Mic, Cam, Screen Share, Hand Raise, Reactions)
+  // =========================================================================
+  function toggleLocalAudio() {
+    isAudioEnabled = !isAudioEnabled;
+    if (localStream && localStream.getAudioTracks().length) {
+      localStream.getAudioTracks()[0].enabled = isAudioEnabled;
+    }
+    updateMicDockUI();
+    sendHeartbeat();
+  }
+
+  function updateMicDockUI() {
+    const btn = document.getElementById('btnToggleMic');
+    const label = document.getElementById('labelMic');
+    const icon = document.getElementById('iconMic');
+    if (isAudioEnabled) {
+      btn.className = "control-btn";
+      label.textContent = "Mute";
+      btn.innerHTML = '<i data-lucide="mic"></i><span>Mute</span>';
+    } else {
+      btn.className = "control-btn danger muted";
+      btn.innerHTML = '<i data-lucide="mic-off"></i><span>Unmute</span>';
+    }
+    lucide.createIcons();
+  }
+
+  function toggleLocalVideo() {
+    isVideoEnabled = !isVideoEnabled;
+    const localVideo = document.getElementById('localVideo');
+    const localAvatar = document.getElementById('localAvatarFallback');
+
+    if (localStream && localStream.getVideoTracks().length) {
+      localStream.getVideoTracks()[0].enabled = isVideoEnabled;
+    }
+    if (isVideoEnabled) {
+      localVideo.style.display = 'block';
+      localAvatar.style.display = 'none';
+    } else {
+      localVideo.style.display = 'none';
+      localAvatar.style.display = 'flex';
+    }
+    updateCamDockUI();
+    sendHeartbeat();
+  }
+
+  function updateCamDockUI() {
+    const btn = document.getElementById('btnToggleCam');
+    if (isVideoEnabled) {
+      btn.className = "control-btn";
+      btn.innerHTML = '<i data-lucide="video"></i><span>Stop Cam</span>';
+    } else {
+      btn.className = "control-btn danger";
+      btn.innerHTML = '<i data-lucide="video-off"></i><span>Start Cam</span>';
+    }
+    lucide.createIcons();
+  }
+
+  async function toggleScreenShare() {
+    const btn = document.getElementById('btnScreenShare');
+    if (!isScreenSharing) {
+      try {
+        screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+        const screenTrack = screenStream.getVideoTracks()[0];
+
+        // Replace video track in all active peer connections
+        for (let sid in peerConnections) {
+          const senders = peerConnections[sid].getSenders();
+          const videoSender = senders.find(s => s.track && s.track.kind === 'video');
+          if (videoSender) {
+            videoSender.replaceTrack(screenTrack);
+          }
+        }
+
+        // Display local screen share preview
+        const localVideo = document.getElementById('localVideo');
+        localVideo.srcObject = screenStream;
+        localVideo.classList.remove('mirrored');
+
+        isScreenSharing = true;
+        btn.className = "control-btn active";
+        btn.innerHTML = '<i data-lucide="monitor-off"></i><span>Stop Share</span>';
+        lucide.createIcons();
+
+        screenTrack.onended = () => {
+          stopScreenShare();
+        };
+
+        showComicToast("Screen sharing active! Pitch decks & demos are live.");
+      } catch (err) {
+        console.warn("Screen share cancelled or failed:", err);
+      }
+    } else {
+      stopScreenShare();
+    }
+  }
+
+  function stopScreenShare() {
+    if (screenStream) {
+      screenStream.getTracks().forEach(t => t.stop());
+      screenStream = null;
+    }
+    const btn = document.getElementById('btnScreenShare');
+    const localVideo = document.getElementById('localVideo');
+
+    if (localStream && localStream.getVideoTracks().length) {
+      const camTrack = localStream.getVideoTracks()[0];
+      for (let sid in peerConnections) {
+        const senders = peerConnections[sid].getSenders();
+        const videoSender = senders.find(s => s.track && s.track.kind === 'video');
+        if (videoSender) videoSender.replaceTrack(camTrack);
+      }
+      localVideo.srcObject = localStream;
+      localVideo.classList.add('mirrored');
+    }
+
+    isScreenSharing = false;
+    btn.className = "control-btn";
+    btn.innerHTML = '<i data-lucide="monitor"></i><span>Share Screen</span>';
+    lucide.createIcons();
+    showComicToast("Screen share stopped. Reverted to camera.");
+  }
+
+  function toggleRaiseHand() {
+    isHandRaised = !isHandRaised;
+    const btn = document.getElementById('btnRaiseHand');
+    const handBadge = document.getElementById('localHandBadge');
+
+    if (isHandRaised) {
+      btn.className = "control-btn active";
+      if (handBadge) handBadge.style.display = 'flex';
+      showComicToast("✋ Hand raised! Other founders notified.");
+    } else {
+      btn.className = "control-btn";
+      if (handBadge) handBadge.style.display = 'none';
+    }
+    sendHeartbeat();
+  }
+
+  function toggleReactionPalette() {
+    const palette = document.getElementById('reactionPalette');
+    palette.style.display = palette.style.display === 'none' ? 'flex' : 'none';
+  }
+
+  function sendEmojiReaction(emoji) {
+    spawnFloatingReaction(emoji);
+    sendSignal('all', 'reaction', { emoji: emoji });
+    toggleReactionPalette();
+  }
+
+  function spawnFloatingReaction(emoji) {
+    const layer = document.getElementById('reactionsLayer');
+    const el = document.createElement('div');
+    el.className = 'floating-reaction';
+    el.textContent = emoji;
+    el.style.left = Math.floor(Math.random() * 60 + 20) + '%';
+    layer.appendChild(el);
+    setTimeout(() => el.remove(), 2800);
+  }
+
+  function toggleDrawer() {
+    const drawer = document.getElementById('sideDrawer');
+    const btn = document.getElementById('btnToggleDrawer');
+    if (drawer.classList.contains('hidden-drawer')) {
+      drawer.classList.remove('hidden-drawer');
+      btn.classList.add('active');
+    } else {
+      drawer.classList.add('hidden-drawer');
+      btn.classList.remove('active');
+    }
+  }
+
+  function switchDrawerTab(tab) {
+    document.querySelectorAll('.drawer-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('panelActivities').style.display = 'none';
+    document.getElementById('panelChat').style.display = 'none';
+    document.getElementById('panelRoster').style.display = 'none';
+
+    if (tab === 'activities') {
+      document.getElementById('tabBtnActivities').classList.add('active');
+      document.getElementById('panelActivities').style.display = 'flex';
+    } else if (tab === 'chat') {
+      document.getElementById('tabBtnChat').classList.add('active');
+      document.getElementById('panelChat').style.display = 'flex';
+      document.getElementById('chatUnreadDot').style.display = 'none';
+    } else if (tab === 'roster') {
+      document.getElementById('tabBtnRoster').classList.add('active');
+      document.getElementById('panelRoster').style.display = 'flex';
+    }
+  }
+
+  // =========================================================================
+  // 6. IN-MEETING CHAT SYSTEM
+  // =========================================================================
+  async function sendMeetingChat(e) {
+    e.preventDefault();
+    const input = document.getElementById('chatInput');
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    input.value = '';
+    try {
+      const resp = await fetch("{% url 'meeting_chat_api' room.slug %}", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          session_id: USER_SESSION_ID,
+          sender_name: currentFounder.name,
+          sender_avatar: currentFounder.avatar,
+          sender_color: currentFounder.color,
+          message: msg,
+          message_type: 'chat'
+        })
+      });
+      const data = await resp.json();
+      if (data.success && data.message) {
+        appendChatMessage(data.message, true);
+      }
+    } catch (err) {
+      console.warn("Failed to send chat message:", err);
+    }
+  }
+
+  async function pollChatMessages() {
+    try {
+      const resp = await fetch(`{% url 'meeting_chat_api' room.slug %}?session_id=${USER_SESSION_ID}&last_id=${lastChatId}`);
+      const data = await resp.json();
+      if (data.success && data.messages && data.messages.length) {
+        lastChatId = data.last_id;
+        const panelChat = document.getElementById('panelChat');
+        if (panelChat.style.display === 'none') {
+          document.getElementById('chatUnreadDot').style.display = 'inline-block';
+        }
+        data.messages.forEach(m => appendChatMessage(m, m.is_self));
+      }
+    } catch (err) {
+      console.warn("Chat poll error:", err);
+    }
+  }
+
+  function appendChatMessage(msg, isSelf) {
+    const container = document.getElementById('chatMessagesContainer');
+    if (!container) return;
+
+    if (msg.message_type === 'system' || msg.message_type === 'pitch_vote') {
+      const div = document.createElement('div');
+      div.className = 'chat-bubble system-bubble';
+      div.innerHTML = `${escapeHtml(msg.sender_avatar || '🔔')} ${escapeHtml(msg.message)}`;
+      container.appendChild(div);
+    } else {
+      const row = document.createElement('div');
+      row.className = 'chat-bubble-row ' + (isSelf ? 'self' : '');
+      row.innerHTML = `
+        <div class="comic-avatar comic-avatar-xs comic-box-${msg.sender_color || 'yellow'}">
+          ${escapeHtml(msg.sender_avatar || 'TH')}
+        </div>
+        <div class="chat-bubble ${isSelf ? 'self-bubble' : 'other-bubble'}">
+          <div class="text-xs font-bold text-muted mb-xs">${escapeHtml(msg.sender_name)}</div>
+          <div>${escapeHtml(msg.message)}</div>
+        </div>
+      `;
+      container.appendChild(row);
+    }
+    container.scrollTop = container.scrollHeight;
+  }
+
+  // =========================================================================
+  // 7. CLUB ACTIVITIES (Pitch Roaster, Icebreaker Spinner, Notes)
+  // =========================================================================
+  function syncActivityState(state, activityType) {
+    if (!state) return;
+
+    // Pitch Timer
+    if (state.pitch_timer) {
+      const timer = state.pitch_timer;
+      if (timer.running) {
+        if (!pitchTimerInterval) {
+          startLocalTimerTick();
+        }
+      } else {
+        if (pitchTimerInterval) {
+          clearInterval(pitchTimerInterval);
+          pitchTimerInterval = null;
+        }
+      }
+      if (timer.time_left !== undefined && !timer.running) {
+        updateTimerDisplay(timer.time_left);
+      }
+    }
+
+    // Mastermind Topic
+    if (state.current_topic) {
+      const topicElem = document.getElementById('currentTopicText');
+      if (topicElem) topicElem.textContent = `"${state.current_topic}"`;
+    }
+  }
+
+  function startLocalTimerTick() {
+    if (pitchTimerInterval) clearInterval(pitchTimerInterval);
+    pitchTimerInterval = setInterval(() => {
+      timerSecondsLeft--;
+      if (timerSecondsLeft <= 0) {
+        timerSecondsLeft = 0;
+        clearInterval(pitchTimerInterval);
+        pitchTimerInterval = null;
+        showComicToast("⏰ Time is up! Roast the pitch!");
+      }
+      updateTimerDisplay(timerSecondsLeft);
+    }, 1000);
+  }
+
+  function updateTimerDisplay(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    const str = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    const display = document.getElementById('timerDisplay');
+    if (display) {
+      display.textContent = str;
+      if (seconds <= 10 && seconds > 0) {
+        display.classList.add('danger');
+      } else {
+        display.classList.remove('danger');
+      }
+    }
+  }
+
+  async function startPitchTimer(duration) {
+    timerSecondsLeft = duration;
+    updateTimerDisplay(duration);
+    startLocalTimerTick();
+    await dispatchActivityAction('start_timer', { duration: duration, speaker: currentFounder.name });
+  }
+
+  async function stopPitchTimer() {
+    if (pitchTimerInterval) {
+      clearInterval(pitchTimerInterval);
+      pitchTimerInterval = null;
+    }
+    await dispatchActivityAction('stop_timer', {});
+  }
+
+  async function resetPitchTimer(duration) {
+    if (pitchTimerInterval) {
+      clearInterval(pitchTimerInterval);
+      pitchTimerInterval = null;
+    }
+    timerSecondsLeft = duration;
+    updateTimerDisplay(duration);
+    await dispatchActivityAction('reset_timer', { duration: duration, speaker: currentFounder.name });
+  }
+
+  function setVoteScore(score) {
+    currentVoteScore = score;
+    const stars = document.getElementById('starRating').children;
+    for (let i = 0; i < stars.length; i++) {
+      stars[i].style.opacity = (i < score) ? '1' : '0.3';
+    }
+  }
+
+  function toggleVoteTag(btn, tag) {
+    if (selectedVoteTags.includes(tag)) {
+      selectedVoteTags = selectedVoteTags.filter(t => t !== tag);
+      btn.className = "comic-btn comic-btn-xs comic-btn-white vote-tag";
+    } else {
+      selectedVoteTags.push(tag);
+      btn.className = "comic-btn comic-btn-xs comic-btn-pink vote-tag";
+    }
+  }
+
+  async function submitPitchVote() {
+    await dispatchActivityAction('vote_pitch', {
+      score: currentVoteScore,
+      tags: selectedVoteTags,
+      voter_name: currentFounder.name,
+      feedback: "Live pitch feedback"
+    });
+    showComicToast("Pitch score & roast feedback submitted!");
+  }
+
+  async function spinNextTopic() {
+    await dispatchActivityAction('next_topic', {});
+    showComicToast("New Mastermind discussion topic broadcasted!");
+  }
+
+  async function saveRoomNotes() {
+    const notes = document.getElementById('roomNotesText').value;
+    await dispatchActivityAction('save_notes', { notes: notes });
+    showComicToast("Discussion notes synced across all peers!");
+  }
+
+  async function dispatchActivityAction(action, data) {
+    try {
+      const resp = await fetch("{% url 'meeting_activity_api' room.slug %}", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: action, ...data })
+      });
+      const resData = await resp.json();
+      if (resData.success && resData.activity_state) {
+        syncActivityState(resData.activity_state, resData.current_activity);
+      }
+    } catch (err) {
+      console.warn("Activity action failed:", err);
+    }
+  }
+
+  // =========================================================================
+  // 8. SIMULATED CLUB PEERS FOR TESTING (Demo Mode)
+  // =========================================================================
+  async function toggleDemoPeers() {
+    try {
+      const resp = await fetch("{% url 'meeting_demo_peers_api' room.slug %}", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }
+      });
+      const data = await resp.json();
+      if (data.success) {
+        showComicToast(data.message);
+        sendHeartbeat();
+      }
+    } catch (err) {
+      console.warn("Toggle demo peers failed:", err);
+    }
+  }
+
+  // =========================================================================
+  // 9. LEAVE DISCUSSION CLEANUP
+  // =========================================================================
+  async function leaveMeeting() {
+    if (confirm("Leave this discussion meeting stage?")) {
+      try {
+        await fetch("{% url 'meeting_leave_api' room.slug %}", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ session_id: USER_SESSION_ID })
+        });
+      } catch (e) {}
+
+      // Stop all tracks
+      if (localStream) {
+        localStream.getTracks().forEach(t => t.stop());
+      }
+      if (screenStream) {
+        screenStream.getTracks().forEach(t => t.stop());
+      }
+      for (let sid in peerConnections) {
+        try { peerConnections[sid].close(); } catch(e){}
+      }
+
+      window.location.href = "{% url 'meeting_directory' %}";
+    }
+  }
+
+  function copyRoomLink() {
+    navigator.clipboard.writeText(window.location.href);
+    showComicToast("Meeting link copied to clipboard! Send to peers.");
+  }
+
+  function escapeHtml(text) {
+    if (!text) return '';
+    return text.toString()
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+</script>
+{% endblock %}
