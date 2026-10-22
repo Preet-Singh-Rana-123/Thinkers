@@ -1,139 +1,104 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ room.title }} | Live Discussion Stage{% endblock %}
+{% block title %}{{ room.title }} | Live Meeting Stage{% endblock %}
 
-{% block navbar %}
-<!-- Sleek In-Meeting Top Bar Replacing Full Navbar for Uncluttered Stage Focus -->
-<header class="meeting-header">
-  <div class="meeting-header-left">
-    <a href="{% url 'meeting_directory' %}" class="meeting-back-btn" title="Exit to Meeting Directory">
-      <i data-lucide="arrow-left" class="icon-sm"></i>
-      <span class="hidden sm:inline">Exit</span>
-    </a>
-    <div class="meeting-title-group">
-      <div class="meeting-title-row">
-        <h1 class="meeting-room-title">{{ room.title }}</h1>
-        <span class="meeting-pill meeting-pill-{{ room.badge_color }}">{{ room.get_meeting_type_display }}</span>
-      </div>
-      <div class="meeting-sub-meta">
-        <span class="meeting-live-dot"></span>
-        <span class="meeting-status-label" id="connectionStatusText">Live Discussion Stage</span>
-        <span class="meeting-meta-sep">•</span>
-        <span class="meeting-club-name"><i data-lucide="compass" class="icon-xs"></i> {{ room.club_display }}</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="meeting-header-right">
-    <div class="meeting-timer-pill" id="roomSessionTimer" title="Session Duration">
-      <i data-lucide="clock" class="icon-xs"></i>
-      <span id="sessionTimerDisplay">00:00</span>
-    </div>
-
-    <button onclick="toggleDemoPeers()" class="meeting-header-btn meeting-header-btn-yellow" id="toggleDemoPeersBtn" title="Simulate 2 Club Co-Founders for Testing">
-      <i data-lucide="sparkles" class="icon-xs"></i>
-      <span class="hidden sm:inline">Simulate Peers</span>
-    </button>
-
-    <button onclick="copyRoomLink()" class="meeting-header-btn" title="Copy Invite Link">
-      <i data-lucide="share-2" class="icon-xs"></i>
-      <span class="hidden md:inline">Share</span>
-    </button>
-
-    <button class="meeting-header-btn" id="layoutToggleBtn" onclick="toggleStageLayout()" title="Switch View (Grid / Focus)">
-      <i data-lucide="layout-grid" class="icon-xs"></i>
-    </button>
-  </div>
-</header>
-{% endblock %}
-
-{% block footer %}
-<!-- Intentionally empty: Remove bulky marketing footer inside live video room -->
-{% endblock %}
-
-{% block extra_head %}
+{% block extra_css %}
 <style>
   /* =========================================================================
-     CLEAN, MODERN NEO-STUDIO VIDEO MEETING STAGE
+     STANDALONE FULL-SCREEN LIVE MEETING ROOM STAGE (GOOGLE MEET / WHEREBY STYLE)
      ========================================================================= */
-  :root {
-    --stage-bg: #0f1115;
-    --stage-surface: #181b22;
-    --stage-surface-hover: #222630;
-    --stage-border: rgba(255, 255, 255, 0.1);
-    --stage-border-active: #FFDD00;
-    --stage-text: #f3f4f6;
-    --stage-text-muted: #9ca3af;
+  * {
+    box-sizing: border-box;
   }
 
-  /* Reset main container padding for full-bleed meeting stage */
-  body {
-    background-color: var(--stage-bg) !important;
-    overflow: hidden !important;
-  }
-  .main-content {
-    padding: 0 !important;
+  html, body {
     margin: 0 !important;
-    max-width: 100% !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    background-color: #0c0e12 !important;
+    color: #f3f4f6 !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
   }
-  .comic-stripe {
+
+  .comic-stripe, .django-messages-wrap {
     display: none !important;
   }
 
-  /* Meeting Top Header */
-  .meeting-header {
-    height: 56px;
-    background: #16181d;
-    border-bottom: 2px solid #232731;
+  main.main-content {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: 100vw !important;
+    overflow: hidden !important;
+  }
+
+  /* Meeting Master Shell */
+  .meet-app {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    background: #0c0e12;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* 1. TOP HEADER BAR */
+  .meet-top-bar {
+    height: 54px;
+    background: #14171f;
+    border-bottom: 1px solid #232834;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 1.25rem;
-    z-index: 50;
-    position: relative;
-    color: #ffffff;
+    z-index: 40;
+    flex-shrink: 0;
   }
 
-  .meeting-header-left {
+  .meet-top-left {
     display: flex;
     align-items: center;
     gap: 0.85rem;
     min-width: 0;
   }
 
-  .meeting-back-btn {
+  .meet-exit-btn {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
     padding: 0.35rem 0.65rem;
-    background: #232731;
-    border: 1.5px solid rgba(255, 255, 255, 0.15);
+    background: #202430;
+    border: 1px solid #2e3444;
     border-radius: 8px;
-    color: #ffffff;
-    font-size: 0.8rem;
+    color: #e5e7eb;
+    font-size: 0.78rem;
     font-weight: 700;
     text-decoration: none;
     transition: all 0.15s ease;
   }
-  .meeting-back-btn:hover {
-    background: #2e3442;
+  .meet-exit-btn:hover {
+    background: #2b3142;
     color: #FFDD00;
   }
 
-  .meeting-title-group {
+  .meet-title-info {
     display: flex;
     flex-direction: column;
     min-width: 0;
   }
 
-  .meeting-title-row {
+  .meet-title-row {
     display: flex;
     align-items: center;
     gap: 0.5rem;
   }
 
-  .meeting-room-title {
+  .meet-room-name {
     font-size: 0.95rem;
     font-weight: 800;
     color: #ffffff;
@@ -141,248 +106,245 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 380px;
-    letter-spacing: -0.01em;
+    max-width: 360px;
   }
 
-  .meeting-pill {
+  .meet-badge-tag {
     font-size: 0.65rem;
     font-weight: 800;
     padding: 0.15rem 0.45rem;
     border-radius: 6px;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
-    border: 1.5px solid #161616;
+    background: #FFDD00;
+    color: #161616;
+    letter-spacing: 0.03em;
   }
-  .meeting-pill-purple { background: #d8b4fe; color: #161616; }
-  .meeting-pill-pink { background: #fca5a5; color: #161616; }
-  .meeting-pill-yellow { background: #fde047; color: #161616; }
-  .meeting-pill-cyan { background: #7dd3fc; color: #161616; }
-  .meeting-pill-green { background: #86efac; color: #161616; }
 
-  .meeting-sub-meta {
+  .meet-sub-row {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    gap: 0.45rem;
     font-size: 0.72rem;
-    color: var(--stage-text-muted);
-    font-weight: 600;
+    color: #9ca3af;
   }
 
-  .meeting-live-dot {
+  .meet-pulse-dot {
     width: 7px;
     height: 7px;
     border-radius: 50%;
     background: #10b981;
-    animation: livePulse 1.8s infinite;
+    animation: liveGlow 1.8s infinite;
   }
 
-  @keyframes livePulse {
+  @keyframes liveGlow {
     0%, 100% { opacity: 1; transform: scale(1); }
     50% { opacity: 0.4; transform: scale(0.85); }
   }
 
-  .meeting-header-right {
+  .meet-top-right {
     display: flex;
     align-items: center;
     gap: 0.5rem;
   }
 
-  .meeting-timer-pill {
+  .meet-timer-badge {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    padding: 0.3rem 0.6rem;
-    background: #232731;
-    border-radius: 6px;
-    font-size: 0.75rem;
+    padding: 0.3rem 0.65rem;
+    background: #1f232d;
+    border: 1px solid #2d3342;
+    border-radius: 8px;
+    font-size: 0.78rem;
     font-weight: 700;
-    color: #e5e7eb;
+    color: #d1d5db;
     font-variant-numeric: tabular-nums;
   }
 
-  .meeting-header-btn {
+  .meet-head-action-btn {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    padding: 0.35rem 0.7rem;
-    background: #232731;
-    border: 1.5px solid rgba(255, 255, 255, 0.12);
+    padding: 0.35rem 0.75rem;
+    background: #202430;
+    border: 1px solid #2e3444;
     border-radius: 8px;
-    color: #ffffff;
+    color: #f3f4f6;
     font-size: 0.78rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.15s ease;
   }
-  .meeting-header-btn:hover {
-    background: #2f3544;
-    border-color: rgba(255, 255, 255, 0.3);
+  .meet-head-action-btn:hover {
+    background: #2b3142;
+    border-color: #3f475d;
   }
-  .meeting-header-btn-yellow {
+  .meet-head-action-btn.primary {
     background: #FFDD00;
     color: #161616;
-    border: 2px solid #161616;
-    box-shadow: 2px 2px 0 #161616;
+    border-color: #FFDD00;
+    box-shadow: 0 2px 8px rgba(255, 221, 0, 0.25);
   }
-  .meeting-header-btn-yellow:hover {
-    background: #ffe642;
-    transform: translateY(-1px);
+  .meet-head-action-btn.primary:hover {
+    background: #ffe338;
   }
 
-  /* Main Stage Container */
-  .meeting-stage-viewport {
+  /* 2. MAIN BODY / VIDEO ARENA */
+  .meet-body-area {
     display: flex;
-    height: calc(100vh - 56px);
-    width: 100vw;
-    background: var(--stage-bg);
+    flex: 1;
+    height: calc(100vh - 54px);
     position: relative;
     overflow: hidden;
   }
 
-  .stage-arena-wrap {
+  .meet-stage-arena {
     flex: 1;
     display: flex;
     flex-direction: column;
-    position: relative;
-    overflow: hidden;
-    padding: 1rem 1rem 5.5rem 1rem;
-    height: 100%;
     align-items: center;
     justify-content: center;
+    padding: 1.25rem 1.25rem 5.5rem 1.25rem;
+    position: relative;
+    overflow: hidden;
+    height: 100%;
   }
 
-  /* Dynamic Adaptive Video Grid */
-  .clean-video-grid {
+  /* Dynamic Responsive Video Grid */
+  .meet-video-grid {
     display: grid;
     gap: 1rem;
     width: 100%;
     height: 100%;
-    max-width: 1320px;
-    max-height: calc(100vh - 165px);
+    max-width: 1280px;
+    max-height: calc(100vh - 145px);
+    margin: auto;
     align-content: center;
     justify-content: center;
-    margin: auto;
-    transition: all 0.3s ease;
+    transition: all 0.25s ease;
   }
 
-  /* Auto Grid layouts based on participant count */
-  .clean-video-grid[data-count="1"] {
+  /* Grid layout rules depending on participant count */
+  .meet-video-grid[data-count="1"] {
     grid-template-columns: 1fr;
-    max-width: 880px;
-    max-height: 540px;
+    max-width: 820px;
+    max-height: 520px;
   }
-  .clean-video-grid[data-count="2"] {
+  .meet-video-grid[data-count="2"] {
     grid-template-columns: repeat(2, 1fr);
+    max-height: 500px;
   }
-  .clean-video-grid[data-count="3"],
-  .clean-video-grid[data-count="4"] {
+  .meet-video-grid[data-count="3"],
+  .meet-video-grid[data-count="4"] {
     grid-template-columns: repeat(2, 1fr);
+    max-height: calc(100vh - 160px);
   }
-  .clean-video-grid[data-count="5"],
-  .clean-video-grid[data-count="6"],
-  .clean-video-grid[data-count="7"],
-  .clean-video-grid[data-count="8"] {
+  .meet-video-grid[data-count="5"],
+  .meet-video-grid[data-count="6"],
+  .meet-video-grid[data-count="7"],
+  .meet-video-grid[data-count="8"] {
     grid-template-columns: repeat(3, 1fr);
   }
 
   @media (max-width: 768px) {
-    .clean-video-grid[data-count="2"],
-    .clean-video-grid[data-count="3"],
-    .clean-video-grid[data-count="4"],
-    .clean-video-grid[data-count="5"] {
+    .meet-video-grid[data-count="2"],
+    .meet-video-grid[data-count="3"],
+    .meet-video-grid[data-count="4"],
+    .meet-video-grid[data-count="5"] {
       grid-template-columns: 1fr !important;
     }
   }
 
-  /* Individual Video Card */
-  .clean-video-tile {
-    background: #191c24;
-    border: 2px solid #282d3a;
+  /* Video Tile Card */
+  .meet-video-tile {
+    background: #181b23;
+    border: 2px solid #282d3b;
     border-radius: 16px;
     position: relative;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
     aspect-ratio: 16 / 9;
     width: 100%;
     height: 100%;
     min-height: 180px;
-    transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
   }
 
-  .clean-video-tile.speaking {
+  .meet-video-tile.speaking {
     border-color: #10b981;
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.4), 0 8px 24px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.4), 0 8px 30px rgba(0, 0, 0, 0.6);
   }
 
-  .clean-video-tile.hand-raised {
+  .meet-video-tile.hand-raised {
     border-color: #FFDD00;
+    box-shadow: 0 0 0 3px rgba(255, 221, 0, 0.35);
   }
 
-  .clean-video-tile video {
+  .meet-video-tile video {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    background: #111317;
+    background: #111318;
   }
 
-  .clean-video-tile video.mirrored {
+  .meet-video-tile video.mirrored {
     transform: scaleX(-1);
   }
 
-  /* Avatar Fallback Card when camera is disabled */
-  .clean-avatar-fallback {
+  /* Camera-Off Avatar Tile */
+  .meet-avatar-canvas {
     width: 100%;
     height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.6rem;
-    background: radial-gradient(circle at center, #232733 0%, #15171e 100%);
-    color: #ffffff;
+    gap: 0.65rem;
+    background: radial-gradient(circle at center, #242938 0%, #13151c 100%);
     user-select: none;
   }
 
-  .clean-avatar-circle {
-    width: 76px;
-    height: 76px;
+  .meet-avatar-circle {
+    width: 78px;
+    height: 78px;
     border-radius: 50%;
-    border: 3px solid #161616;
+    background: #2b3142;
+    border: 3px solid #FFDD00;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.8rem;
     font-weight: 900;
-    box-shadow: 3px 3px 0 #161616;
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
     transition: transform 0.2s ease;
   }
 
-  .clean-video-tile.speaking .clean-avatar-circle {
-    transform: scale(1.08);
+  .meet-video-tile.speaking .meet-avatar-circle {
+    transform: scale(1.1);
     box-shadow: 0 0 0 4px #10b981;
   }
 
-  .clean-avatar-name {
-    font-size: 0.88rem;
+  .meet-avatar-name {
+    font-size: 0.9rem;
     font-weight: 800;
     color: #ffffff;
   }
 
-  .clean-avatar-off-pill {
-    font-size: 0.65rem;
+  .meet-avatar-subtag {
+    font-size: 0.68rem;
     font-weight: 700;
-    padding: 0.15rem 0.45rem;
+    padding: 0.2rem 0.55rem;
     border-radius: 4px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
     color: #9ca3af;
   }
 
-  /* Overlay Badges on Video Card */
-  .tile-meta-bottom {
+  /* Tile Overlays */
+  .tile-info-bar-bottom {
     position: absolute;
     bottom: 0.65rem;
     left: 0.65rem;
@@ -394,79 +356,77 @@
     z-index: 10;
   }
 
-  .tile-name-chip {
-    background: rgba(15, 17, 21, 0.82);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 8px;
-    padding: 0.25rem 0.6rem;
+  .tile-user-chip {
+    background: rgba(18, 21, 28, 0.85);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    padding: 0.3rem 0.75rem;
     color: #ffffff;
-    font-size: 0.74rem;
+    font-size: 0.75rem;
     font-weight: 700;
     display: flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.4rem;
   }
 
-  .tile-status-group {
+  .tile-controls-status {
     display: flex;
     align-items: center;
     gap: 0.35rem;
   }
 
-  .tile-icon-badge {
-    width: 28px;
-    height: 28px;
+  .tile-status-icon {
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
-    background: rgba(15, 17, 21, 0.82);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(18, 21, 28, 0.85);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.75rem;
+    font-size: 0.78rem;
   }
 
-  .tile-icon-badge.danger {
+  .tile-status-icon.danger {
     background: #ef4444;
     border-color: #ef4444;
     color: #ffffff;
   }
 
-  .tile-icon-badge.warning {
+  .tile-status-icon.warning {
     background: #FFDD00;
     border-color: #FFDD00;
     color: #161616;
   }
 
-  /* =========================================================================
-     FLOATING DOCKED CONTROL BAR (GOOGLE MEET / WHEREBY STYLE)
-     ========================================================================= */
-  .floating-controls-dock {
+  /* 3. FLOATING BOTTOM DOCK CONTROLS (GOOGLE MEET STYLE) */
+  .meet-dock-container {
     position: absolute;
     bottom: 1.25rem;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(22, 25, 32, 0.94);
-    backdrop-filter: blur(16px);
-    border: 2px solid rgba(255, 255, 255, 0.14);
+    background: rgba(22, 26, 35, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: 9999px;
     padding: 0.45rem 0.85rem;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 0, 0, 0.4);
-    z-index: 40;
+    gap: 0.55rem;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(0, 0, 0, 0.3);
+    z-index: 50;
   }
 
-  .dock-btn {
+  .meet-dock-btn {
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background: #2b303c;
-    border: 1.5px solid rgba(255, 255, 255, 0.12);
-    color: #f3f4f6;
+    background: #2a303f;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #e5e7eb;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -476,151 +436,148 @@
     padding: 0;
   }
 
-  .dock-btn:hover {
-    background: #394050;
+  .meet-dock-btn:hover {
+    background: #384155;
     transform: translateY(-2px);
     color: #ffffff;
   }
 
-  .dock-btn:active {
+  .meet-dock-btn:active {
     transform: translateY(1px);
   }
 
-  .dock-btn.active {
+  .meet-dock-btn.active {
     background: #FFDD00;
     color: #161616;
-    border-color: #161616;
+    border-color: #FFDD00;
   }
 
-  .dock-btn.danger {
+  .meet-dock-btn.danger {
     background: #ef4444;
     border-color: #ef4444;
     color: #ffffff;
   }
 
-  .dock-btn.danger:hover {
+  .meet-dock-btn.danger:hover {
     background: #dc2626;
   }
 
-  .dock-btn.leave-btn {
+  .meet-dock-btn.leave {
     width: auto;
     border-radius: 9999px;
-    padding: 0 1rem;
+    padding: 0 1.15rem;
     background: #dc2626;
     border-color: #b91c1c;
     color: #ffffff;
     font-weight: 800;
-    font-size: 0.78rem;
-    gap: 0.35rem;
+    font-size: 0.8rem;
+    gap: 0.4rem;
   }
 
-  .dock-btn.leave-btn:hover {
+  .meet-dock-btn.leave:hover {
     background: #b91c1c;
   }
 
-  .dock-badge-dot {
-    position: absolute;
-    top: 2px;
-    right: 2px;
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background: #ef4444;
-    border: 1.5px solid #16181d;
-  }
-
-  .dock-sep {
+  .meet-dock-divider {
     width: 1px;
     height: 28px;
     background: rgba(255, 255, 255, 0.14);
-    margin: 0 0.2rem;
+    margin: 0 0.15rem;
+  }
+
+  .meet-unread-pip {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ef4444;
+    border: 1.5px solid #161a23;
   }
 
   /* Emoji Reactions Popover */
-  .reactions-popover {
+  .meet-reactions-bubble {
     position: absolute;
     bottom: calc(100% + 12px);
     left: 50%;
     transform: translateX(-50%);
-    background: #1d212a;
-    border: 2px solid rgba(255, 255, 255, 0.15);
+    background: #1c212c;
+    border: 1px solid rgba(255, 255, 255, 0.18);
     border-radius: 30px;
-    padding: 0.35rem 0.5rem;
+    padding: 0.35rem 0.55rem;
     display: flex;
-    gap: 0.4rem;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-    z-index: 50;
+    gap: 0.45rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    z-index: 60;
   }
 
-  .reaction-emoji-btn {
+  .reaction-btn-item {
     background: transparent;
     border: none;
-    font-size: 1.4rem;
+    font-size: 1.35rem;
     cursor: pointer;
     border-radius: 50%;
-    width: 38px;
-    height: 38px;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: transform 0.12s ease;
   }
-  .reaction-emoji-btn:hover {
+  .reaction-btn-item:hover {
     transform: scale(1.25);
     background: rgba(255, 255, 255, 0.1);
   }
 
-  .floating-reaction {
+  .floating-emoji-fly {
     position: absolute;
     bottom: 90px;
-    font-size: 2.4rem;
+    font-size: 2.5rem;
     user-select: none;
     pointer-events: none;
     z-index: 100;
-    animation: flyUp 2.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    animation: flyUpAnim 2.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
   }
 
-  @keyframes flyUp {
+  @keyframes flyUpAnim {
     0% { transform: translateY(0) scale(0.6); opacity: 0; }
     15% { transform: translateY(-30px) scale(1.25); opacity: 1; }
-    80% { transform: translateY(-340px) scale(1); opacity: 0.9; }
-    100% { transform: translateY(-420px) scale(0.7); opacity: 0; }
+    80% { transform: translateY(-320px) scale(1); opacity: 0.9; }
+    100% { transform: translateY(-400px) scale(0.7); opacity: 0; }
   }
 
-  /* =========================================================================
-     CLEAN SLIDE-OUT SIDE DRAWER
-     ========================================================================= */
-  .clean-side-drawer {
-    width: 370px;
+  /* 4. SLIDE-OUT RIGHT DRAWER */
+  .meet-drawer-panel {
+    width: 380px;
     max-width: 100vw;
-    background: #16181f;
-    border-left: 2px solid #282d3b;
+    background: #151821;
+    border-left: 1px solid #252b39;
     display: flex;
     flex-direction: column;
     height: 100%;
-    z-index: 30;
-    transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s ease;
+    z-index: 45;
+    flex-shrink: 0;
+    transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .clean-side-drawer.drawer-closed {
-    width: 0;
-    min-width: 0;
-    display: none;
+  .meet-drawer-panel.collapsed {
+    display: none !important;
   }
 
-  .drawer-nav-header {
+  .drawer-tabs-header {
     display: flex;
-    border-bottom: 2px solid #282d3b;
-    background: #1a1d26;
+    border-bottom: 1px solid #252b39;
+    background: #191d28;
+    height: 48px;
   }
 
-  .drawer-tab-item {
+  .drawer-tab-link {
     flex: 1;
-    padding: 0.8rem 0.5rem;
     background: transparent;
     border: none;
     border-bottom: 3px solid transparent;
-    color: var(--stage-text-muted);
+    color: #9ca3af;
     font-size: 0.8rem;
     font-weight: 800;
     cursor: pointer;
@@ -631,84 +588,116 @@
     transition: all 0.12s ease;
   }
 
-  .drawer-tab-item:hover {
+  .drawer-tab-link:hover {
     color: #ffffff;
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.04);
   }
 
-  .drawer-tab-item.active {
+  .drawer-tab-link.active {
     color: #FFDD00;
     border-bottom-color: #FFDD00;
     background: rgba(255, 221, 0, 0.05);
   }
 
-  .drawer-content-body {
+  .drawer-close-btn {
+    width: 44px;
+    background: transparent;
+    border: none;
+    color: #9ca3af;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .drawer-close-btn:hover {
+    color: #ffffff;
+  }
+
+  .drawer-inner-body {
     flex: 1;
     overflow-y: auto;
     padding: 1rem;
     display: flex;
     flex-direction: column;
-    color: #e5e7eb;
   }
 
-  /* Sub-tabs for Activities to avoid visual clutter */
-  .activity-sub-nav {
+  /* Sub navigation for Activities */
+  .activities-sub-pills {
     display: flex;
-    background: #232733;
+    background: #202431;
     border-radius: 8px;
     padding: 3px;
     margin-bottom: 1rem;
-    gap: 2px;
+    gap: 3px;
   }
 
-  .activity-sub-btn {
+  .act-pill-btn {
     flex: 1;
-    padding: 0.4rem 0.3rem;
+    padding: 0.45rem 0.3rem;
     border: none;
     background: transparent;
     border-radius: 6px;
     color: #9ca3af;
-    font-size: 0.72rem;
+    font-size: 0.74rem;
     font-weight: 700;
     cursor: pointer;
     text-align: center;
     transition: all 0.12s ease;
   }
 
-  .activity-sub-btn.active {
+  .act-pill-btn.active {
     background: #FFDD00;
     color: #161616;
     font-weight: 800;
   }
 
-  /* Pitch Timer Card */
-  .clean-pitch-timer-box {
-    background: #202430;
-    border: 2px solid #2f3546;
-    border-radius: 12px;
-    padding: 1rem;
+  /* Pitch Timer Box in Drawer */
+  .drawer-pitch-card {
+    background: #1d212b;
+    border: 1px solid #2b3242;
+    border-radius: 14px;
+    padding: 1.1rem;
     text-align: center;
     margin-bottom: 1rem;
   }
 
-  .timer-clock-digits {
+  .pitch-digits-clock {
     font-family: var(--font-display, 'Space Grotesk', monospace);
-    font-size: 3.2rem;
+    font-size: 3.4rem;
     font-weight: 900;
     line-height: 1;
-    margin: 0.6rem 0;
+    margin: 0.65rem 0;
     color: #FFDD00;
-    letter-spacing: -0.02em;
     font-variant-numeric: tabular-nums;
   }
 
-  .timer-clock-digits.danger {
+  .pitch-digits-clock.danger {
     color: #ef4444;
     animation: pulse 0.7s infinite;
   }
 
-  /* Chat list in drawer */
-  .clean-chat-list {
+  .preset-timer-btn {
+    padding: 0.35rem 0.65rem;
+    background: #292f3f;
+    border: 1px solid #373f54;
+    border-radius: 6px;
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.12s ease;
+  }
+  .preset-timer-btn:hover {
+    background: #363e52;
+  }
+  .preset-timer-btn.primary {
+    background: #FFDD00;
+    color: #161616;
+    border-color: #FFDD00;
+  }
+
+  /* Chat Messages in Drawer */
+  .drawer-chat-list {
     flex: 1;
     overflow-y: auto;
     display: flex;
@@ -717,19 +706,19 @@
     padding-bottom: 0.5rem;
   }
 
-  .clean-chat-msg {
+  .chat-row-msg {
     display: flex;
     gap: 0.5rem;
     align-items: flex-start;
   }
 
-  .clean-chat-msg.self {
+  .chat-row-msg.self {
     flex-direction: row-reverse;
   }
 
-  .clean-chat-bubble {
-    background: #232733;
-    border: 1px solid #32384a;
+  .chat-bubble-content {
+    background: #202431;
+    border: 1px solid #2e3547;
     border-radius: 10px;
     padding: 0.5rem 0.75rem;
     font-size: 0.82rem;
@@ -738,51 +727,51 @@
     word-break: break-word;
   }
 
-  .clean-chat-msg.self .clean-chat-bubble {
+  .chat-row-msg.self .chat-bubble-content {
     background: #FFDD00;
     color: #161616;
-    border-color: #161616;
+    border-color: #FFDD00;
   }
 
-  .clean-chat-system {
+  .chat-system-notification {
     background: rgba(255, 221, 0, 0.08);
     border: 1px dashed rgba(255, 221, 0, 0.3);
     border-radius: 8px;
-    padding: 0.4rem 0.6rem;
+    padding: 0.4rem 0.65rem;
     font-size: 0.75rem;
     color: #fde047;
     text-align: center;
   }
 
-  .clean-chat-input-bar {
+  .drawer-chat-bar {
     display: flex;
     gap: 0.5rem;
     margin-top: 0.5rem;
-    background: #1a1d26;
-    border-top: 1px solid #282d3b;
+    background: #151821;
+    border-top: 1px solid #252b39;
     padding-top: 0.65rem;
   }
 
-  .clean-chat-input {
+  .drawer-chat-input {
     flex: 1;
-    background: #232733;
-    border: 1.5px solid #333a4c;
+    background: #202431;
+    border: 1px solid #303749;
     border-radius: 8px;
     padding: 0.5rem 0.75rem;
     color: #ffffff;
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     outline: none;
   }
-  .clean-chat-input:focus {
+  .drawer-chat-input:focus {
     border-color: #FFDD00;
   }
 
-  /* Pre-Join Screen (Green Room) */
-  .greenroom-backdrop {
+  /* 5. GREEN ROOM PREVIEW SCREEN MODAL */
+  .greenroom-fullscreen-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(10, 12, 16, 0.92);
-    backdrop-filter: blur(12px);
+    background: rgba(10, 12, 17, 0.94);
+    backdrop-filter: blur(16px);
     z-index: 99999;
     display: flex;
     align-items: center;
@@ -790,22 +779,24 @@
     padding: 1.5rem;
   }
 
-  .greenroom-box {
-    background: #181b22;
-    border: 2px solid #2b303d;
+  .greenroom-card-box {
+    background: #161922;
+    border: 1px solid #282f40;
     border-radius: 20px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.75);
     width: 100%;
     max-width: 580px;
     padding: 1.5rem;
     color: #ffffff;
+    display: flex;
+    flex-direction: column;
   }
 
-  .greenroom-preview-stage {
+  .greenroom-video-viewport {
     width: 100%;
     aspect-ratio: 16 / 9;
-    background: #0d0f13;
-    border: 2px solid #262b37;
+    background: #0d0f14;
+    border: 1.5px solid #242936;
     border-radius: 12px;
     overflow: hidden;
     position: relative;
@@ -815,7 +806,7 @@
     justify-content: center;
   }
 
-  .greenroom-preview-stage video {
+  .greenroom-video-viewport video {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -823,299 +814,350 @@
 </style>
 {% endblock %}
 
+{% block navbar %}
+<!-- Top Header for Meeting Room -->
+<header class="meet-top-bar">
+  <div class="meet-top-left">
+    <a href="{% url 'meeting_directory' %}" class="meet-exit-btn" title="Back to All Meeting Rooms">
+      <i data-lucide="arrow-left" class="icon-sm"></i>
+      <span>Exit</span>
+    </a>
+    <div class="meet-title-info">
+      <div class="meet-title-row">
+        <h1 class="meet-room-name">{{ room.title }}</h1>
+        <span class="meet-badge-tag">{{ room.get_meeting_type_display }}</span>
+      </div>
+      <div class="meet-sub-row">
+        <span class="meet-pulse-dot"></span>
+        <span id="connectionStatusText">Live Stage</span>
+        <span>•</span>
+        <span><i data-lucide="compass" class="icon-xs"></i> {{ room.club_display }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="meet-top-right">
+    <div class="meet-timer-badge" title="Meeting Duration">
+      <i data-lucide="clock" class="icon-xs"></i>
+      <span id="sessionTimerDisplay">00:00</span>
+    </div>
+
+    <button onclick="toggleDemoPeers()" class="meet-head-action-btn primary" id="toggleDemoPeersBtn" title="Simulate 2 Club Co-Founders for Testing">
+      <i data-lucide="sparkles" class="icon-xs"></i>
+      <span class="hidden sm:inline">Simulate Peers</span>
+    </button>
+
+    <button onclick="copyRoomLink()" class="meet-head-action-btn" title="Copy Meeting Link">
+      <i data-lucide="share-2" class="icon-xs"></i>
+      <span class="hidden md:inline">Share</span>
+    </button>
+  </div>
+</header>
+{% endblock %}
+
+{% block footer %}
+<!-- No marketing footer in live meeting stage -->
+{% endblock %}
+
 {% block content %}
-<div class="meeting-stage-viewport" id="meetingApp">
+<div class="meet-app" id="meetingApp">
 
-  <!-- Left / Main Stage Arena -->
-  <div class="stage-arena-wrap" id="stageArenaWrap">
+  <!-- Main Body Area -->
+  <div class="meet-body-area">
     
-    <!-- Clean Video Grid -->
-    <div class="clean-video-grid" id="videoGrid" data-count="1">
+    <!-- Video Stage Canvas -->
+    <div class="meet-stage-arena" id="stageArenaWrap">
       
-      <!-- Local User's Video Card -->
-      <div class="clean-video-tile" id="localVideoCard">
-        <video id="localVideo" autoplay playsinline muted class="mirrored"></video>
+      <!-- Video Grid -->
+      <div class="meet-video-grid" id="videoGrid" data-count="1">
         
-        <!-- Avatar Fallback when camera is disabled -->
-        <div class="clean-avatar-fallback" id="localAvatarFallback" style="display: none;">
-          <div class="clean-avatar-circle comic-box-{{ founder.color|default:'yellow' }}">
-            {{ founder.avatar|default:'TH' }}
+        <!-- Local User's Video Card -->
+        <div class="meet-video-tile" id="localVideoCard">
+          <video id="localVideo" autoplay playsinline muted class="mirrored"></video>
+          
+          <!-- Fallback when camera is disabled -->
+          <div class="meet-avatar-canvas" id="localAvatarFallback" style="display: none;">
+            <div class="meet-avatar-circle">
+              {{ founder.avatar|default:'TH' }}
+            </div>
+            <div class="meet-avatar-name">{{ founder.name }} (You)</div>
+            <span class="meet-avatar-subtag">Camera Off</span>
           </div>
-          <div class="clean-avatar-name">{{ founder.name }} (You)</div>
-          <span class="clean-avatar-off-pill">Camera Off</span>
-        </div>
 
-        <!-- Meta Overlay (Bottom) -->
-        <div class="tile-meta-bottom">
-          <div class="tile-name-chip">
-            <i data-lucide="user" class="icon-xs"></i>
-            <span id="localCardName">{{ founder.name }} (You)</span>
-            {% if is_host %}
-              <span class="comic-badge comic-badge-yellow comic-badge-xs" style="padding: 1px 4px; font-size: 0.6rem;">HOST</span>
-            {% endif %}
-          </div>
-          <div class="tile-status-group">
-            <div class="tile-icon-badge warning" id="localHandBadge" style="display: none;" title="Hand Raised">✋</div>
-            <div class="tile-icon-badge" id="localMicBadge" title="Microphone Status">
-              <i data-lucide="mic" class="icon-xs"></i>
+          <!-- Bottom Overlay Tags -->
+          <div class="tile-info-bar-bottom">
+            <div class="tile-user-chip">
+              <i data-lucide="user" class="icon-xs"></i>
+              <span id="localCardName">{{ founder.name }} (You)</span>
+              {% if is_host %}
+                <span class="comic-badge comic-badge-yellow comic-badge-xs" style="padding: 1px 4px; font-size: 0.6rem;">HOST</span>
+              {% endif %}
+            </div>
+            <div class="tile-controls-status">
+              <div class="tile-status-icon warning" id="localHandBadge" style="display: none;" title="Hand Raised">✋</div>
+              <div class="tile-status-icon" id="localMicBadge" title="Microphone Status">
+                <i data-lucide="mic" class="icon-xs"></i>
+              </div>
             </div>
           </div>
         </div>
+
+        <!-- Remote Peer Video Cards will mount dynamically here -->
+
       </div>
 
-      <!-- Remote peer video cards are mounted dynamically here -->
+      <!-- Emoji Floating Reactions Layer -->
+      <div id="reactionsLayer"></div>
+
+      <!-- FLOATING BOTTOM DOCK CONTROLS (GOOGLE MEET / WHEREBY STYLE) -->
+      <div class="meet-dock-container" id="floatingControlsDock">
+        
+        <!-- Mic Toggle -->
+        <button class="meet-dock-btn" id="btnToggleMic" onclick="toggleLocalAudio()" title="Mute / Unmute Microphone (M)">
+          <i data-lucide="mic" id="iconMic"></i>
+        </button>
+
+        <!-- Camera Toggle -->
+        <button class="meet-dock-btn" id="btnToggleCam" onclick="toggleLocalVideo()" title="Turn Camera On / Off (V)">
+          <i data-lucide="video" id="iconCam"></i>
+        </button>
+
+        <!-- Screen Share -->
+        <button class="meet-dock-btn" id="btnScreenShare" onclick="toggleScreenShare()" title="Share Screen / Pitch Deck">
+          <i data-lucide="monitor" id="iconScreen"></i>
+        </button>
+
+        <!-- Raise Hand -->
+        <button class="meet-dock-btn" id="btnRaiseHand" onclick="toggleRaiseHand()" title="Raise / Lower Hand">
+          <i data-lucide="hand" id="iconHand"></i>
+        </button>
+
+        <!-- Emoji Reactions Popover Button -->
+        <div style="position: relative; display: inline-block;">
+          <button class="meet-dock-btn" id="btnReactionsToggle" onclick="toggleReactionPalette()" title="Send Live Reaction">
+            <i data-lucide="smile"></i>
+          </button>
+
+          <!-- Emoji Popover -->
+          <div class="meet-reactions-bubble" id="reactionPalette" style="display: none;">
+            <button onclick="sendEmojiReaction('🚀')" class="reaction-btn-item" title="Rocket">🚀</button>
+            <button onclick="sendEmojiReaction('🔥')" class="reaction-btn-item" title="Fire">🔥</button>
+            <button onclick="sendEmojiReaction('👏')" class="reaction-btn-item" title="Clap">👏</button>
+            <button onclick="sendEmojiReaction('💡')" class="reaction-btn-item" title="Idea">💡</button>
+            <button onclick="sendEmojiReaction('❤️')" class="reaction-btn-item" title="Heart">❤️</button>
+            <button onclick="sendEmojiReaction('🤯')" class="reaction-btn-item" title="Mindblown">🤯</button>
+          </div>
+        </div>
+
+        <div class="meet-dock-divider"></div>
+
+        <!-- Activities Toggle -->
+        <button class="meet-dock-btn active" id="btnActivitiesToggle" onclick="openDrawerWithTab('activities')" title="Club Activities (Pitch Timer, Notes, Topics)">
+          <i data-lucide="zap"></i>
+        </button>
+
+        <!-- Chat Toggle -->
+        <button class="meet-dock-btn" id="btnChatToggle" onclick="openDrawerWithTab('chat')" title="Meeting Chat">
+          <i data-lucide="message-square"></i>
+          <span class="meet-unread-pip" id="chatUnreadDot" style="display: none;"></span>
+        </button>
+
+        <!-- Roster Toggle -->
+        <button class="meet-dock-btn" id="btnRosterToggle" onclick="openDrawerWithTab('roster')" title="Participant Roster">
+          <i data-lucide="users"></i>
+        </button>
+
+        <div class="meet-dock-divider"></div>
+
+        <!-- Leave Call Button -->
+        <button class="meet-dock-btn leave" onclick="leaveMeeting()" title="Leave Meeting">
+          <i data-lucide="phone-off" class="icon-xs"></i>
+          <span>Leave</span>
+        </button>
+
+      </div>
 
     </div>
 
-    <!-- Floating Emojis Reaction Layer -->
-    <div id="reactionsLayer"></div>
-
-    <!-- Floating Dock Controls Bar (Google Meet Style) -->
-    <div class="floating-controls-dock" id="floatingControlsDock">
+    <!-- Right Slide-Out Clean Drawer -->
+    <aside class="meet-drawer-panel" id="sideDrawer">
       
-      <!-- Mic Toggle -->
-      <button class="dock-btn" id="btnToggleMic" onclick="toggleLocalAudio()" title="Mute / Unmute Microphone (M)">
-        <i data-lucide="mic" id="iconMic"></i>
-      </button>
-
-      <!-- Cam Toggle -->
-      <button class="dock-btn" id="btnToggleCam" onclick="toggleLocalVideo()" title="Turn Camera On / Off (V)">
-        <i data-lucide="video" id="iconCam"></i>
-      </button>
-
-      <!-- Screen Share -->
-      <button class="dock-btn" id="btnScreenShare" onclick="toggleScreenShare()" title="Share Screen / Pitch Deck">
-        <i data-lucide="monitor" id="iconScreen"></i>
-      </button>
-
-      <!-- Raise Hand -->
-      <button class="dock-btn" id="btnRaiseHand" onclick="toggleRaiseHand()" title="Raise / Lower Hand">
-        <i data-lucide="hand" id="iconHand"></i>
-      </button>
-
-      <!-- Reactions -->
-      <div style="position: relative; display: inline-block;">
-        <button class="dock-btn" id="btnReactionsToggle" onclick="toggleReactionPalette()" title="Send Live Reaction">
-          <i data-lucide="smile"></i>
+      <!-- Drawer Nav Header -->
+      <div class="drawer-tabs-header">
+        <button class="drawer-tab-link active" id="tabBtnActivities" onclick="switchDrawerTab('activities')">
+          <i data-lucide="zap" class="icon-xs"></i> Activities
         </button>
+        <button class="drawer-tab-link" id="tabBtnChat" onclick="switchDrawerTab('chat')">
+          <i data-lucide="message-square" class="icon-xs"></i> Chat
+        </button>
+        <button class="drawer-tab-link" id="tabBtnRoster" onclick="switchDrawerTab('roster')">
+          <i data-lucide="users" class="icon-xs"></i> Roster (<span id="rosterCount">1</span>)
+        </button>
+        <button onclick="toggleDrawer()" class="drawer-close-btn" title="Close Panel">
+          <i data-lucide="x" class="icon-xs"></i>
+        </button>
+      </div>
 
-        <div class="reactions-popover" id="reactionPalette" style="display: none;">
-          <button onclick="sendEmojiReaction('🚀')" class="reaction-emoji-btn" title="Rocket">🚀</button>
-          <button onclick="sendEmojiReaction('🔥')" class="reaction-emoji-btn" title="Fire">🔥</button>
-          <button onclick="sendEmojiReaction('👏')" class="reaction-emoji-btn" title="Clap">👏</button>
-          <button onclick="sendEmojiReaction('💡')" class="reaction-emoji-btn" title="Idea">💡</button>
-          <button onclick="sendEmojiReaction('❤️')" class="reaction-emoji-btn" title="Heart">❤️</button>
-          <button onclick="sendEmojiReaction('🤯')" class="reaction-emoji-btn" title="Mindblown">🤯</button>
+      <!-- Panel 1: Club Activities (Structured Modular Sub-views) -->
+      <div class="drawer-inner-body" id="panelActivities">
+        
+        <!-- Activity Sub Navigation -->
+        <div class="activities-sub-pills">
+          <button class="act-pill-btn active" id="subBtnTimer" onclick="switchActivitySub('timer')">
+            ⏱️ Pitch Roaster
+          </button>
+          <button class="act-pill-btn" id="subBtnTopic" onclick="switchActivitySub('topic')">
+            💡 Mastermind
+          </button>
+          <button class="act-pill-btn" id="subBtnNotes" onclick="switchActivitySub('notes')">
+            📝 Notes
+          </button>
+        </div>
+
+        <!-- Sub-View A: Pitch Roaster -->
+        <div id="subViewTimer">
+          <div class="drawer-pitch-card">
+            <div class="flex justify-between items-center text-xs font-bold text-muted mb-xs">
+              <span class="flex items-center gap-xs"><i data-lucide="flame" class="icon-xs" style="color:#ef4444;"></i> Pitch Timer</span>
+              <span id="timerSpeakerLabel">Speaker: Pitcher</span>
+            </div>
+            
+            <div class="pitch-digits-clock" id="timerDisplay">01:00</div>
+            
+            <div class="flex gap-xs justify-center mb-xs">
+              <button onclick="startPitchTimer(60)" class="preset-timer-btn primary">
+                <i data-lucide="play" class="icon-xs"></i> 60s Pitch
+              </button>
+              <button onclick="startPitchTimer(180)" class="preset-timer-btn">
+                3m Demo
+              </button>
+              <button onclick="stopPitchTimer()" class="preset-timer-btn">
+                <i data-lucide="pause" class="icon-xs"></i> Pause
+              </button>
+              <button onclick="resetPitchTimer(60)" class="preset-timer-btn">
+                <i data-lucide="rotate-ccw" class="icon-xs"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Roast Feedback Card -->
+          <div class="comic-box comic-box-white" style="padding: 0.85rem; border-width: 2px;">
+            <div class="flex justify-between items-center mb-xs">
+              <span class="text-xs font-black text-dark">Rate Current Pitch</span>
+              <div class="flex gap-xs cursor-pointer" id="starRating">
+                <span onclick="setVoteScore(1)">⭐</span>
+                <span onclick="setVoteScore(2)">⭐</span>
+                <span onclick="setVoteScore(3)">⭐</span>
+                <span onclick="setVoteScore(4)">⭐</span>
+                <span onclick="setVoteScore(5)">⭐</span>
+              </div>
+            </div>
+            <div class="flex gap-xs flex-wrap mb-sm">
+              <button onclick="toggleVoteTag(this, 'Killer Hook')" class="comic-btn comic-btn-xs comic-btn-white vote-tag">Killer Hook</button>
+              <button onclick="toggleVoteTag(this, 'Huge TAM')" class="comic-btn comic-btn-xs comic-btn-white vote-tag">Huge TAM</button>
+              <button onclick="toggleVoteTag(this, 'Needs Moat')" class="comic-btn comic-btn-xs comic-btn-white vote-tag">Needs Moat</button>
+              <button onclick="toggleVoteTag(this, 'Investable')" class="comic-btn comic-btn-xs comic-btn-white vote-tag">Investable</button>
+            </div>
+            <button onclick="submitPitchVote()" class="comic-btn comic-btn-xs comic-btn-primary comic-btn-full">
+              <i data-lucide="send" class="icon-xs"></i> Submit Pitch Feedback
+            </button>
+          </div>
+        </div>
+
+        <!-- Sub-View B: Mastermind Discussion Topic -->
+        <div id="subViewTopic" style="display: none;">
+          <div class="comic-box comic-box-cyan mb-md" style="padding: 1rem;">
+            <div class="flex justify-between items-center mb-sm">
+              <span class="comic-badge comic-badge-yellow comic-badge-xs">DISCUSSION PROMPT</span>
+              <button onclick="spinNextTopic()" class="comic-btn comic-btn-xs comic-btn-black">
+                <i data-lucide="shuffle" class="icon-xs"></i> Next
+              </button>
+            </div>
+            <p class="font-bold text-sm text-dark mb-0 leading-relaxed" id="currentTopicText">
+              "{{ room.activity_state.current_topic|default:'What is your single biggest bottleneck to 10x growth this month?' }}"
+            </p>
+          </div>
+          <p class="text-xs text-muted font-bold leading-normal">
+            Round-robin rule: Each founder speaks for 90 seconds before opening for peer reactions.
+          </p>
+        </div>
+
+        <!-- Sub-View C: Collaborative Notes -->
+        <div id="subViewNotes" style="display: none; height: 100%; flex-direction: column;">
+          <div class="flex justify-between items-center mb-xs">
+            <span class="text-xs font-bold text-muted">Shared Room Notes</span>
+            <button onclick="saveRoomNotes()" class="preset-timer-btn primary" style="padding: 0.2rem 0.5rem;">
+              <i data-lucide="save" class="icon-xs"></i> Sync
+            </button>
+          </div>
+          <textarea id="roomNotesText" class="drawer-chat-input flex-1" style="min-height: 220px; font-family: monospace; font-size: 0.8rem; line-height: 1.45;" placeholder="Drop action items, founder contacts, links...">{{ room.activity_state.notes|default:'' }}</textarea>
+          <span class="text-xs text-muted mt-xs font-bold" id="notesSavedIndicator">Auto-synced across room peers</span>
+        </div>
+
+      </div>
+
+      <!-- Panel 2: In-Meeting Chat -->
+      <div class="drawer-inner-body" id="panelChat" style="display: none;">
+        <div class="drawer-chat-list" id="chatMessagesContainer">
+          {% for msg in messages_list %}
+            {% if msg.message_type == 'system' or msg.message_type == 'pitch_vote' %}
+              <div class="chat-system-notification">
+                {{ msg.sender_avatar }} {{ msg.message }}
+              </div>
+            {% else %}
+              <div class="chat-row-msg {% if msg.sender_user == founder.user %}self{% endif %}">
+                <div class="comic-avatar comic-avatar-xs comic-box-{{ msg.sender_color|default:'yellow' }}">
+                  {{ msg.sender_avatar|default:'TH' }}
+                </div>
+                <div class="chat-bubble-content">
+                  <div class="text-xs font-bold opacity-75 mb-xs">{{ msg.sender_name }}</div>
+                  <div>{{ msg.message }}</div>
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        <form onsubmit="sendMeetingChat(event)" class="drawer-chat-bar">
+          <input type="text" id="chatInput" placeholder="Drop note, link or feedback..." class="drawer-chat-input" autocomplete="off" />
+          <button type="submit" class="preset-timer-btn primary" style="padding: 0.5rem 0.75rem;">
+            <i data-lucide="send" class="icon-xs"></i>
+          </button>
+        </form>
+      </div>
+
+      <!-- Panel 3: Participant Roster -->
+      <div class="drawer-inner-body" id="panelRoster" style="display: none;">
+        <div class="text-xs font-bold text-muted mb-sm uppercase tracking-wider">Active Attendees</div>
+        <div class="flex flex-col gap-xs" id="rosterList">
+          <!-- Populated by syncParticipants -->
         </div>
       </div>
 
-      <div class="dock-sep"></div>
-
-      <!-- Activities Drawer Button -->
-      <button class="dock-btn active" id="btnActivitiesToggle" onclick="openDrawerWithTab('activities')" title="Club Activities (Pitch Timer, Notes, Topics)">
-        <i data-lucide="zap"></i>
-      </button>
-
-      <!-- Chat Drawer Button -->
-      <button class="dock-btn" id="btnChatToggle" onclick="openDrawerWithTab('chat')" title="Meeting Chat">
-        <i data-lucide="message-square"></i>
-        <span class="dock-badge-dot" id="chatUnreadDot" style="display: none;"></span>
-      </button>
-
-      <!-- Roster Drawer Button -->
-      <button class="dock-btn" id="btnRosterToggle" onclick="openDrawerWithTab('roster')" title="Participant Roster">
-        <i data-lucide="users"></i>
-      </button>
-
-      <div class="dock-sep"></div>
-
-      <!-- Leave Call Button -->
-      <button class="dock-btn leave-btn" onclick="leaveMeeting()" title="Leave Meeting">
-        <i data-lucide="phone-off" class="icon-xs"></i>
-        <span>Leave</span>
-      </button>
-
-    </div>
+    </aside>
 
   </div>
 
-  <!-- Right Slide-Out Clean Drawer -->
-  <aside class="clean-side-drawer" id="sideDrawer">
-    
-    <!-- Drawer Nav Tabs -->
-    <div class="drawer-nav-header">
-      <button class="drawer-tab-item active" id="tabBtnActivities" onclick="switchDrawerTab('activities')">
-        <i data-lucide="zap" class="icon-xs"></i> Activities
-      </button>
-      <button class="drawer-tab-item" id="tabBtnChat" onclick="switchDrawerTab('chat')">
-        <i data-lucide="message-square" class="icon-xs"></i> Chat
-      </button>
-      <button class="drawer-tab-item" id="tabBtnRoster" onclick="switchDrawerTab('roster')">
-        <i data-lucide="users" class="icon-xs"></i> Roster (<span id="rosterCount">1</span>)
-      </button>
-      <button onclick="toggleDrawer()" class="drawer-tab-item" style="flex: 0 0 44px;" title="Close Panel">
-        <i data-lucide="x" class="icon-xs"></i>
-      </button>
-    </div>
-
-    <!-- Panel 1: Club Activities (Modular Sub-views to Prevent Clutter) -->
-    <div class="drawer-content-body" id="panelActivities">
-      
-      <!-- Sub-Navigation for Clean Focus -->
-      <div class="activity-sub-nav">
-        <button class="activity-sub-btn active" id="subBtnTimer" onclick="switchActivitySub('timer')">
-          ⏱️ Pitch Roaster
-        </button>
-        <button class="activity-sub-btn" id="subBtnTopic" onclick="switchActivitySub('topic')">
-          💡 Mastermind
-        </button>
-        <button class="activity-sub-btn" id="subBtnNotes" onclick="switchActivitySub('notes')">
-          📝 Notes
-        </button>
-      </div>
-
-      <!-- Sub-View A: Pitch Roaster & Countdown Timer -->
-      <div id="subViewTimer">
-        <div class="clean-pitch-timer-box">
-          <div class="flex justify-between items-center text-xs font-bold text-muted">
-            <span class="flex items-center gap-xs"><i data-lucide="flame" class="icon-xs" style="color:#ef4444;"></i> Pitch Timer</span>
-            <span id="timerSpeakerLabel">Speaker: Pitcher</span>
-          </div>
-          
-          <div class="timer-clock-digits" id="timerDisplay">01:00</div>
-          
-          <div class="flex gap-xs justify-center mb-xs">
-            <button onclick="startPitchTimer(60)" class="comic-btn comic-btn-xs comic-btn-yellow">
-              <i data-lucide="play" class="icon-xs"></i> 60s Pitch
-            </button>
-            <button onclick="startPitchTimer(180)" class="comic-btn comic-btn-xs comic-btn-white">
-              3m Demo
-            </button>
-            <button onclick="stopPitchTimer()" class="comic-btn comic-btn-xs comic-btn-white">
-              <i data-lucide="pause" class="icon-xs"></i> Pause
-            </button>
-            <button onclick="resetPitchTimer(60)" class="comic-btn comic-btn-xs comic-btn-white">
-              <i data-lucide="rotate-ccw" class="icon-xs"></i>
-            </button>
-          </div>
-        </div>
-
-        <!-- Clean Roast Feedback Card -->
-        <div class="comic-box comic-box-white" style="padding: 0.75rem; border-width: 2px;">
-          <div class="flex justify-between items-center mb-xs">
-            <span class="text-xs font-black text-dark">Rate Current Pitch</span>
-            <div class="flex gap-xs cursor-pointer" id="starRating">
-              <span onclick="setVoteScore(1)">⭐</span>
-              <span onclick="setVoteScore(2)">⭐</span>
-              <span onclick="setVoteScore(3)">⭐</span>
-              <span onclick="setVoteScore(4)">⭐</span>
-              <span onclick="setVoteScore(5)">⭐</span>
-            </div>
-          </div>
-          <div class="flex gap-xs flex-wrap mb-sm">
-            <button onclick="toggleVoteTag(this, 'Killer Hook')" class="comic-btn comic-btn-xs comic-btn-white vote-tag">Killer Hook</button>
-            <button onclick="toggleVoteTag(this, 'Huge TAM')" class="comic-btn comic-btn-xs comic-btn-white vote-tag">Huge TAM</button>
-            <button onclick="toggleVoteTag(this, 'Needs Moat')" class="comic-btn comic-btn-xs comic-btn-white vote-tag">Needs Moat</button>
-            <button onclick="toggleVoteTag(this, 'Investable')" class="comic-btn comic-btn-xs comic-btn-white vote-tag">Investable</button>
-          </div>
-          <button onclick="submitPitchVote()" class="comic-btn comic-btn-xs comic-btn-primary comic-btn-full">
-            <i data-lucide="send" class="icon-xs"></i> Submit Pitch Feedback
-          </button>
-        </div>
-      </div>
-
-      <!-- Sub-View B: Mastermind Discussion Topic -->
-      <div id="subViewTopic" style="display: none;">
-        <div class="comic-box comic-box-cyan mb-md" style="padding: 1rem;">
-          <div class="flex justify-between items-center mb-sm">
-            <span class="comic-badge comic-badge-yellow comic-badge-xs">DISCUSSION PROMPT</span>
-            <button onclick="spinNextTopic()" class="comic-btn comic-btn-xs comic-btn-black">
-              <i data-lucide="shuffle" class="icon-xs"></i> Next
-            </button>
-          </div>
-          <p class="font-bold text-sm text-dark mb-0 leading-relaxed" id="currentTopicText">
-            "{{ room.activity_state.current_topic|default:'What is your single biggest bottleneck to 10x growth this month?' }}"
-          </p>
-        </div>
-        <p class="text-xs text-muted font-bold leading-normal">
-          Use round-robin format: Each founder takes 90 seconds to answer before open floor discussion begins.
-        </p>
-      </div>
-
-      <!-- Sub-View C: Collaborative Notes -->
-      <div id="subViewNotes" style="display: none; height: 100%; flex-direction: column;">
-        <div class="flex justify-between items-center mb-xs">
-          <span class="text-xs font-bold text-muted">Shared Room Notes</span>
-          <button onclick="saveRoomNotes()" class="comic-btn comic-btn-xs comic-btn-white">
-            <i data-lucide="save" class="icon-xs"></i> Sync
-          </button>
-        </div>
-        <textarea id="roomNotesText" class="clean-chat-input flex-1" style="min-height: 220px; font-family: monospace; font-size: 0.8rem; line-height: 1.45;" placeholder="Drop action items, founder contacts, links...">{{ room.activity_state.notes|default:'' }}</textarea>
-        <span class="text-xs text-muted mt-xs font-bold" id="notesSavedIndicator">Auto-synced across room peers</span>
-      </div>
-
-    </div>
-
-    <!-- Panel 2: Live In-Meeting Chat -->
-    <div class="drawer-content-body" id="panelChat" style="display: none;">
-      <div class="clean-chat-list" id="chatMessagesContainer">
-        {% for msg in messages_list %}
-          {% if msg.message_type == 'system' or msg.message_type == 'pitch_vote' %}
-            <div class="clean-chat-system">
-              {{ msg.sender_avatar }} {{ msg.message }}
-            </div>
-          {% else %}
-            <div class="clean-chat-msg {% if msg.sender_user == founder.user %}self{% endif %}">
-              <div class="comic-avatar comic-avatar-xs comic-box-{{ msg.sender_color|default:'yellow' }}">
-                {{ msg.sender_avatar|default:'TH' }}
-              </div>
-              <div class="clean-chat-bubble">
-                <div class="text-xs font-bold opacity-75 mb-xs">${escapeHtml(msg.sender_name)}</div>
-                <div>{{ msg.message }}</div>
-              </div>
-            </div>
-          {% endif %}
-        {% endfor %}
-      </div>
-
-      <form onsubmit="sendMeetingChat(event)" class="clean-chat-input-bar">
-        <input type="text" id="chatInput" placeholder="Drop note, link or feedback..." class="clean-chat-input" autocomplete="off" />
-        <button type="submit" class="comic-btn comic-btn-xs comic-btn-yellow" style="padding: 0.45rem 0.75rem;">
-          <i data-lucide="send" class="icon-xs"></i>
-        </button>
-      </form>
-    </div>
-
-    <!-- Panel 3: Participant Roster -->
-    <div class="drawer-content-body" id="panelRoster" style="display: none;">
-      <div class="text-xs font-bold text-muted mb-sm uppercase tracking-wider">Active Attendees</div>
-      <div class="flex flex-col gap-xs" id="rosterList">
-        <!-- Rendered by syncParticipants -->
-      </div>
-    </div>
-
-  </aside>
-
 </div>
 
-<!-- PRE-JOIN GREEN ROOM / PERMISSIONS MODAL -->
-<div id="greenRoomModal" class="greenroom-backdrop">
-  <div class="greenroom-box">
+<!-- PRE-JOIN GREEN ROOM / DEVICE CHECK MODAL -->
+<div id="greenRoomModal" class="greenroom-fullscreen-overlay">
+  <div class="greenroom-card-box">
     <div class="flex justify-between items-center mb-xs">
-      <span class="comic-sticker comic-sticker-yellow" style="font-size: 0.75rem; padding: 0.2rem 0.5rem;">
+      <span class="comic-sticker comic-sticker-yellow" style="font-size: 0.72rem; padding: 0.2rem 0.5rem;">
         <i data-lucide="video" class="icon-xs"></i> GREEN ROOM CHECK
       </span>
       <span class="comic-badge comic-badge-green comic-badge-xs">Ready</span>
     </div>
 
     <h2 class="text-xl font-bold mb-xs mt-sm text-white">{{ room.title }}</h2>
-    <p class="text-xs text-muted font-bold mb-0">Check camera &amp; mic before joining the live video stage.</p>
+    <p class="text-xs text-muted font-bold mb-0">Check camera &amp; mic before going live on stage.</p>
 
     <!-- Camera Preview Viewport -->
-    <div class="greenroom-preview-stage">
+    <div class="greenroom-video-viewport">
       <video id="previewVideo" autoplay playsinline muted class="mirrored"></video>
-      <div id="previewAvatarPlaceholder" class="clean-avatar-fallback" style="display: none;">
-        <div class="clean-avatar-circle comic-box-{{ founder.color|default:'yellow' }}">
+      <div id="previewAvatarPlaceholder" class="meet-avatar-canvas" style="display: none;">
+        <div class="meet-avatar-circle">
           {{ founder.avatar|default:'TH' }}
         </div>
         <p class="font-bold text-xs mt-xs text-white">Camera is disabled</p>
@@ -1137,21 +1179,21 @@
     <div class="grid grid-cols-2 gap-sm mb-md">
       <div>
         <label class="text-xs font-bold text-muted block mb-xs">Display Name</label>
-        <input type="text" id="prejoinName" value="{{ founder.name }}" class="clean-chat-input w-full text-xs" />
+        <input type="text" id="prejoinName" value="{{ founder.name }}" class="drawer-chat-input w-full text-xs" />
       </div>
       <div>
         <label class="text-xs font-bold text-muted block mb-xs">Club Role</label>
-        <input type="text" id="prejoinRole" value="{{ founder.role }}" class="clean-chat-input w-full text-xs" />
+        <input type="text" id="prejoinRole" value="{{ founder.role }}" class="drawer-chat-input w-full text-xs" />
       </div>
     </div>
 
-    <!-- Actions -->
+    <!-- Action Buttons -->
     <div class="flex justify-between items-center flex-wrap gap-sm">
       <div class="flex gap-xs">
-        <button type="button" id="prejoinMicBtn" onclick="togglePrejoinMic()" class="comic-btn comic-btn-xs comic-btn-white">
+        <button type="button" id="prejoinMicBtn" onclick="togglePrejoinMic()" class="preset-timer-btn">
           <i data-lucide="mic" id="prejoinMicIcon" class="icon-xs"></i> <span id="prejoinMicText">Mic On</span>
         </button>
-        <button type="button" id="prejoinCamBtn" onclick="togglePrejoinCam()" class="comic-btn comic-btn-xs comic-btn-white">
+        <button type="button" id="prejoinCamBtn" onclick="togglePrejoinCam()" class="preset-timer-btn">
           <i data-lucide="video" id="prejoinCamIcon" class="icon-xs"></i> <span id="prejoinCamText">Cam On</span>
         </button>
       </div>
@@ -1298,10 +1340,10 @@
     const btn = document.getElementById('prejoinMicBtn');
     const txt = document.getElementById('prejoinMicText');
     if (enabled) {
-      btn.className = "comic-btn comic-btn-xs comic-btn-white";
+      btn.className = "preset-timer-btn";
       txt.textContent = "Mic On";
     } else {
-      btn.className = "comic-btn comic-btn-xs comic-btn-pink";
+      btn.className = "preset-timer-btn danger";
       txt.textContent = "Mic Off";
     }
   }
@@ -1328,10 +1370,10 @@
     const btn = document.getElementById('prejoinCamBtn');
     const txt = document.getElementById('prejoinCamText');
     if (enabled) {
-      btn.className = "comic-btn comic-btn-xs comic-btn-white";
+      btn.className = "preset-timer-btn";
       txt.textContent = "Cam On";
     } else {
-      btn.className = "comic-btn comic-btn-xs comic-btn-pink";
+      btn.className = "preset-timer-btn danger";
       txt.textContent = "Cam Off";
     }
   }
@@ -1468,7 +1510,7 @@
       if (handBadge) handBadge.style.display = peer.hand_raised ? 'flex' : 'none';
       const micBadge = document.getElementById('localMicBadge');
       if (micBadge) {
-        micBadge.className = peer.has_audio ? "tile-icon-badge" : "tile-icon-badge danger";
+        micBadge.className = peer.has_audio ? "tile-status-icon" : "tile-status-icon danger";
         micBadge.innerHTML = peer.has_audio ? '<i data-lucide="mic" class="icon-xs"></i>' : '<i data-lucide="mic-off" class="icon-xs"></i>';
         lucide.createIcons();
       }
@@ -1487,14 +1529,14 @@
     // Toggle mic status
     const micBadge = card.querySelector('.peer-mic-badge');
     if (micBadge) {
-      micBadge.className = peer.has_audio ? "tile-icon-badge" : "tile-icon-badge danger";
+      micBadge.className = peer.has_audio ? "tile-status-icon" : "tile-status-icon danger";
       micBadge.innerHTML = peer.has_audio ? '<i data-lucide="mic" class="icon-xs"></i>' : '<i data-lucide="mic-off" class="icon-xs"></i>';
       lucide.createIcons();
     }
 
     // Video vs Avatar display
     const videoElem = card.querySelector('video');
-    const avatarFallback = card.querySelector('.clean-avatar-fallback');
+    const avatarFallback = card.querySelector('.meet-avatar-canvas');
     if (videoElem && avatarFallback) {
       if (peer.has_video && videoElem.srcObject) {
         videoElem.style.display = 'block';
@@ -1509,26 +1551,26 @@
   function createPeerCard(peer) {
     const grid = document.getElementById('videoGrid');
     const card = document.createElement('div');
-    card.className = 'clean-video-tile';
+    card.className = 'meet-video-tile';
     card.id = 'peerCard_' + peer.session_id;
 
     card.innerHTML = `
       <video autoplay playsinline></video>
-      <div class="clean-avatar-fallback">
-        <div class="clean-avatar-circle comic-box-${peer.color || 'purple'}">
+      <div class="meet-avatar-canvas">
+        <div class="meet-avatar-circle" style="background: #2b3142;">
           ${escapeHtml(peer.avatar || 'TH')}
         </div>
-        <div class="clean-avatar-name">${escapeHtml(peer.display_name)}</div>
-        <span class="clean-avatar-off-pill">${escapeHtml(peer.role || 'Member')}</span>
+        <div class="meet-avatar-name">${escapeHtml(peer.display_name)}</div>
+        <span class="meet-avatar-subtag">${escapeHtml(peer.role || 'Member')}</span>
       </div>
-      <div class="tile-meta-bottom">
-        <div class="tile-name-chip">
+      <div class="tile-info-bar-bottom">
+        <div class="tile-user-chip">
           <i data-lucide="user" class="icon-xs"></i>
           <span>${escapeHtml(peer.display_name)}</span>
         </div>
-        <div class="tile-status-group">
-          <div class="tile-icon-badge warning peer-hand-badge" style="display: none;" title="Hand Raised">✋</div>
-          <div class="tile-icon-badge peer-mic-badge" title="Microphone Status">
+        <div class="tile-controls-status">
+          <div class="tile-status-icon warning peer-hand-badge" style="display: none;" title="Hand Raised">✋</div>
+          <div class="tile-status-icon peer-mic-badge" title="Microphone Status">
             <i data-lucide="mic" class="icon-xs"></i>
           </div>
         </div>
@@ -1556,7 +1598,6 @@
     const pc = new RTCPeerConnection(RTC_CONFIG);
     peerConnections[remoteSessionId] = pc;
 
-    // Attach local tracks
     if (localStream) {
       localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
     }
@@ -1572,7 +1613,7 @@
       remoteStreams[remoteSessionId] = remoteStream;
       const card = document.getElementById('peerCard_' + remoteSessionId) || createPeerCard(peerInfo);
       const videoElem = card.querySelector('video');
-      const avatarElem = card.querySelector('.clean-avatar-fallback');
+      const avatarElem = card.querySelector('.meet-avatar-canvas');
       if (videoElem) {
         videoElem.srcObject = remoteStream;
         videoElem.style.display = 'block';
@@ -1694,11 +1735,11 @@
   function updateMicDockUI() {
     const btn = document.getElementById('btnToggleMic');
     if (isAudioEnabled) {
-      btn.className = "dock-btn";
+      btn.className = "meet-dock-btn";
       btn.innerHTML = '<i data-lucide="mic"></i>';
       btn.title = "Mute Microphone (M)";
     } else {
-      btn.className = "dock-btn danger";
+      btn.className = "meet-dock-btn danger";
       btn.innerHTML = '<i data-lucide="mic-off"></i>';
       btn.title = "Unmute Microphone (M)";
     }
@@ -1727,11 +1768,11 @@
   function updateCamDockUI() {
     const btn = document.getElementById('btnToggleCam');
     if (isVideoEnabled) {
-      btn.className = "dock-btn";
+      btn.className = "meet-dock-btn";
       btn.innerHTML = '<i data-lucide="video"></i>';
       btn.title = "Turn Off Camera (V)";
     } else {
-      btn.className = "dock-btn danger";
+      btn.className = "meet-dock-btn danger";
       btn.innerHTML = '<i data-lucide="video-off"></i>';
       btn.title = "Turn On Camera (V)";
     }
@@ -1756,12 +1797,12 @@
         localVideo.classList.remove('mirrored');
 
         isScreenSharing = true;
-        btn.className = "dock-btn active";
+        btn.className = "meet-dock-btn active";
         btn.innerHTML = '<i data-lucide="monitor-off"></i>';
         lucide.createIcons();
 
         screenTrack.onended = () => stopScreenShare();
-        showComicToast("Screen sharing active! Your screen is live to founders.");
+        showComicToast("Screen sharing active!");
       } catch (err) {
         console.warn("Screen share cancelled:", err);
       }
@@ -1790,7 +1831,7 @@
     }
 
     isScreenSharing = false;
-    btn.className = "dock-btn";
+    btn.className = "meet-dock-btn";
     btn.innerHTML = '<i data-lucide="monitor"></i>';
     lucide.createIcons();
     showComicToast("Screen share stopped.");
@@ -1802,11 +1843,11 @@
     const handBadge = document.getElementById('localHandBadge');
 
     if (isHandRaised) {
-      btn.className = "dock-btn active";
+      btn.className = "meet-dock-btn active";
       if (handBadge) handBadge.style.display = 'flex';
       showComicToast("✋ Hand raised!");
     } else {
-      btn.className = "dock-btn";
+      btn.className = "meet-dock-btn";
       if (handBadge) handBadge.style.display = 'none';
     }
     sendHeartbeat();
@@ -1826,7 +1867,7 @@
   function spawnFloatingReaction(emoji) {
     const layer = document.getElementById('reactionsLayer');
     const el = document.createElement('div');
-    el.className = 'floating-reaction';
+    el.className = 'floating-emoji-fly';
     el.textContent = emoji;
     el.style.left = Math.floor(Math.random() * 60 + 20) + '%';
     layer.appendChild(el);
@@ -1834,25 +1875,25 @@
   }
 
   // =========================================================================
-  // 6. CLEAN DRAWER SYSTEM
+  // 6. DRAWER TOGGLES & TABS
   // =========================================================================
   function toggleDrawer() {
     const drawer = document.getElementById('sideDrawer');
-    if (drawer.classList.contains('drawer-closed')) {
-      drawer.classList.remove('drawer-closed');
+    if (drawer.classList.contains('collapsed')) {
+      drawer.classList.remove('collapsed');
     } else {
-      drawer.classList.add('drawer-closed');
+      drawer.classList.add('collapsed');
     }
   }
 
   function openDrawerWithTab(tab) {
     const drawer = document.getElementById('sideDrawer');
-    drawer.classList.remove('drawer-closed');
+    drawer.classList.remove('collapsed');
     switchDrawerTab(tab);
   }
 
   function switchDrawerTab(tab) {
-    document.querySelectorAll('.drawer-tab-item').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.drawer-tab-link').forEach(t => t.classList.remove('active'));
     document.getElementById('panelActivities').style.display = 'none';
     document.getElementById('panelChat').style.display = 'none';
     document.getElementById('panelRoster').style.display = 'none';
@@ -1871,7 +1912,7 @@
   }
 
   function switchActivitySub(sub) {
-    document.querySelectorAll('.activity-sub-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.act-pill-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('subViewTimer').style.display = 'none';
     document.getElementById('subViewTopic').style.display = 'none';
     document.getElementById('subViewNotes').style.display = 'none';
@@ -1885,18 +1926,6 @@
     } else if (sub === 'notes') {
       document.getElementById('subBtnNotes').classList.add('active');
       document.getElementById('subViewNotes').style.display = 'flex';
-    }
-  }
-
-  function toggleStageLayout() {
-    const grid = document.getElementById('videoGrid');
-    const isFocus = grid.getAttribute('data-focus') === 'true';
-    if (isFocus) {
-      grid.removeAttribute('data-focus');
-      showComicToast("Switched to Grid View");
-    } else {
-      grid.setAttribute('data-focus', 'true');
-      showComicToast("Switched to Focus View");
     }
   }
 
@@ -1955,17 +1984,17 @@
 
     if (msg.message_type === 'system' || msg.message_type === 'pitch_vote') {
       const div = document.createElement('div');
-      div.className = 'clean-chat-system';
+      div.className = 'chat-system-notification';
       div.innerHTML = `${escapeHtml(msg.sender_avatar || '🔔')} ${escapeHtml(msg.message)}`;
       container.appendChild(div);
     } else {
       const row = document.createElement('div');
-      row.className = 'clean-chat-msg ' + (isSelf ? 'self' : '');
+      row.className = 'chat-row-msg ' + (isSelf ? 'self' : '');
       row.innerHTML = `
         <div class="comic-avatar comic-avatar-xs comic-box-${msg.sender_color || 'yellow'}">
           ${escapeHtml(msg.sender_avatar || 'TH')}
         </div>
-        <div class="clean-chat-bubble">
+        <div class="chat-bubble-content">
           <div class="text-xs font-bold opacity-75 mb-xs">${escapeHtml(msg.sender_name)}</div>
           <div>${escapeHtml(msg.message)}</div>
         </div>
@@ -2087,7 +2116,7 @@
       voter_name: currentFounder.name,
       feedback: "Live pitch feedback"
     });
-    showComicToast("Pitch score & roast feedback submitted!");
+    showComicToast("Pitch score submitted!");
   }
 
   async function spinNextTopic() {
@@ -2100,7 +2129,7 @@
     await dispatchActivityAction('save_notes', { notes: notes });
     const ind = document.getElementById('notesSavedIndicator');
     if (ind) {
-      ind.textContent = "Saved at " + new Date().toLocaleTimeString();
+      ind.textContent = "Synced at " + new Date().toLocaleTimeString();
       ind.style.color = "#10b981";
     }
     showComicToast("Discussion notes synced!");
@@ -2123,7 +2152,7 @@
   }
 
   // =========================================================================
-  // 9. SIMULATED CLUB PEERS FOR TESTING (Demo Mode)
+  // 9. SIMULATED CLUB PEERS (Demo Mode)
   // =========================================================================
   async function toggleDemoPeers() {
     try {
@@ -2145,7 +2174,7 @@
   // 10. LEAVE DISCUSSION CLEANUP
   // =========================================================================
   async function leaveMeeting() {
-    if (confirm("Leave this discussion meeting stage?")) {
+    if (confirm("Leave this live discussion meeting?")) {
       try {
         await fetch("{% url 'meeting_leave_api' room.slug %}", {
           method: "POST",
@@ -2166,7 +2195,7 @@
 
   function copyRoomLink() {
     navigator.clipboard.writeText(window.location.href);
-    showComicToast("Meeting link copied to clipboard! Send to peers.");
+    showComicToast("Meeting link copied to clipboard!");
   }
 
   function escapeHtml(text) {
