@@ -95,6 +95,12 @@
           </a>
         </li>
         <li>
+          <a href="{% url 'my_clubs' %}" class="nav-link-item {% if request.resolver_match.url_name == 'my_clubs' %}active{% endif %}">
+            <i data-lucide="bookmark-check" class="icon-sm"></i>
+            <span>My Clubs</span>
+          </a>
+        </li>
+        <li>
           <a href="{% url 'pitch_wall' %}" class="nav-link-item {% if request.resolver_match.url_name in 'pitch_wall challenges' %}active{% endif %}">
             <i data-lucide="rocket" class="icon-sm"></i>
             <span>Pitch Wall</span>

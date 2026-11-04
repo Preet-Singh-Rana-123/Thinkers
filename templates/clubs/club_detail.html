@@ -27,10 +27,22 @@
           </span>
         </div>
 
-        <div class="flex gap-sm">
-          <a href="{% url 'club_join' club.slug %}" class="comic-btn comic-btn-sm comic-btn-black">
-            <i data-lucide="plus" class="icon-sm"></i> Join This Club
-          </a>
+        <div class="flex gap-sm items-center flex-wrap">
+          {% if is_member %}
+            <span class="comic-badge comic-badge-green" style="padding: 0.5rem 0.85rem; font-size: 0.85rem;">
+              <i data-lucide="check-circle" class="icon-sm"></i> Joined as {{ membership.role }}
+            </span>
+            <a href="{% url 'club_leave' club.slug %}?next={% url 'club_detail' club.slug %}" 
+               class="comic-btn comic-btn-sm comic-btn-white text-danger" 
+               onclick="return confirm('Are you sure you want to leave {{ club.name }}?');"
+               title="Leave club">
+              <i data-lucide="log-out" class="icon-sm"></i> Leave
+            </a>
+          {% else %}
+            <a href="{% url 'club_join' club.slug %}?next={% url 'club_detail' club.slug %}" class="comic-btn comic-btn-sm comic-btn-black">
+              <i data-lucide="plus" class="icon-sm"></i> Join This Club
+            </a>
+          {% endif %}
           <button onclick="showComicToast('Club invite link copied to clipboard!');" class="comic-btn comic-btn-sm comic-btn-white">
             <i data-lucide="share-2" class="icon-sm"></i> Share
           </button>

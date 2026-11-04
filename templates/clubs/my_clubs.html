@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Joined Clubs | Thinkers Network{% endblock %}
+
+{% block content %}
+
+<section class="page-section">
+  <div class="comic-container">
+    <!-- Breadcrumb -->
+    <div class="comic-breadcrumb">
+      <a href="{% url 'home' %}">Home</a> <span class="comic-breadcrumb-sep">&gt;</span> 
+      <a href="{% url 'club_list' %}">Clubs</a> <span class="comic-breadcrumb-sep">&gt;</span> 
+      <span>My Clubs</span>
+    </div>
+
+    <!-- Header Row -->
+    <div class="section-header-row">
+      <div>
+        <span class="comic-sticker comic-sticker-cyan">
+          <i data-lucide="bookmark-check"></i> MY ENTREPRENEUR CIRCLES
+        </span>
+        <h1 class="section-title">
+          My Joined Clubs
+        </h1>
+        <p class="section-subtitle section-subtitle-left">
+          The founder circles, builder hubs, and weekly masterminds you actively belong to.
+        </p>
+      </div>
+
+      <div class="flex gap-sm items-center flex-wrap">
+        <a href="{% url 'club_list' %}" class="comic-btn comic-btn-yellow">
+          <i data-lucide="compass"></i> Explore All Clubs
+        </a>
+        <a href="{% url 'club_create' %}" class="comic-btn comic-btn-pink">
+          <i data-lucide="plus"></i> Launch A Club
+        </a>
+      </div>
+    </div>
+
+    <!-- Sub-navigation Tabs -->
+    <div class="comic-subnav-tabs">
+      <a href="{% url 'club_list' %}" class="comic-subnav-tab">
+        <i data-lucide="grid" class="icon-sm"></i> Explore All Clubs ({{ total_clubs_count }})
+      </a>
+      <a href="{% url 'my_clubs' %}" class="comic-subnav-tab active">
+        <i data-lucide="bookmark-check" class="icon-sm"></i> My Clubs ({{ my_clubs_count }})
+      </a>
+    </div>
+
+    {% if is_demo_view %}
+      <div class="comic-box comic-box-yellow mb-lg p-sm flex items-center justify-between flex-wrap gap-sm">
+        <div class="flex items-center gap-xs">
+          <i data-lucide="info" class="icon-sm"></i>
+          <span class="text-sm font-bold">
+            Showing joined hubs for demo founder <strong>@{{ viewed_user.username }}</strong>. Log in to track your personal club memberships!
+          </span>
+        </div>
+        <div class="flex gap-xs">
+          <a href="{% url 'login' %}?next={% url 'my_clubs' %}" class="comic-btn comic-btn-xs comic-btn-black">Log In</a>
+          <a href="{% url 'register' %}" class="comic-btn comic-btn-xs comic-btn-pink">Join Free</a>
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Joined Clubs Grid -->
+    {% if memberships %}
+      <div class="card-grid-3">
+        {% for m in memberships %}
+          <div class="comic-box comic-box-hoverable {{ m.club.bg_color }}">
+            <div class="club-card-header">
+              <span class="comic-badge comic-badge-{{ m.club.badge_color }}">{{ m.club.category_label }}</span>
+              <span class="comic-badge comic-badge-yellow" title="Your membership role">
+                <i data-lucide="shield" class="icon-sm"></i> {{ m.role }}
+              </span>
+            </div>
+
+            <h3 class="club-card-title">
+              <a href="{% url 'club_detail' m.club.slug %}">{{ m.club.name }}</a>
+            </h3>
+
+            <p class="club-card-tagline">
+              {{ m.club.tagline }}
+            </p>
+
+            <div class="club-info-snippet">
+              <div class="club-info-row mb-xs">
+                <i data-lucide="calendar" class="icon-sm"></i> {{ m.club.frequency }}
+              </div>
+              <div class="club-info-row mb-xs text-muted">
+                <i data-lucide="crown" class="icon-sm"></i> Hosts: {{ m.club.lead }}
+              </div>
+              <div class="club-info-row text-muted" style="font-size: 0.78rem;">
+                <i data-lucide="check-circle" class="icon-sm"></i> Member since {{ m.joined_at|date:"M d, Y" }}
+              </div>
+            </div>
+
+            <!-- Tags -->
+            <div class="comic-tag-group mb-lg">
+              {% for tag in m.club.tags %}
+                <span class="comic-tag">#{{ tag }}</span>
+              {% endfor %}
+            </div>
+
+            <!-- Actions -->
+            <div class="club-card-actions">
+              <a href="{% url 'club_detail' m.club.slug %}" class="comic-btn comic-btn-sm comic-btn-black flex-1">
+                Enter Hub <i data-lucide="arrow-right" class="icon-sm"></i>
+              </a>
+              <a href="{% url 'join_meeting_room' m.club.slug %}" class="comic-btn comic-btn-sm comic-btn-pink" title="Live Video Room">
+                <i data-lucide="video" class="icon-sm"></i>
+              </a>
+              <a href="{% url 'club_leave' m.club.slug %}?next={% url 'my_clubs' %}" 
+                 onclick="return confirm('Are you sure you want to leave {{ m.club.name }}?');" 
+                 class="comic-btn comic-btn-sm comic-btn-white" 
+                 title="Leave this club">
+                <i data-lucide="log-out" class="icon-sm text-danger"></i>
+              </a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="comic-box comic-box-yellow text-center p-xl">
+        <div class="mb-md">
+          <i data-lucide="compass" class="icon-xl"></i>
+        </div>
+        <h3 class="mb-xs text-2xl font-black">You haven't joined any clubs yet!</h3>
+        <p class="text-muted mb-lg max-w-lg mx-auto">
+          Explore our directory of 25+ domain-specific founder clubs in AI, SaaS, D2C, FinTech, and CleanTech to collaborate with fellow builders.
+        </p>
+        <div class="flex justify-center gap-md flex-wrap">
+          <a href="{% url 'club_list' %}" class="comic-btn comic-btn-primary">
+            <i data-lucide="compass" class="icon-sm"></i> Browse All Clubs
+          </a>
+          <a href="{% url 'club_create' %}" class="comic-btn comic-btn-pink">
+            <i data-lucide="plus" class="icon-sm"></i> Launch A New Club
+          </a>
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+</section>
+
+{% endblock %}

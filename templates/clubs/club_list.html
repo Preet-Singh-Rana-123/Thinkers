@@ -26,8 +26,23 @@
         </p>
       </div>
 
-      <a href="{% url 'club_create' %}" class="comic-btn comic-btn-pink">
-        <i data-lucide="plus"></i> Launch A New Club
+      <div class="flex gap-sm items-center flex-wrap">
+        <a href="{% url 'my_clubs' %}" class="comic-btn comic-btn-yellow">
+          <i data-lucide="bookmark-check"></i> My Clubs ({{ my_clubs_count }})
+        </a>
+        <a href="{% url 'club_create' %}" class="comic-btn comic-btn-pink">
+          <i data-lucide="plus"></i> Launch A New Club
+        </a>
+      </div>
+    </div>
+
+    <!-- Sub-navigation Tabs -->
+    <div class="comic-subnav-tabs">
+      <a href="{% url 'club_list' %}" class="comic-subnav-tab active">
+        <i data-lucide="grid" class="icon-sm"></i> Explore All Clubs ({{ total_clubs_count }})
+      </a>
+      <a href="{% url 'my_clubs' %}" class="comic-subnav-tab">
+        <i data-lucide="bookmark-check" class="icon-sm"></i> My Clubs ({{ my_clubs_count }})
       </a>
     </div>
 
@@ -47,14 +62,14 @@
         <a href="{% url 'club_list' %}?cat=d2c" class="filter-chip {% if current_category == 'd2c' %}active{% endif %}">
           <i data-lucide="shopping-bag" class="icon-sm"></i> D2C Brands
         </a>
-        <a href="{% url 'club_list' %}?cat=greentech" class="filter-chip {% if current_category == 'greentech' %}active{% endif %}">
+        <a href="{% url 'club_list' %}?cat=clean" class="filter-chip {% if current_category == 'clean' or current_category == 'greentech' %}active{% endif %}">
           <i data-lucide="leaf" class="icon-sm"></i> CleanTech
         </a>
         <a href="{% url 'club_list' %}?cat=fintech" class="filter-chip {% if current_category == 'fintech' %}active{% endif %}">
           <i data-lucide="credit-card" class="icon-sm"></i> FinTech
         </a>
-        <a href="{% url 'club_list' %}?cat=student" class="filter-chip {% if current_category == 'student' %}active{% endif %}">
-          <i data-lucide="flame" class="icon-sm"></i> Student Hustlers
+        <a href="{% url 'club_list' %}?cat=hustle" class="filter-chip {% if current_category == 'hustle' or current_category == 'student' %}active{% endif %}">
+          <i data-lucide="flame" class="icon-sm"></i> Campus Hustle
         </a>
       </div>
 
@@ -117,19 +132,68 @@
               <a href="{% url 'club_detail' club.slug %}" class="comic-btn comic-btn-sm comic-btn-black flex-1">
                 View Hub <i data-lucide="arrow-right" class="icon-sm"></i>
               </a>
-              <button onclick="showComicToast('Joined {{ club.name }}!');" class="comic-btn comic-btn-sm comic-btn-yellow">
-                <i data-lucide="plus" class="icon-sm"></i> Join
-              </button>
+
+              {% if club.id in joined_club_ids %}
+                <span class="comic-badge comic-badge-green" style="padding: 0.45rem 0.75rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.25rem;">
+                  <i data-lucide="check-circle" class="icon-sm"></i> Joined
+                </span>
+              {% else %}
+                <a href="{% url 'club_join' club.slug %}?next={{ request.get_full_path|urlencode }}" class="comic-btn comic-btn-sm comic-btn-yellow">
+                  <i data-lucide="plus" class="icon-sm"></i> Join
+                </a>
+              {% endif %}
             </div>
           </div>
         {% endfor %}
       </div>
+
+      <!-- Comic Pagination (9 clubs per page) -->
+      {% if page_obj.paginator.num_pages > 1 %}
+        <div class="comic-pagination-container">
+          <div class="comic-pagination">
+            {% if page_obj.has_previous %}
+              <a href="?page={{ page_obj.previous_page_number }}{% if current_category != 'all' %}&cat={{ current_category }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}" class="comic-pagination-page comic-pagination-nav" title="Previous Page">
+                <i data-lucide="chevron-left" class="icon-sm"></i> Prev
+              </a>
+            {% else %}
+              <span class="comic-pagination-page comic-pagination-nav disabled">
+                <i data-lucide="chevron-left" class="icon-sm"></i> Prev
+              </span>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+              {% if num == page_obj.number %}
+                <span class="comic-pagination-page active">{{ num }}</span>
+              {% else %}
+                <a href="?page={{ num }}{% if current_category != 'all' %}&cat={{ current_category }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}" class="comic-pagination-page">
+                  {{ num }}
+                </a>
+              {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+              <a href="?page={{ page_obj.next_page_number }}{% if current_category != 'all' %}&cat={{ current_category }}{% endif %}{% if search_query %}&q={{ search_query }}{% endif %}" class="comic-pagination-page comic-pagination-nav" title="Next Page">
+                Next <i data-lucide="chevron-right" class="icon-sm"></i>
+              </a>
+            {% else %}
+              <span class="comic-pagination-page comic-pagination-nav disabled">
+                Next <i data-lucide="chevron-right" class="icon-sm"></i>
+              </span>
+            {% endif %}
+          </div>
+
+          <div class="text-sm font-bold text-muted">
+            Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ total_filtered_count }} clubs &bull; Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+          </div>
+        </div>
+      {% endif %}
+
     {% else %}
       <div class="comic-box comic-box-yellow text-center p-lg">
         <div class="mb-md">
           <i data-lucide="search-x" class="icon-xl"></i>
         </div>
-        <h3 class="mb-xs text-2xl">No clubs matched your search!</h3>
+        <h3 class="mb-xs text-2xl font-black">No clubs matched your search!</h3>
         <p class="text-muted mb-lg">
           Try another search keyword or launch your own club in this space!
         </p>

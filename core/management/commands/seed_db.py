@@ -423,6 +423,586 @@ class Command(BaseCommand):
                     ("rohan_mehta", "Growth Mentor"),
                 ]
             },
+            {
+                "name": "AI Agents & LLMOps Circle",
+                "slug": "ai-agents-llmops",
+                "category": "ai",
+                "category_label": "AI & DeepTech",
+                "badge_color": "purple",
+                "bg_color": "comic-box-purple",
+                "tagline": "Building autonomous agents, multi-agent frameworks, and local LLM pipelines.",
+                "description": "A collaborative sandbox for researchers, hackers, and builders creating next-generation autonomous AI agents, fine-tuning open-weights models, and deploying production LLMOps.",
+                "lead": "Kabir Sengupta & Ananya Rao",
+                "university": "IIT Bombay & BITS Pilani",
+                "frequency": "Every Wednesday @ 7:30 PM IST",
+                "tags_text": "Agents, LangChain, Llama3, VectorDB, RAG",
+                "members_count_cache": 348,
+                "announcements": [
+                    {"content": "Auto-eval benchmarks sprint starts this Friday! We're evaluating custom RAG accuracy on Indian legal docs.", "badge": "BENCHMARK SPRINT"},
+                ],
+                "events": [
+                    {"title": "Multi-Agent Systems with CrewAI & LangGraph", "date": "Wednesday, 7:30 PM", "type": "Live Code Lab", "order": 1},
+                ],
+                "members": [
+                    ("aarav_sharma", "AI Mentor"),
+                    ("preet_builder", "Founding Hacker"),
+                ]
+            },
+            {
+                "name": "Computer Vision & Robotics Guild",
+                "slug": "robotics-computervision",
+                "category": "ai",
+                "category_label": "AI & DeepTech",
+                "badge_color": "purple",
+                "bg_color": "comic-box-purple",
+                "tagline": "Edge AI, spatial computing, drones, and autonomous robotics for physical world applications.",
+                "description": "From warehouse automation to smart agritech drones, our members build embedded vision systems, SLAM navigation, and real-time inference models.",
+                "lead": "Devansh Patel & Dr. Meera Nambiar",
+                "university": "IIT Madras Research Park",
+                "frequency": "Bi-weekly Saturdays @ 4:00 PM IST",
+                "tags_text": "Robotics, OpenCV, EdgeAI, ROS, Jetson",
+                "members_count_cache": 215,
+                "announcements": [
+                    {"content": "NVIDIA Jetson Orin Nano development boards arrived in the hardware lab for member loan!", "badge": "HARDWARE GRANT"},
+                ],
+                "events": [
+                    {"title": "Real-Time Object Detection at 60 FPS on Microcontrollers", "date": "Saturday, 4:00 PM", "type": "Demo Day", "order": 1},
+                ],
+                "members": [
+                    ("maya_verma", "Research Fellow"),
+                ]
+            },
+            {
+                "name": "Neural Hardware & Silicon Innovators",
+                "slug": "neural-hardware",
+                "category": "ai",
+                "category_label": "AI & DeepTech",
+                "badge_color": "purple",
+                "bg_color": "comic-box-purple",
+                "tagline": "FPGA accelerators, RISC-V compute, and customized neural processing chips.",
+                "description": "A deep-tech hub dedicated to hardware enthusiasts building customized silicon architectures, FPGA machine learning accelerators, and open RISC-V chipsets.",
+                "lead": "Rishi Nair & Tenzin Dorjee",
+                "university": "IISc Bangalore",
+                "frequency": "Every Sunday @ 11:00 AM IST",
+                "tags_text": "RISC-V, Silicon, FPGA, Hardware, Semiconductors",
+                "members_count_cache": 182,
+                "announcements": [
+                    {"content": "Tape-out workshop with open-source SkyWater 130nm process PDKs is happening this weekend.", "badge": "TAPE-OUT"},
+                ],
+                "events": [
+                    {"title": "Synthesizing Custom Neural Accelerators with Chisel", "date": "Sunday, 11:00 AM", "type": "Hands-on Lab", "order": 1},
+                ],
+                "members": [
+                    ("vikram_sethi", "Hardware Lead"),
+                ]
+            },
+            {
+                "name": "Micro-SaaS & Indie Builders Hub",
+                "slug": "micro-saas-indie",
+                "category": "saas",
+                "category_label": "B2B SaaS",
+                "badge_color": "cyan",
+                "bg_color": "comic-box-cyan",
+                "tagline": "Zero-funding to $10k MRR: Bootstrapped software businesses built by solo founders.",
+                "description": "The premier sanctuary for solo developers and technical co-founders building focused, profitable micro-SaaS tools. Weekly live teardowns, pricing reviews, and churn reduction tactics.",
+                "lead": "Nikhil Joshi & Samaira Khan",
+                "university": "VIT Vellore & Cross-Campus",
+                "frequency": "Every Tuesday @ 9:00 PM IST",
+                "tags_text": "Bootstrapping, MicroSaaS, MRR, NextJS, Stripe",
+                "members_count_cache": 490,
+                "announcements": [
+                    {"content": "New member showcase: 3 micro-apps launched on Product Hunt today! Let's give them some love.", "badge": "LAUNCH DAY"},
+                ],
+                "events": [
+                    {"title": "Pricing Strategy Tear-Down: From Free Tier to $49/mo Plans", "date": "Tuesday, 9:00 PM", "type": "Mastermind", "order": 1},
+                ],
+                "members": [
+                    ("tanvi_chawla", "Growth Advisor"),
+                    ("preet_builder", "Active Indie Hacker"),
+                ]
+            },
+            {
+                "name": "DevTools & Open Source Collective",
+                "slug": "devtools-opensource",
+                "category": "saas",
+                "category_label": "B2B SaaS",
+                "badge_color": "cyan",
+                "bg_color": "comic-box-cyan",
+                "tagline": "Developer-first products, open-source SDKs, and API infrastructure that engineers love.",
+                "description": "Engineers building for engineers. We discuss GitHub growth, developer experience (DX), open-core monetization, and scaling cloud-native CLI tools.",
+                "lead": "Aditya Verma & Sneha Kulkarni",
+                "university": "IIIT Hyderabad",
+                "frequency": "Every Monday @ 8:00 PM IST",
+                "tags_text": "DevTools, OSS, Golang, Rust, DX",
+                "members_count_cache": 395,
+                "announcements": [
+                    {"content": "Our shared GitHub repository just crossed 1,500 stars! Check out the contribution guidelines.", "badge": "MILESTONE"},
+                ],
+                "events": [
+                    {"title": "Building Lightning-Fast CLI Tools in Go & Rust", "date": "Monday, 8:00 PM", "type": "Workshop", "order": 1},
+                ],
+                "members": [
+                    ("aarav_sharma", "Core Maintainer"),
+                    ("preet_builder", "Core Contributor"),
+                ]
+            },
+            {
+                "name": "Enterprise Workflow Automation Lab",
+                "slug": "enterprise-workflow",
+                "category": "saas",
+                "category_label": "B2B SaaS",
+                "badge_color": "cyan",
+                "bg_color": "comic-box-cyan",
+                "tagline": "Transforming back-office operations with modern workflow engines and headless integrations.",
+                "description": "We crack enterprise sales, SOC2 compliance, and multi-tenant cloud orchestration for student founders building heavy-duty B2B software.",
+                "lead": "Karthik Subramanian",
+                "university": "IIM Ahmedabad & DTU",
+                "frequency": "Every Friday @ 6:00 PM IST",
+                "tags_text": "Enterprise, Zapier, Webhooks, SOC2, Automation",
+                "members_count_cache": 210,
+                "announcements": [
+                    {"content": "Check out our new guide on Enterprise Procurement: How to survive 90-day vendor security audits.", "badge": "PLAYBOOK"},
+                ],
+                "events": [
+                    {"title": "Selling Software to Enterprise CFOs as College Students", "date": "Friday, 6:00 PM", "type": "Sales Lab", "order": 1},
+                ],
+                "members": [
+                    ("tanvi_chawla", "Member"),
+                ]
+            },
+            {
+                "name": "Vertical AI for Legal & Compliance",
+                "slug": "legaltech-ai",
+                "category": "saas",
+                "category_label": "B2B SaaS",
+                "badge_color": "cyan",
+                "bg_color": "comic-box-cyan",
+                "tagline": "Contract analytics, regulatory auditing, and legal tech workflow tools.",
+                "description": "Law students and tech founders collaborating to solve cross-border compliance, automated NDA diligence, and regulatory reporting.",
+                "lead": "Shreya Saxena & Tarun Bansal",
+                "university": "NLSIU Bangalore & NALSAR",
+                "frequency": "Alternate Thursdays @ 7:00 PM IST",
+                "tags_text": "LegalTech, Compliance, Auditing, NLP, Contracts",
+                "members_count_cache": 165,
+                "announcements": [
+                    {"content": "Template repository for GDPR & DPDP compliance checklists is now live in the clubhouse files.", "badge": "LEGAL RESOURCE"},
+                ],
+                "events": [
+                    {"title": "Automated Redlining with LLMs: Benchmarks vs Human Lawyers", "date": "Thursday, 7:00 PM", "type": "Discussion", "order": 1},
+                ],
+                "members": [
+                    ("priya_sen", "Product Designer"),
+                ]
+            },
+            {
+                "name": "Clean Mobility & EV Hackers",
+                "slug": "clean-mobility-ev",
+                "category": "clean",
+                "category_label": "CleanTech & Hardware",
+                "badge_color": "green",
+                "bg_color": "comic-box-green",
+                "tagline": "Battery management systems (BMS), electric 2-wheelers, and smart charging grids.",
+                "description": "Hardware founders and electrical engineers designing affordable EV conversion kits, telematics units, and thermal-efficient battery packs for Indian road conditions.",
+                "lead": "Arjun Reddy & Pooja Hegde",
+                "university": "NIT Trichy & RVCE Bangalore",
+                "frequency": "Every Saturday @ 5:30 PM IST",
+                "tags_text": "EV, BatteryTech, BMS, IoT, Mobility",
+                "members_count_cache": 275,
+                "announcements": [
+                    {"content": "Field testing on our 48V LFP battery pack completed 1,000 thermal cycles with zero degradation!", "badge": "TEST RESULTS"},
+                ],
+                "events": [
+                    {"title": "Designing Safe BMS Circuits with CAN Bus Telemetry", "date": "Saturday, 5:30 PM", "type": "Workshop", "order": 1},
+                ],
+                "members": [
+                    ("maya_verma", "Battery Advisor"),
+                    ("preet_builder", "Hardware Collaborator"),
+                ]
+            },
+            {
+                "name": "Circular Economy & Agritech Pioneers",
+                "slug": "circulareconomy-agritech",
+                "category": "clean",
+                "category_label": "CleanTech & Hardware",
+                "badge_color": "green",
+                "bg_color": "comic-box-green",
+                "tagline": "Farm-to-fork telemetry, soil sensors, and biodegradable bio-plastics from crop waste.",
+                "description": "Tackling stubble burning, soil degradation, and cold-chain logistics through biological materials and low-cost IoT telemetry stations.",
+                "lead": "Gurpreet Singh & Haritha Nair",
+                "university": "Punjab Agricultural University & IIT Kharagpur",
+                "frequency": "Every Wednesday @ 6:30 PM IST",
+                "tags_text": "Agritech, CircularEconomy, IoT, BioPlastics, Solar",
+                "members_count_cache": 230,
+                "announcements": [
+                    {"content": "Pilot deployment in 12 Punjab farms started for our wireless moisture and nitrogen sensor nodes.", "badge": "FIELD PILOT"},
+                ],
+                "events": [
+                    {"title": "Low-Power LoRaWAN Deployments for Rural Smart Farms", "date": "Wednesday, 6:30 PM", "type": "Tech Demo", "order": 1},
+                ],
+                "members": [
+                    ("maya_verma", "Co-Lead"),
+                ]
+            },
+            {
+                "name": "Carbon Accounting & Climate Fintech",
+                "slug": "carbon-accounting-fintech",
+                "category": "clean",
+                "category_label": "CleanTech & Hardware",
+                "badge_color": "green",
+                "bg_color": "comic-box-green",
+                "tagline": "Automated Scope 1-3 carbon tracking and verified ESG carbon credit tokenization.",
+                "description": "Building modern auditable carbon accounting software, satellite emissions tracking, and green bond rails for emerging market corporates.",
+                "lead": "Zoya Merchant & Chirag Jain",
+                "university": "Ashoka University & IIT Delhi",
+                "frequency": "Bi-weekly Tuesdays @ 8:00 PM IST",
+                "tags_text": "CarbonCredits, ESG, SatelliteData, CleanFintech",
+                "members_count_cache": 155,
+                "announcements": [
+                    {"content": "New partnership with Sentinel satellite open data for automated forest canopy monitoring.", "badge": "PARTNERSHIP"},
+                ],
+                "events": [
+                    {"title": "Deciphering Corporate ESG Disclosures & Scope 3 Verification", "date": "Tuesday, 8:00 PM", "type": "Mastermind", "order": 1},
+                ],
+                "members": [
+                    ("rohan_mehta", "Member"),
+                ]
+            },
+            {
+                "name": "Decentralized Finance & Algorithmic Trading",
+                "slug": "defi-algo-trading",
+                "category": "fintech",
+                "category_label": "FinTech & Web3",
+                "badge_color": "yellow",
+                "bg_color": "comic-box-yellow",
+                "tagline": "High-frequency crypto arbitrage, liquidity protocols, and automated DEX market makers.",
+                "description": "A high-octane trading and blockchain development collective analyzing on-chain order books, MEV bots, and decentralized yield vaults.",
+                "lead": "Dhruv Kapoor & Neil D'Souza",
+                "university": "IIT Kanpur & BITS Goa",
+                "frequency": "Every Thursday @ 9:30 PM IST",
+                "tags_text": "DeFi, Solidity, Quant, MEV, Web3",
+                "members_count_cache": 310,
+                "announcements": [
+                    {"content": "Algorithmic backtesting framework on Polygon and Arbitrum data released on our member drive.", "badge": "ALGO CODE"},
+                ],
+                "events": [
+                    {"title": "Arbitrage Bot Architecture & Flash Loan Mechanics", "date": "Thursday, 9:30 PM", "type": "Live Coding", "order": 1},
+                ],
+                "members": [
+                    ("vikram_sethi", "Blockchain Engineer"),
+                ]
+            },
+            {
+                "name": "UPI Infrastructure & Neo-Banking Guild",
+                "slug": "upi-neobanking-guild",
+                "category": "fintech",
+                "category_label": "FinTech & Web3",
+                "badge_color": "yellow",
+                "bg_color": "comic-box-yellow",
+                "tagline": "Building on Account Aggregator frameworks, UPI credit lines, and micro-savings apps.",
+                "description": "Targeting the next 500 million digital consumers in India. We dissect NBFC partnerships, digital KYC pipelines, and recurring payment mechanics.",
+                "lead": "Aakash Singhal & Bhavna Pillai",
+                "university": "NMIMS Mumbai & Delhi University",
+                "frequency": "Every Monday @ 7:00 PM IST",
+                "tags_text": "UPI, NeoBank, CreditLines, AccountAggregator",
+                "members_count_cache": 380,
+                "announcements": [
+                    {"content": "Reserve Bank regulatory sandbox highlights summary document has been published.", "badge": "POLICY INSIGHT"},
+                ],
+                "events": [
+                    {"title": "Integrating India's Account Aggregator Ecosystem for Instant Credit", "date": "Monday, 7:00 PM", "type": "Workshop", "order": 1},
+                ],
+                "members": [
+                    ("priya_sen", "Product Designer"),
+                ]
+            },
+            {
+                "name": "Zero-Knowledge & Privacy Cryptography",
+                "slug": "zeroknowledge-crypto",
+                "category": "fintech",
+                "category_label": "FinTech & Web3",
+                "badge_color": "yellow",
+                "bg_color": "comic-box-yellow",
+                "tagline": "zk-SNARKs, confidential rollups, and verifiable computation for secure data sharing.",
+                "description": "Math geeks and crypto researchers building zero-knowledge proofs for identity verification, decentralized voting, and compliant privacy protocols.",
+                "lead": "Siddharth Menon",
+                "university": "Chennai Mathematical Institute",
+                "frequency": "Every Sunday @ 4:00 PM IST",
+                "tags_text": "zkSNARKs, Cryptography, Rollups, Privacy, Math",
+                "members_count_cache": 140,
+                "announcements": [
+                    {"content": "Study group on Circom circuits and Groth16 proofs meets this Sunday.", "badge": "STUDY GROUP"},
+                ],
+                "events": [
+                    {"title": "Writing Your First Zero-Knowledge Proof Circuit in Circom", "date": "Sunday, 4:00 PM", "type": "Tech Workshop", "order": 1},
+                ],
+                "members": [
+                    ("vikram_sethi", "Member"),
+                ]
+            },
+            {
+                "name": "Direct-To-GenZ Apparel & Streetwear",
+                "slug": "genz-streetwear-syndicate",
+                "category": "d2c",
+                "category_label": "D2C & Consumer",
+                "badge_color": "pink",
+                "bg_color": "comic-box-pink",
+                "tagline": "Limited drops, viral TikTok/Reels marketing, and on-demand sustainable manufacturing.",
+                "description": "Campus fashion designers and streetwear founders sharing supplier contacts in Tirupur/Ludhiana, shopify conversion hacks, and viral creator seeding.",
+                "lead": "Rhea Singhania & Aryan Malhotra",
+                "university": "NIFT Delhi & Pearl Academy",
+                "frequency": "Every Friday @ 8:30 PM IST",
+                "tags_text": "Fashion, Drops, Streetwear, Shopify, Reels",
+                "members_count_cache": 410,
+                "announcements": [
+                    {"content": "Supplier contact list updated with 8 vetted textile knitters in Tirupur offering low MOQs.", "badge": "SUPPLY CHAIN"},
+                ],
+                "events": [
+                    {"title": "How to Sell Out a 500-Piece Streetwear Drop in 60 Minutes", "date": "Friday, 8:30 PM", "type": "Masterclass", "order": 1},
+                ],
+                "members": [
+                    ("rohan_mehta", "Mentor"),
+                ]
+            },
+            {
+                "name": "Functional Food & Smart Nutrition Collective",
+                "slug": "functional-food-nutrition",
+                "category": "d2c",
+                "category_label": "D2C & Consumer",
+                "badge_color": "pink",
+                "bg_color": "comic-box-pink",
+                "tagline": "Clean-label energy bars, nootropic beverages, and protein snacks for busy builders.",
+                "description": "Formulating healthy, lab-tested consumable brands. We discuss FSSAI licenses, cold-chain distribution, Q-commerce listing (Blinkit/Zepto), and unit economics.",
+                "lead": "Mehul Choksi & Dr. Radhika Iyer",
+                "university": "ICT Mumbai & NIFTEM",
+                "frequency": "Every Saturday @ 11:30 AM IST",
+                "tags_text": "FMCG, Nootropics, QCommerce, Nutrition, FSSAI",
+                "members_count_cache": 260,
+                "announcements": [
+                    {"content": "FSSAI compliance clinic will be held this Saturday morning with our food law advisor.", "badge": "COMPLIANCE"},
+                ],
+                "events": [
+                    {"title": "Cracking Q-Commerce: Getting Listed on Blinkit & Zepto", "date": "Saturday, 11:30 AM", "type": "Workshop", "order": 1},
+                ],
+                "members": [
+                    ("rohan_mehta", "Advisor"),
+                ]
+            },
+            {
+                "name": "Clean Beauty & Ayurvedic Bio-Formulations",
+                "slug": "clean-beauty-bio",
+                "category": "d2c",
+                "category_label": "D2C & Consumer",
+                "badge_color": "pink",
+                "bg_color": "comic-box-pink",
+                "tagline": "Modernizing clinical skincare with native botanicals and active dermatological science.",
+                "description": "Formulators and brand builders sharing batch testing protocols, sustainable packaging vendors, and influencer ROI strategies.",
+                "lead": "Tanvi Agarwal",
+                "university": "Panjab University & SRCC",
+                "frequency": "Every Thursday @ 6:00 PM IST",
+                "tags_text": "Beauty, Skincare, D2C, Ayurveda, ECommerce",
+                "members_count_cache": 225,
+                "announcements": [
+                    {"content": "Glass bottle packaging supplier catalog uploaded with eco-friendly frosted finishes.", "badge": "PACKAGING"},
+                ],
+                "events": [
+                    {"title": "Formulation Stability Testing & Shelf Life Certification", "date": "Thursday, 6:00 PM", "type": "Webinar", "order": 1},
+                ],
+                "members": [
+                    ("priya_sen", "Brand Designer"),
+                ]
+            },
+            {
+                "name": "Student Freelance Agency & Dev Shop Co-op",
+                "slug": "student-agency-coop",
+                "category": "hustle",
+                "category_label": "Campus Hustle & Agency",
+                "badge_color": "yellow",
+                "bg_color": "comic-box-yellow",
+                "tagline": "Landing high-ticket international clients, subcontracting gigs, and building agency cashflow.",
+                "description": "A tight-knit network of campus agency owners running design, web development, SEO, and video editing agencies. We pass leads, share pitch decks, and review contracts.",
+                "lead": "Kunal Ghosh & Yash Vardhan",
+                "university": "Chandigarh University & DU",
+                "frequency": "Every Monday @ 9:00 PM IST",
+                "tags_text": "Agency, Freelancing, Upwork, ColdEmail, Retainers",
+                "members_count_cache": 540,
+                "announcements": [
+                    {"content": "Lead board updated: 4 international clients seeking React & Figma designers right now!", "badge": "PAID GIGS"},
+                ],
+                "events": [
+                    {"title": "Cold Email Teardown: How to Win $3k Design Retainers on Upwork", "date": "Monday, 9:00 PM", "type": "Live Tear-Down", "order": 1},
+                ],
+                "members": [
+                    ("rohan_mehta", "Growth Mentor"),
+                ]
+            },
+            {
+                "name": "Creator Economy & Content Studio Incubator",
+                "slug": "creator-economy-incubator",
+                "category": "hustle",
+                "category_label": "Campus Hustle & Agency",
+                "badge_color": "yellow",
+                "bg_color": "comic-box-yellow",
+                "tagline": "Monetizing YouTube, podcasts, newsletters, and digital products to six figures.",
+                "description": "Campus creators with 10k+ audiences sharing thumbnail A/B testing, sponsorship rate cards, affiliate strategies, and short-form content syndication.",
+                "lead": "Ishaan Gupta & Mehak Chhabra",
+                "university": "Christ University Bangalore",
+                "frequency": "Every Sunday @ 6:00 PM IST",
+                "tags_text": "YouTube, Newsletters, Podcasting, Sponsorships",
+                "members_count_cache": 460,
+                "announcements": [
+                    {"content": "Brand sponsorship rate-card benchmark sheet for 2026 is published in the resources tab.", "badge": "SPONSOR DATA"},
+                ],
+                "events": [
+                    {"title": "Short-Form Video Algorithm Playbook: Reels, Shorts & TikTok", "date": "Sunday, 6:00 PM", "type": "Masterclass", "order": 1},
+                ],
+                "members": [
+                    ("priya_sen", "Visual Lead"),
+                ]
+            },
+            {
+                "name": "Campus Event & Fest Merchandising Guild",
+                "slug": "campus-fest-merch",
+                "category": "hustle",
+                "category_label": "Campus Hustle & Agency",
+                "badge_color": "yellow",
+                "bg_color": "comic-box-yellow",
+                "tagline": "Monetizing annual fests, corporate sponsorships, and campus-wide vendor concessions.",
+                "description": "The underground playbook for campus organizers to negotiate five-figure brand sponsorships, organize hackathons, and sell out merchandise.",
+                "lead": "Rohan Bhardwaj",
+                "university": "Delhi Technological University (DTU)",
+                "frequency": "Bi-weekly Wednesdays @ 8:30 PM IST",
+                "tags_text": "CampusFests, Sponsorships, Hackathons, Merch",
+                "members_count_cache": 295,
+                "announcements": [
+                    {"content": "Sponsorship proposal deck template downloaded by over 120 college clubs nationwide.", "badge": "TOOLKIT"},
+                ],
+                "events": [
+                    {"title": "How to Pitch Top Tech Brands for ₹5 Lakh Fest Title Sponsorship", "date": "Wednesday, 8:30 PM", "type": "Pitch Coaching", "order": 1},
+                ],
+                "members": [
+                    ("rohan_mehta", "Co-Lead"),
+                ]
+            },
+            {
+                "name": "EdTech & Interactive Gamified Learning",
+                "slug": "edtech-gamified-learning",
+                "category": "saas",
+                "category_label": "B2B SaaS",
+                "badge_color": "cyan",
+                "bg_color": "comic-box-cyan",
+                "tagline": "Duolingo-style micro-learning apps and AI automated coding assessments for colleges.",
+                "description": "Founders modernizing university curriculums with AI tutors, bite-sized mobile simulations, and automated skill credentialing.",
+                "lead": "Pranav Joshi & Aditi Sen",
+                "university": "BITS Pilani & Manipal",
+                "frequency": "Every Tuesday @ 7:00 PM IST",
+                "tags_text": "EdTech, Gamification, Microlearning, Assessments",
+                "members_count_cache": 270,
+                "announcements": [
+                    {"content": "Pilot program deployed across 3 universities for our coding assessment sandbox.", "badge": "CAMPUS PILOT"},
+                ],
+                "events": [
+                    {"title": "Gamification Mechanics: Retention Loops & Streaks in Educational Apps", "date": "Tuesday, 7:00 PM", "type": "Design Lab", "order": 1},
+                ],
+                "members": [
+                    ("tanvi_chawla", "EdTech Advisor"),
+                ]
+            },
+            {
+                "name": "HealthTech & Wearable Bio-Sensors",
+                "slug": "healthtech-wearables",
+                "category": "clean",
+                "category_label": "CleanTech & Hardware",
+                "badge_color": "green",
+                "bg_color": "comic-box-green",
+                "tagline": "Continuous glucose monitors, ECG smart rings, and preventive telemedicine triage.",
+                "description": "Bio-engineers and medical innovators prototyping non-invasive medical sensors, HIPAA-compliant patient apps, and diagnostic algorithms.",
+                "lead": "Dr. Alok Nath & Tara Deshmukh",
+                "university": "AIIMS New Delhi & IIT Delhi",
+                "frequency": "Every Saturday @ 3:00 PM IST",
+                "tags_text": "HealthTech, Wearables, BioSensors, Telehealth",
+                "members_count_cache": 210,
+                "announcements": [
+                    {"content": "Clinical trial protocol template approved for wearable PPG sensor testing.", "badge": "CLINICAL PROTOCOL"},
+                ],
+                "events": [
+                    {"title": "Signal Filtering for Wearable PPG & ECG Sensors with DSP", "date": "Saturday, 3:00 PM", "type": "Engineering Lab", "order": 1},
+                ],
+                "members": [
+                    ("maya_verma", "BioTech Fellow"),
+                ]
+            },
+            {
+                "name": "Gaming, Esports & Virtual Worlds Studio",
+                "slug": "gaming-esports-studio",
+                "category": "d2c",
+                "category_label": "D2C & Consumer",
+                "badge_color": "pink",
+                "bg_color": "comic-box-pink",
+                "tagline": "Indie game studios, Unreal Engine 5 worlds, and competitive gaming leagues.",
+                "description": "Game designers, 3D artists, and unity developers launching multiplayer mobile titles, Steam indie games, and campus esports tournaments.",
+                "lead": "Armaan Sheikh & Leo Fernandes",
+                "university": "Whistling Woods & MIT-WPU Pune",
+                "frequency": "Every Friday @ 10:00 PM IST",
+                "tags_text": "Gaming, UnrealEngine, Unity, Esports, Steam",
+                "members_count_cache": 365,
+                "announcements": [
+                    {"content": "Winter Game Jam winners announced! Check out the 5 playable indie prototypes on Itch.io.", "badge": "GAME JAM"},
+                ],
+                "events": [
+                    {"title": "Unreal Engine 5 Lumen & Nanite Optimization for Low-End PCs", "date": "Friday, 10:00 PM", "type": "Workshop", "order": 1},
+                ],
+                "members": [
+                    ("preet_builder", "Technical Advisor"),
+                ]
+            },
+            {
+                "name": "GovTech & Public Infrastructure Innovators",
+                "slug": "govtech-public-infra",
+                "category": "saas",
+                "category_label": "B2B SaaS",
+                "badge_color": "cyan",
+                "bg_color": "comic-box-cyan",
+                "tagline": "Open digital public goods, smart municipal services, and transparent procurement.",
+                "description": "Engineers building atop India Stack (OCEN, ONDC, DigiLocker) to streamline citizen grievance portals, transit tracking, and public tenders.",
+                "lead": "Mitali Roy & Suresh Gowda",
+                "university": "St. Xavier's Kolkata & PES Bangalore",
+                "frequency": "Alternate Saturdays @ 6:00 PM IST",
+                "tags_text": "GovTech, IndiaStack, ONDC, SmartCities, APIs",
+                "members_count_cache": 190,
+                "announcements": [
+                    {"content": "ONDC buyer app boilerplate code repository published under MIT license.", "badge": "OPEN SOURCE"},
+                ],
+                "events": [
+                    {"title": "Architecting ONDC Buyer & Seller Nodes from Scratch", "date": "Saturday, 6:00 PM", "type": "Code Review", "order": 1},
+                ],
+                "members": [
+                    ("aarav_sharma", "Architecture Contributor"),
+                ]
+            },
+            {
+                "name": "NeuroTech & Cognitive Interfaces Lab",
+                "slug": "neurotech-bci-lab",
+                "category": "ai",
+                "category_label": "AI & DeepTech",
+                "badge_color": "purple",
+                "bg_color": "comic-box-purple",
+                "tagline": "Brain-computer interfaces (BCI), sleep trackers, and focus-enhancing neuro-feedback.",
+                "description": "Exploring EEG headsets, signal processing algorithms, and non-invasive cognitive enhancement applications with open-source hardware.",
+                "lead": "Eshan Trivedi & Mira Sen",
+                "university": "IIT Gandhinagar",
+                "frequency": "Every Sunday @ 2:00 PM IST",
+                "tags_text": "BCI, NeuroTech, EEG, SignalProcessing, Hardware",
+                "members_count_cache": 150,
+                "announcements": [
+                    {"content": "OpenBCI Cyton 8-channel biosensing boards have arrived for the club hardware bench.", "badge": "HARDWARE BENCH"},
+                ],
+                "events": [
+                    {"title": "Processing Raw EEG Brainwaves with Python & MNE", "date": "Sunday, 2:00 PM", "type": "Lab Session", "order": 1},
+                ],
+                "members": [
+                    ("maya_verma", "Neuro Member"),
+                ]
+            },
         ]
 
         club_objects = {}
