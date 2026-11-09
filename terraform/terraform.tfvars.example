@@ -1,0 +1,24 @@
+# AWS Region & Environment
+aws_region  = "us-east-1"
+environment = "production"
+
+# Network CIDRs
+vpc_cidr             = "10.0.0.0/16"
+public_subnet_cidrs  = ["10.0.1.0/24", "10.0.2.0/24"]
+private_subnet_cidrs = ["10.0.10.0/24", "10.0.11.0/24"]
+availability_zones   = ["us-east-1a", "us-east-1b"]
+
+# AWS RDS MySQL Settings
+db_instance_class    = "db.t3.medium"
+db_allocated_storage = 20
+db_name              = "thinkers_db"
+db_username          = "thinkers_admin"
+db_password          = "ReplaceWithStrongPassword2026!"
+multi_az_db          = true
+
+# Compute / Auto Scaling
+instance_type        = "t3.medium"
+asg_min_size         = 2
+asg_max_size         = 6
+asg_desired_capacity = 2
+ssh_key_name         = "thinkers-deploy-key"

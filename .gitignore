@@ -1,9 +1,27 @@
+# Python / Django
 myenv/
 venv/
+env/
 *.pyc
+*.pyo
+*.pyd
 __pycache__/
 db.sqlite3
-.DS_Store
 media/
+staticfiles/
 local_settings.py
-EOF
+.DS_Store
+
+# Environment & Secrets
+.env
+
+# Backups & Logs
+backups/
+logs/
+*.log
+
+# Terraform
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/terraform.tfvars

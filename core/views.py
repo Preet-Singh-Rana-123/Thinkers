@@ -1,3 +1,6 @@
+import time
+from django.http import JsonResponse
+from django.db import connection
 from django.shortcuts import render
 from core.models import PlatformStat, Testimonial
 from clubs.models import Club
@@ -35,3 +38,23 @@ def about(request):
 def how_it_works(request):
     """Interactive comic guide: 4 step roadmap to entrepreneur club success."""
     return render(request, "core/how_it_works.html")
+
+
+def health_check(request):
+    """Health check endpoint for ALB, Docker container, and Prometheus uptime monitoring."""
+    db_status = "healthy"
+    try:
+        connection.ensure_connection()
+    except Exception as exc:
+        db_status = f"unhealthy: {str(exc)}"
+
+    is_healthy = db_status == "healthy"
+    status_code = 200 if is_healthy else 503
+
+    return JsonResponse({
+        "status": "healthy" if is_healthy else "degraded",
+        "service": "thinkers-platform",
+        "database": db_status,
+        "timestamp": int(time.time()),
+    }, status=status_code)
+

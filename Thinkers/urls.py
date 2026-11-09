@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,4 +28,8 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('chat/', include('chat.urls')),
 ]
+
+if 'django_prometheus' in getattr(settings, 'INSTALLED_APPS', []):
+    urlpatterns.append(path('', include('django_prometheus.urls')))
+
 

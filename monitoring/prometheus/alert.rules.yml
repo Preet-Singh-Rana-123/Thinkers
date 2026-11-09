@@ -1,0 +1,87 @@
+# ==============================================================================
+# Prometheus Alerting Rules for Thinkers Platform
+# Matches Synopsis Section 6.2 Specifications
+# ==============================================================================
+
+groups:
+  - name: thinkers_application_alerts
+    rules:
+      # Alert Rule 1: HTTP 500 error rates exceed 2%
+      - alert: Http500ErrorRateExceeded
+        expr: >
+          (
+            sum(rate(django_http_responses_total_by_status_total{status=~"5.."}[5m]))
+            /
+            clamp_min(sum(rate(django_http_responses_total_by_status_total[5m])), 0.001)
+          ) * 100 > 2
+        for: 2m
+        labels:
+          severity: critical
+          tier: application
+        annotations:
+          summary: "Thinkers Platform HTTP 500 Error Rate Exceeded 2%"
+          description: "High error rate detected: HTTP 5xx responses constitute {{ $value | printf \"%.2f\" }}% of all traffic (> 2% SLA limit)."
+
+      # Application Instance Down Alert
+      - alert: DjangoAppDown
+        expr: up{job="thinkers-django"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          tier: application
+        annotations:
+          summary: "Thinkers Django App Container is Down"
+          description: "Prometheus cannot scrape /metrics from web:8000 for more than 1 minute."
+
+  - name: thinkers_infrastructure_alerts
+    rules:
+      # Alert Rule 2: Container CPU exceeds 85% for more than 5 minutes
+      - alert: ContainerCpuUsageExceeded85Percent
+        expr: >
+          (
+            sum by (name) (rate(container_cpu_usage_seconds_total{name=~"thinkers_.*"}[5m]))
+            /
+            sum by (name) (container_spec_cpu_quota{name=~"thinkers_.*"} / container_spec_cpu_period{name=~"thinkers_.*"})
+          ) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          tier: infrastructure
+        annotations:
+          summary: "Container {{ $labels.name }} CPU Exceeds 85%"
+          description: "Container {{ $labels.name }} has sustained CPU utilization above 85% for more than 5 minutes."
+
+      # Host Memory Saturation Alert
+      - alert: HostHighMemorySaturation
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 90
+        for: 5m
+        labels:
+          severity: warning
+          tier: infrastructure
+        annotations:
+          summary: "Host High Memory Saturation (> 90%)"
+          description: "Host available memory is below 10% for more than 5 minutes."
+
+  - name: thinkers_database_alerts
+    rules:
+      # MySQL Connection Down Alert
+      - alert: MySQLDatabaseDown
+        expr: up{job="mysql-exporter"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          tier: database
+        annotations:
+          summary: "MySQL Database Exporter Unreachable"
+          description: "MySQL instance is down or mysqld_exporter cannot connect to port 3306."
+
+      # MySQL Active Connections Pool Alert
+      - alert: MySQLConnectionPoolSaturated
+        expr: (mysql_global_status_threads_connected / mysql_global_variables_max_connections) * 100 > 80
+        for: 3m
+        labels:
+          severity: warning
+          tier: database
+        annotations:
+          summary: "MySQL Active Connections Pool > 80%"
+          description: "MySQL connection pool usage is currently at {{ $value | printf \"%.2f\" }}% of max connections."

@@ -1,0 +1,60 @@
+# ==============================================================================
+# Prometheus Configuration for Thinkers Platform
+# Scrape Interval: 15s (as specified in Synopsis Section 6.1)
+# ==============================================================================
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  scrape_timeout: 10s
+
+# Alertmanager Integration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - 'alertmanager:9093'
+
+# Alert Rules Evaluation
+rule_files:
+  - '/etc/prometheus/alert.rules.yml'
+
+# Metrics Scrape Targets
+scrape_configs:
+  # 1. Thinkers Django Application Endpoint (/metrics)
+  - job_name: 'thinkers-django'
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+    static_configs:
+      - targets: ['web:8000']
+        labels:
+          app: 'thinkers'
+          env: 'production'
+          component: 'backend'
+
+  # 2. Node Exporter (Host System Telemetry)
+  - job_name: 'node-exporter'
+    scrape_interval: 15s
+    static_configs:
+      - targets: ['node_exporter:9100']
+        labels:
+          env: 'production'
+          component: 'infrastructure'
+
+  # 3. cAdvisor (Container Resource Utilization)
+  - job_name: 'cadvisor'
+    scrape_interval: 15s
+    static_configs:
+      - targets: ['cadvisor:8080']
+        labels:
+          env: 'production'
+          component: 'containers'
+
+  # 4. MySQL Exporter (Database Connection Pools, Queries & Locks)
+  - job_name: 'mysql-exporter'
+    scrape_interval: 15s
+    static_configs:
+      - targets: ['mysqld_exporter:9104']
+        labels:
+          env: 'production'
+          component: 'database'
