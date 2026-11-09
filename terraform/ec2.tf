@@ -25,6 +25,15 @@ locals {
               #!/bin/bash
               set -ex
 
+              # 0. Configure 2GB Swap Space to prevent memory spikes on t3.micro
+              if ! [ -f /swapfile ]; then
+                fallocate -l 2G /swapfile || dd if=/dev/zero of=/swapfile bs=1M count=2048
+                chmod 600 /swapfile
+                mkswap /swapfile
+                swapon /swapfile
+                echo '/swapfile none swap sw 0 0' >> /etc/fstab
+              fi
+
               # 1. Update packages and install Docker & Docker Compose
               apt-get update -y
               apt-get install -y ca-certificates curl gnupg lsb-release git
@@ -73,7 +82,7 @@ locals {
               ENVFILE
 
               # 4. Build and start containers
-              docker compose up -d --build web nginx prometheus grafana cadvisor node_exporter mysqld_exporter alertmanager
+              docker compose up -d --build web nginx
               echo "Thinkers Compute Node Initialization Finished Successfully!"
               EOF
 }
@@ -92,6 +101,15 @@ resource "aws_launch_template" "app" {
   network_interfaces {
     associate_public_ip_address = false
     security_groups             = [aws_security_group.app_sg.id]
+  }
+
+  block_device_mappings {
+    device_name = "/dev/sda1"
+    ebs {
+      volume_size           = 20
+      volume_type           = "gp3"
+      delete_on_termination = true
+    }
   }
 
   user_data = base64encode(local.user_data)
@@ -119,7 +137,7 @@ resource "aws_autoscaling_group" "app_asg" {
   desired_capacity = var.asg_desired_capacity
 
   health_check_type         = "ELB"
-  health_check_grace_period = 300
+  health_check_grace_period = 900
 
   launch_template {
     id      = aws_launch_template.app.id
