@@ -210,6 +210,26 @@ services:
       - thinkers_internal
       - thinkers_monitoring
 
+  # ----------------------------------------------------------------------------
+  # 10. Automated CI/CD Server (Jenkins)
+  # ----------------------------------------------------------------------------
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: thinkers_jenkins
+    restart: unless-stopped
+    user: root
+    ports:
+      - "8089:8080"
+      - "50000:50000"
+    environment:
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+    volumes:
+      - jenkins_data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - thinkers_internal
+      - thinkers_monitoring
+
 # Persistent Storage Volumes
 volumes:
   mysql_data:
@@ -218,6 +238,7 @@ volumes:
   logs_volume:
   prometheus_data:
   grafana_data:
+  jenkins_data:
 
 # Isolated Docker Networks
 networks:

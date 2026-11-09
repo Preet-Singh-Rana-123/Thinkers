@@ -44,23 +44,36 @@ locals {
               mkdir -p /opt/thinkers
               cd /opt/thinkers
 
+              # Clone repository
+              git clone https://github.com/Preet-Singh-Rana-123/Thinkers.git repo
+              cp -r repo/* .
+              rm -rf repo
+
               # 3. Write Production Environment Configuration
-              cat << 'ENVFILE' > .env
+              cat << ENVFILE > .env
               DJANGO_SECRET_KEY=prod-thinkers-secret-key-$(openssl rand -hex 16)
               DJANGO_DEBUG=False
               ALLOWED_HOSTS=*
+              CSRF_TRUSTED_ORIGINS=http://${aws_lb.main.dns_name},https://${aws_lb.main.dns_name}
               DB_HOST=${aws_db_instance.mysql_primary.address}
               DB_PORT=3306
               DB_NAME=${var.db_name}
               DB_USER=${var.db_username}
               DB_PASSWORD=${var.db_password}
+              MYSQL_ROOT_PASSWORD=${var.db_password}
+              MYSQL_DATABASE=${var.db_name}
+              MYSQL_USER=${var.db_username}
+              MYSQL_PASSWORD=${var.db_password}
               USE_S3=True
               AWS_STORAGE_BUCKET_NAME=${aws_s3_bucket.assets.id}
               AWS_S3_REGION_NAME=${var.aws_region}
+              NGINX_PORT=80
+              GRAFANA_PORT=3000
+              MYSQL_HOST_PORT=3307
               ENVFILE
 
-              # 4. Clone or pull repo and start stack
-              # (In production, Jenkins pushes the image and triggers deploy)
+              # 4. Build and start containers
+              docker compose up -d --build web nginx prometheus grafana cadvisor node_exporter mysqld_exporter alertmanager
               echo "Thinkers Compute Node Initialization Finished Successfully!"
               EOF
 }
