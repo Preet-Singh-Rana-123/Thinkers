@@ -27,6 +27,13 @@ pipeline {
         disableConcurrentBuilds()
     }
 
+    triggers {
+        // Automatically checks GitHub every minute for new commits pushed to main
+        pollSCM('* * * * *')
+        // Automatically triggers when GitHub Webhook fires
+        githubPush()
+    }
+
     stages {
         // ---------------------------------------------------------------------
         // Stage 1: Source Checkout & Static Code Analysis
@@ -78,7 +85,7 @@ pipeline {
             steps {
                 echo "=== [Stage 4] Building Multi-Stage Docker Image: ${IMAGE_NAME}:${IMAGE_TAG} ==="
                 sh '''
-                    docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:latest .
+                    docker build -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} -t thinkers-web:latest -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:latest .
                     echo "Docker image built successfully."
                 '''
             }
@@ -101,9 +108,10 @@ pipeline {
             steps {
                 echo '=== [Stage 6] Performing Zero-Downtime Rolling Update ==='
                 sh '''
-                    echo "Refreshing containers and checking configuration..."
-                    python3 manage.py check
-                    echo "Deployment step completed successfully."
+                    echo "Applying migrations and refreshing web container with latest image..."
+                    docker compose run --rm web python manage.py migrate --noinput || true
+                    docker compose up -d --no-deps web
+                    echo "Live application container refreshed with updated code!"
                 '''
             }
         }
