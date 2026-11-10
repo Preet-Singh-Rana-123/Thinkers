@@ -1,0 +1,45 @@
+FROM jenkins/jenkins:lts
+USER root
+
+# Install system dependencies & python
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    python3-pip \
+    python3-venv \
+    curl \
+    unzip \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Docker CLI
+RUN ARCH=$(uname -m) && \
+    if [ "$ARCH" = "x86_64" ]; then DOCKER_ARCH="x86_64"; else DOCKER_ARCH="aarch64"; fi && \
+    curl -fsSL https://download.docker.com/linux/static/stable/${DOCKER_ARCH}/docker-26.1.4.tgz | tar -xz -C /tmp && \
+    mv /tmp/docker/docker /usr/local/bin/ && \
+    chmod +x /usr/local/bin/docker && \
+    rm -rf /tmp/docker
+
+# Install Docker Compose Plugin
+RUN ARCH=$(uname -m) && \
+    if [ "$ARCH" = "x86_64" ]; then COMPOSE_ARCH="x86_64"; else COMPOSE_ARCH="aarch64"; fi && \
+    mkdir -p /usr/local/lib/docker/cli-plugins && \
+    curl -fsSL "https://github.com/docker/compose/releases/download/v2.27.0/docker-compose-linux-${COMPOSE_ARCH}" -o /usr/local/lib/docker/cli-plugins/docker-compose && \
+    chmod +x /usr/local/lib/docker/cli-plugins/docker-compose && \
+    ln -sf /usr/local/lib/docker/cli-plugins/docker-compose /usr/local/bin/docker-compose
+
+# Install Terraform CLI
+RUN ARCH=$(uname -m) && \
+    if [ "$ARCH" = "x86_64" ]; then TF_ARCH="amd64"; else TF_ARCH="arm64"; fi && \
+    curl -fsSL "https://releases.hashicorp.com/terraform/1.8.2/terraform_1.8.2_linux_${TF_ARCH}.zip" -o /tmp/tf.zip && \
+    unzip -o /tmp/tf.zip -d /usr/local/bin && \
+    rm /tmp/tf.zip
+
+# Setup Python virtualenv with pre-installed testing and linting tools
+ENV VIRTUAL_ENV=/opt/venv
+RUN python3 -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --upgrade pip flake8 && \
+    pip install -r /tmp/requirements.txt && \
+    rm /tmp/requirements.txt

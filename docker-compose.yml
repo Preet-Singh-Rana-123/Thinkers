@@ -214,7 +214,10 @@ services:
   # 10. Automated CI/CD Server (Jenkins)
   # ----------------------------------------------------------------------------
   jenkins:
-    image: jenkins/jenkins:lts
+    build:
+      context: .
+      dockerfile: Dockerfile.jenkins
+    image: thinkers-jenkins:latest
     container_name: thinkers_jenkins
     restart: unless-stopped
     user: root
@@ -223,6 +226,7 @@ services:
       - "50000:50000"
     environment:
       - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+      - PATH=/opt/venv/bin:/opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
     volumes:
       - jenkins_data:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
