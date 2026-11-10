@@ -109,7 +109,9 @@ pipeline {
                 echo '=== [Stage 6] Performing Zero-Downtime Rolling Update ==='
                 sh '''
                     echo "Applying migrations and refreshing web container with latest image..."
-                    docker compose up -d --force-recreate --no-deps web
+                    docker stop thinkers_web || true
+                    docker rm thinkers_web || true
+                    docker compose -p thinkers up -d --no-deps web
                     docker exec thinkers_web python manage.py migrate --noinput || true
                     echo "Live application container refreshed with updated code!"
                 '''
