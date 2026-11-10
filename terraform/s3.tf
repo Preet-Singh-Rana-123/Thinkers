@@ -106,6 +106,18 @@ resource "aws_iam_role_policy_attachment" "cloudwatch_attach" {
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
 }
 
+# Attach ECR Read-Only Policy to IAM Role (allows EC2 to pull images from ECR)
+resource "aws_iam_role_policy_attachment" "ecr_read_attach" {
+  role       = aws_iam_role.app_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+}
+
+# Attach SSM Managed Instance Policy to IAM Role
+resource "aws_iam_role_policy_attachment" "ssm_attach" {
+  role       = aws_iam_role.app_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
 # IAM Instance Profile for EC2 Instances
 resource "aws_iam_instance_profile" "app_profile" {
   name = "thinkers-app-instance-profile-${var.environment}"

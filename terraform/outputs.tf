@@ -46,3 +46,8 @@ output "asg_name" {
   description = "Name of the Auto Scaling Group"
   value       = aws_autoscaling_group.app_asg.name
 }
+
+output "ecr_repository_url" {
+  description = "AWS ECR Registry Repository URI"
+  value       = aws_ecr_repository.app.repository_url
+}

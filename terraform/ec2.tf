@@ -36,7 +36,7 @@ locals {
 
               # 1. Update packages and install Docker & Docker Compose
               apt-get update -y
-              apt-get install -y ca-certificates curl gnupg lsb-release git
+              apt-get install -y ca-certificates curl gnupg lsb-release git awscli
 
               mkdir -m 0755 -p /etc/apt/keyrings
               curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
@@ -81,8 +81,11 @@ locals {
               MYSQL_HOST_PORT=3307
               ENVFILE
 
-              # 4. Build and start containers
-              docker compose up -d --build web nginx
+              # 4. Authenticate with AWS ECR, pull pre-built image and start containers
+              aws ecr get-login-password --region ${var.aws_region} | docker login --username AWS --password-stdin ${aws_ecr_repository.app.repository_url} || true
+              docker pull ${aws_ecr_repository.app.repository_url}:latest || true
+              docker tag ${aws_ecr_repository.app.repository_url}:latest thinkers-web:latest || true
+              docker compose up -d web nginx || docker compose up -d --build web nginx
               echo "Thinkers Compute Node Initialization Finished Successfully!"
               EOF
 }
